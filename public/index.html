@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#050914">
+<title>FitDeck Pro</title>
+<style>
+:root{
+  --bg:#040812;
+  --panel:#0a1120;
+  --panel2:#0d1729;
+  --line:rgba(255,255,255,.09);
+  --text:#f7fbff;
+  --muted:#8da0b8;
+  --cyan:#47f1ff;
+  --blue:#4a7cff;
+  --violet:#a375ff;
+  --green:#4df0a9;
+  --red:#ff6780;
+  --orange:#ffb454;
+  --shadow:0 28px 80px rgba(0,0,0,.52);
+  --radius:28px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  min-height:100vh;
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  color:var(--text);
+  background:
+    radial-gradient(circle at 12% -5%,rgba(71,241,255,.14),transparent 30rem),
+    radial-gradient(circle at 90% 5%,rgba(163,117,255,.14),transparent 26rem),
+    linear-gradient(180deg,#07101e 0%,#03060d 100%);
+  overflow-x:hidden;
+}
+button,input,select{font:inherit}
+button{cursor:pointer}
+.app{width:min(100%,1120px);margin:auto;padding:14px 12px 110px}
+.topbar{
+  position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;
+  padding:10px 0 14px;background:linear-gradient(180deg,rgba(4,8,18,.96),rgba(4,8,18,.78),transparent);
+  backdrop-filter:blur(20px)
+}
+.brand{display:flex;align-items:center;gap:10px}
+.logo{
+  width:42px;height:42px;border-radius:14px;display:grid;place-items:center;font-weight:950;color:#06101d;
+  background:linear-gradient(135deg,var(--cyan),var(--violet));
+  box-shadow:0 0 32px rgba(71,241,255,.2)
+}
+.brand h1{font-size:17px;margin:0}.brand p{font-size:10px;color:var(--muted);margin:2px 0 0}
+.datebox{padding:8px 10px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.04)}
+.datebox input{border:0;outline:0;background:transparent;color:var(--text);max-width:128px}
+.hero{display:grid;grid-template-columns:1.15fr .85fr;gap:12px;margin-top:4px}
+.panel{
+  position:relative;overflow:hidden;border:1px solid var(--line);border-radius:var(--radius);
+  background:linear-gradient(145deg,rgba(14,25,44,.96),rgba(6,14,26,.98));
+  box-shadow:var(--shadow)
+}
+.hero-copy{padding:23px}
+.eyebrow{font-size:10px;letter-spacing:.17em;text-transform:uppercase;color:var(--cyan);font-weight:900}
+.hero-copy h2{font-size:clamp(30px,6vw,56px);line-height:.98;letter-spacing:-.045em;margin:12px 0 10px}
+.hero-copy p{color:var(--muted);font-size:13px;line-height:1.55;margin:0;max-width:620px}
+.day-pill{display:inline-flex;gap:8px;align-items:center;margin-top:17px;padding:10px 13px;border-radius:999px;background:rgba(71,241,255,.07);border:1px solid rgba(71,241,255,.19);font-size:12px;font-weight:800}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 14px var(--green)}
+.score-card{padding:18px;display:grid;place-items:center}
+.score-orbit{
+  --score:50;
+  position:relative;width:210px;aspect-ratio:1;border-radius:50%;display:grid;place-items:center;
+  background:
+    radial-gradient(circle at center,#091524 0 47%,transparent 48%),
+    conic-gradient(from -90deg,var(--cyan) 0 calc(var(--score)*.5%),var(--violet) calc(var(--score)*.5%) calc(var(--score)*1%),rgba(255,255,255,.06) 0);
+  box-shadow:0 0 55px rgba(71,241,255,.15),inset 0 0 40px rgba(163,117,255,.08)
+}
+.score-orbit:before,.score-orbit:after{
+  content:"";position:absolute;border-radius:50%;border:1px solid rgba(255,255,255,.08)
+}
+.score-orbit:before{inset:11px}.score-orbit:after{inset:27px}
+.score-center{position:relative;text-align:center;z-index:2}
+.score-center strong{display:block;font-size:56px;line-height:.95;letter-spacing:-.06em}
+.score-center span{font-size:10px;color:var(--muted)}
+.score-center em{display:block;font-style:normal;color:var(--cyan);font-size:11px;font-weight:850;margin-top:8px}
+.metric-pills{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;width:100%;margin-top:13px}
+.metric{padding:10px 7px;text-align:center;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.035)}
+.metric b{display:block;font-size:14px}.metric span{font-size:9px;color:var(--muted)}
+.section{margin-top:13px}
+.section-title{display:flex;justify-content:space-between;align-items:end;gap:10px;margin:0 3px 9px}
+.section-title h3{margin:0;font-size:17px}.section-title p{margin:3px 0 0;font-size:11px;color:var(--muted)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.pad{padding:17px}
+.toolbar{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
+.btn{
+  border:0;border-radius:14px;padding:11px 14px;font-size:12px;font-weight:900;
+  background:linear-gradient(135deg,var(--cyan),#8df5d6);color:#06101d;
+  box-shadow:0 12px 30px rgba(71,241,255,.13)
+}
+.btn.secondary{background:rgba(255,255,255,.055);color:var(--text);border:1px solid var(--line);box-shadow:none}
+.btn.danger{background:rgba(255,103,128,.11);color:#fff;border:1px solid rgba(255,103,128,.2);box-shadow:none}
+.deck-status{font-size:11px;color:var(--muted)}
+.deck-stage{
+  position:relative;min-height:485px;display:grid;place-items:center;overflow:visible;
+  perspective:1200px;padding:15px 0
+}
+.deck-shadow,.deck-shadow2{
+  position:absolute;width:min(92%,360px);height:440px;border-radius:28px;border:1px solid rgba(255,255,255,.08);
+  background:linear-gradient(145deg,#111b2f,#07101c);box-shadow:0 22px 50px rgba(0,0,0,.28)
+}
+.deck-shadow{transform:translateY(13px) rotate(-2deg);opacity:.58}
+.deck-shadow2{transform:translateY(7px) rotate(2deg);opacity:.74}
+.playing-card{
+  touch-action:none;user-select:none;
+  position:relative;width:min(92%,360px);height:440px;border-radius:28px;padding:18px;
+  background:
+    radial-gradient(circle at 50% 46%,rgba(71,241,255,.18),transparent 40%),
+    linear-gradient(145deg,#fbfdff,#dce7f2);
+  color:#07111f;box-shadow:0 28px 65px rgba(0,0,0,.38);z-index:5;
+  transform-style:preserve-3d;transition:transform .26s ease,opacity .26s ease;
+  overflow:hidden
+}
+.playing-card.red{
+  background:radial-gradient(circle at 50% 46%,rgba(255,103,128,.18),transparent 40%),linear-gradient(145deg,#fff,#efe4ea)
+}
+.playing-card.dragging{transition:none}
+.playing-card.swipe-left{transform:translateX(-140%) rotate(-18deg);opacity:0}
+.playing-card.swipe-right{transform:translateX(140%) rotate(18deg);opacity:0}
+.corner{position:absolute;font-size:28px;font-weight:950;line-height:.82;text-align:center}
+.corner small{display:block;font-size:17px;margin-top:3px}
+.corner.tl{top:17px;left:17px}.corner.br{right:17px;bottom:17px;transform:rotate(180deg)}
+.card-rank-label{text-align:center;font-size:11px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;opacity:.55}
+.exercise-name{text-align:center;font-size:22px;font-weight:950;margin-top:8px;padding:0 40px}
+.exercise-art{height:225px;display:grid;place-items:center;margin:4px auto}
+.exercise-art svg{width:205px;height:205px;filter:drop-shadow(0 14px 13px rgba(6,16,29,.14))}
+.rep-value{text-align:center}.rep-value strong{display:block;font-size:43px;line-height:.9}.rep-value span{font-size:11px;font-weight:850;opacity:.62}
+.swipe-hint{text-align:center;margin-top:11px;font-size:10px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;opacity:.5}
+.legend{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin-top:10px}
+.legend-item{padding:10px;border-radius:13px;border:1px solid var(--line);background:rgba(255,255,255,.03)}
+.legend-item b{display:block;font-size:10px}.legend-item span{font-size:9px;color:var(--muted)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.stat{padding:13px;border-radius:17px;border:1px solid var(--line);background:rgba(255,255,255,.03)}
+.stat span{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em}.stat b{display:block;font-size:20px;margin-top:4px}
+.log-list{display:grid;gap:7px;margin-top:11px;max-height:335px;overflow:auto}
+.log-row{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;padding:10px 11px;border-radius:13px;background:rgba(255,255,255,.035);border:1px solid var(--line)}
+.log-row b{display:block;font-size:11px}.log-row span{font-size:9px;color:var(--muted)}
+.log-row button{border:0;background:transparent;color:var(--red);font-size:18px}
+.water-panel{display:grid;grid-template-columns:145px 1fr;gap:16px;align-items:center}
+.water-glass{
+  position:relative;width:120px;height:190px;margin:auto;border:4px solid rgba(255,255,255,.78);
+  border-top-width:2px;border-radius:9px 9px 28px 28px;overflow:hidden;background:rgba(255,255,255,.02)
+}
+.water-fill{position:absolute;left:0;right:0;bottom:0;height:0;background:linear-gradient(180deg,#46f1ff,#3870ff);transition:height .45s cubic-bezier(.2,.8,.2,1)}
+.water-fill:before{content:"";position:absolute;left:-10%;top:-7px;width:120%;height:14px;border-radius:50%;background:#70f4ff}
+.water-readout{text-align:center;font-size:38px;font-weight:950;letter-spacing:-.045em}.water-readout span{font-size:12px;color:var(--muted);letter-spacing:0}
+.water-sub{text-align:center;color:var(--muted);font-size:10px;margin-top:3px}
+.add-water{
+  width:100%;margin-top:12px;padding:15px 16px;border:0;border-radius:16px;font-weight:950;font-size:14px;
+  color:#06101d;background:linear-gradient(135deg,var(--cyan),#6fd2ff);box-shadow:0 15px 35px rgba(71,241,255,.16)
+}
+.water-mini{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.water-mini button{padding:10px;border-radius:13px;background:rgba(255,255,255,.05);color:var(--text);border:1px solid var(--line);font-weight:850}
+.field label{display:block;font-size:9px;font-weight:850;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0 0 5px 2px}
+.field input,.field select{width:100%;padding:12px;border-radius:13px;border:1px solid var(--line);background:#07111f;color:var(--text);outline:0}
+.activity-form{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.activity-form .wide{grid-column:1/-1}
+.chart-wrap{padding:17px}
+canvas{display:block;width:100%;height:270px}
+.bottom-nav{
+  position:fixed;left:50%;bottom:10px;transform:translateX(-50%);z-index:80;width:min(94%,520px);
+  display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:7px;border:1px solid var(--line);
+  border-radius:20px;background:rgba(7,14,26,.91);backdrop-filter:blur(20px);box-shadow:var(--shadow)
+}
+.bottom-nav a{text-decoration:none;color:var(--muted);text-align:center;padding:9px 4px;border-radius:13px;font-size:9px;font-weight:900}
+.bottom-nav a:hover{color:var(--text);background:rgba(255,255,255,.05)}
+.toast{position:fixed;left:50%;bottom:86px;transform:translate(-50%,18px);opacity:0;z-index:100;background:#f7fbff;color:#06101d;padding:11px 14px;border-radius:13px;font-size:11px;font-weight:900;transition:.22s;pointer-events:none}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.empty{min-height:180px;display:grid;place-items:center;text-align:center;border:1px dashed var(--line);border-radius:18px;color:var(--muted);font-size:11px;padding:18px}
+@media(max-width:760px){
+  .hero,.grid2{grid-template-columns:1fr}
+  .score-card{min-height:260px}
+  .deck-stage{min-height:465px}
+  .playing-card,.deck-shadow,.deck-shadow2{height:420px}
+}
+@media(max-width:420px){
+  .app{padding-left:9px;padding-right:9px}
+  .brand p{display:none}.hero-copy,.pad,.chart-wrap{padding:14px}
+  .hero-copy h2{font-size:38px}
+  .score-orbit{width:184px}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .water-panel{grid-template-columns:112px 1fr}
+  .water-glass{width:96px;height:155px}
+  .activity-form{grid-template-columns:1fr}.activity-form .wide{grid-column:auto}
+  .deck-stage{min-height:442px;padding-top:8px}
+  .playing-card,.deck-shadow,.deck-shadow2{width:96%;height:405px}
+  .exercise-art{height:205px}.exercise-art svg{width:188px;height:188px}
+}
+
+.metric-pills-four{grid-template-columns:repeat(4,1fr)}
+.bonus-metric{
+  background:linear-gradient(145deg,rgba(163,117,255,.14),rgba(71,241,255,.07));
+  border-color:rgba(163,117,255,.25)
+}
+.bonus-metric b{color:#c7adff}
+.panel:before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(135deg,rgba(255,255,255,.025),transparent 38%);
+}
+.playing-card:after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(120deg,transparent 0 42%,rgba(255,255,255,.22) 50%,transparent 58%);
+  transform:translateX(-130%);transition:transform .7s ease
+}
+.playing-card:hover:after{transform:translateX(130%)}
+.add-water{position:relative;overflow:hidden}
+.add-water:after{
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(110deg,transparent 0 40%,rgba(255,255,255,.35) 50%,transparent 60%);
+  transform:translateX(-120%);transition:transform .6s ease
+}
+.add-water:hover:after{transform:translateX(120%)}
+@media(max-width:420px){
+  .metric-pills-four{grid-template-columns:repeat(2,1fr)}
+}
+
+
+.welcome-block{display:flex;flex-direction:column;gap:2px}
+.welcome-line{font-size:10px;color:var(--muted);font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+.welcome-name{font-size:17px;font-weight:950;letter-spacing:-.02em}
+.profile-btn{
+  width:38px;height:38px;border-radius:13px;border:1px solid var(--line);
+  background:rgba(255,255,255,.05);color:var(--text);font-weight:950
+}
+.topbar-right{display:flex;align-items:center;gap:8px}
+.onboarding{
+  position:fixed;inset:0;z-index:200;display:grid;place-items:center;padding:18px;
+  background:
+    radial-gradient(circle at 20% 10%,rgba(71,241,255,.18),transparent 26rem),
+    radial-gradient(circle at 80% 15%,rgba(163,117,255,.18),transparent 24rem),
+    rgba(3,7,15,.94);
+  backdrop-filter:blur(22px)
+}
+.onboarding.hidden{display:none}
+.onboarding-card{
+  width:min(100%,460px);padding:28px;border-radius:30px;border:1px solid rgba(255,255,255,.11);
+  background:linear-gradient(145deg,rgba(15,27,47,.98),rgba(6,14,26,.98));
+  box-shadow:0 35px 100px rgba(0,0,0,.6);position:relative;overflow:hidden
+}
+.onboarding-card:before{
+  content:"";position:absolute;inset:-1px;pointer-events:none;
+  background:linear-gradient(135deg,rgba(71,241,255,.08),transparent 35%,rgba(163,117,255,.08))
+}
+.onboarding-logo{
+  width:62px;height:62px;border-radius:20px;display:grid;place-items:center;font-size:24px;font-weight:950;
+  color:#06101d;background:linear-gradient(135deg,var(--cyan),var(--violet));
+  box-shadow:0 0 45px rgba(71,241,255,.2);margin-bottom:18px
+}
+.onboarding h2{font-size:34px;line-height:1;margin:0 0 10px;letter-spacing:-.045em}
+.onboarding p{color:var(--muted);font-size:13px;line-height:1.55;margin:0 0 20px}
+.name-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.start-btn{width:100%;margin-top:12px;padding:14px 16px;border:0;border-radius:16px;font-weight:950;color:#06101d;background:linear-gradient(135deg,var(--cyan),#8df5d6)}
+.profile-sheet{
+  position:fixed;inset:0;z-index:180;display:none;place-items:end center;background:rgba(0,0,0,.5);backdrop-filter:blur(8px)
+}
+.profile-sheet.show{display:grid}
+.profile-card{
+  width:min(100%,520px);padding:20px;border-radius:26px 26px 0 0;border:1px solid var(--line);
+  background:linear-gradient(145deg,#0d182a,#07101d);box-shadow:var(--shadow)
+}
+.profile-card h3{margin:0 0 5px}.profile-card p{margin:0 0 14px;color:var(--muted);font-size:11px}
+.profile-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.save-note{
+  margin-top:12px;padding:11px 12px;border-radius:14px;background:rgba(71,241,255,.06);
+  border:1px solid rgba(71,241,255,.14);color:var(--muted);font-size:10px;line-height:1.5
+}
+@media(max-width:420px){
+  .welcome-name{font-size:14px}.welcome-line{font-size:8px}
+  .name-grid{grid-template-columns:1fr}
+  .onboarding-card{padding:22px}
+  .onboarding h2{font-size:30px}
+}
+
+</style>
+</head>
+<body>
+<div class="app">
+<header class="topbar">
+  <div class="brand">
+    <div class="logo">FD</div>
+    <div class="welcome-block">
+      <div class="welcome-line">FitDeck Pro</div>
+      <div class="welcome-name" id="welcomeName">Welcome</div>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <div class="datebox"><input id="activeDate" type="date"></div>
+    <button class="profile-btn" id="profileBtn" aria-label="Edit profile">•••</button>
+  </div>
+</header>
+
+<main>
+<section class="hero" id="dashboard">
+  <article class="panel hero-copy">
+    <div class="eyebrow">Daily performance system</div>
+    <h2 id="heroTitle">Swipe. Train. Progress.</h2>
+    <p id="heroText">A complete 52-card workout deck with automatic tracking, hydration scoring, activity logging and long-term progress.</p>
+    <div class="day-pill"><span class="dot" id="dayDot"></span><span id="dayPill">Upper Body Day</span></div>
+  </article>
+  <article class="panel score-card">
+    <div class="score-orbit" id="scoreOrbit">
+      <div class="score-center">
+        <strong id="fitScore">0</strong>
+        <span>FitScore · -50 to +50</span>
+        <em id="scoreEquivalent">50 / 100 equivalent</em>
+      </div>
+    </div>
+    <div class="metric-pills metric-pills-four">
+      <div class="metric"><b id="workoutMetric">0</b><span>Workout</span></div>
+      <div class="metric"><b id="waterMetric">0</b><span>Water</span></div>
+      <div class="metric"><b id="activityMetric">0</b><span>Steps</span></div>
+      <div class="metric bonus-metric"><b id="bonusMetric">+0</b><span>Cardio Bonus</span></div>
+    </div>
+  </article>
+</section>
+
+<section class="section" id="workout">
+  <div class="section-title"><div><h3>Workout Deck</h3><p>Swipe left or right to complete the top card.</p></div></div>
+  <div class="grid2">
+    <article class="panel pad">
+      <div class="toolbar">
+        <button class="btn secondary" id="shuffleBtn">Shuffle Deck</button>
+        <span class="deck-status" id="deckStatus">52 cards</span>
+      </div>
+      <div class="deck-stage" id="deckStage"></div>
+      <div class="legend" id="legend"></div>
+    </article>
+    <article class="panel pad">
+      <div class="toolbar">
+        <div><b style="font-size:14px">Completed Cards</b><div style="font-size:10px;color:var(--muted)">Swiped cards are logged instantly.</div></div>
+        <button class="btn danger" id="clearWorkoutBtn">Reset</button>
+      </div>
+      <div class="stats">
+        <div class="stat"><span>Cards</span><b id="cardsDone">0</b></div>
+        <div class="stat"><span>Reps</span><b id="totalReps">0</b></div>
+        <div class="stat"><span>Deck</span><b id="deckPercent">0%</b></div>
+        <div class="stat"><span>Remaining</span><b id="remainingCards">52</b></div>
+      </div>
+      <div class="log-list" id="workoutLog"></div>
+    </article>
+  </div>
+</section>
+
+<section class="section" id="water">
+  <div class="section-title"><div><h3>Hydration</h3><p>One tap adds 12 oz and updates your score.</p></div></div>
+  <div class="grid2">
+    <article class="panel pad">
+      <div class="water-panel">
+        <div class="water-glass"><div class="water-fill" id="waterFill"></div></div>
+        <div>
+          <div class="water-readout"><strong id="waterOz">0</strong> <span>oz</span></div>
+          <div class="water-sub" id="waterGoalText">0% of goal</div>
+          <button class="add-water" id="add12Btn">+12 OZ WATER</button>
+          <div class="water-mini"><button id="minus12Btn">−12 oz</button><button id="resetWaterBtn">Reset</button></div>
+        </div>
+      </div>
+    </article>
+    <article class="panel pad">
+      <div class="stats" style="grid-template-columns:1fr 1fr">
+        <div class="stat"><span>Hydration score</span><b id="hydrationScore">0</b></div>
+        <div class="stat"><span>Remaining</span><b id="waterRemaining">96 oz</b></div>
+      </div>
+      <div class="field" style="margin-top:12px"><label>Daily water goal</label><input id="waterGoal" type="number" min="24" max="240" step="1"></div>
+      <p style="font-size:11px;color:var(--muted);line-height:1.6;margin:13px 1px 0">Hydration contributes 25% of FitScore. Intake above the goal is saved without pushing the hydration metric above 100.</p>
+    </article>
+  </div>
+</section>
+
+<section class="section" id="activity">
+  <div class="section-title"><div><h3>Run, Walk & Steps</h3><p>Steps are a core metric. Runs and bike rides add capped bonus points.</p></div></div>
+  <div class="grid2">
+    <article class="panel pad">
+      <div class="activity-form">
+        <div class="field"><label>Activity</label><select id="activityType"><option>Run</option><option>Bike</option><option>Walk</option></select></div>
+        <div class="field"><label>Distance (miles)</label><input id="activityDistance" type="number" min="0" step=".01" placeholder="3.10"></div>
+        <div class="field"><label>Time (minutes)</label><input id="activityMinutes" type="number" min="0" step="1" placeholder="28"></div>
+        <div class="field"><label>Steps today</label><input id="stepsInput" type="number" min="0" step="100" placeholder="8500"></div>
+        <button class="btn wide" id="logActivityBtn">Save Activity</button>
+      </div>
+    </article>
+    <article class="panel pad">
+      <div class="stats">
+        <div class="stat"><span>Steps</span><b id="stepsStat">0</b></div>
+        <div class="stat"><span>Run miles</span><b id="runMilesStat">0.0</b></div>
+        <div class="stat"><span>Bike miles</span><b id="bikeMilesStat">0.0</b></div>
+        <div class="stat"><span>Bonus pts</span><b id="bonusStat">+0</b></div>
+      </div>
+      <div class="log-list" id="activityLog"></div>
+    </article>
+  </div>
+</section>
+
+<section class="section" id="progress">
+  <div class="section-title"><div><h3>Progress</h3><p>Daily FitScore and cumulative average. Weekends are excluded.</p></div></div>
+  <div class="stats" style="margin-bottom:9px">
+    <div class="stat"><span>Upper avg</span><b id="upperAvg">—</b></div>
+    <div class="stat"><span>Lower avg</span><b id="lowerAvg">—</b></div>
+    <div class="stat"><span>Overall avg</span><b id="overallAvg">—</b></div>
+    <div class="stat"><span>Scored days</span><b id="scoredDays">0</b></div>
+  </div>
+  <article class="panel chart-wrap"><canvas id="progressChart"></canvas></article>
+</section>
+</main>
+</div>
+
+<nav class="bottom-nav"><a href="#dashboard">Score</a><a href="#workout">Deck</a><a href="#water">Water</a><a href="#progress">Progress</a></nav>
+
+<div class="onboarding" id="onboarding">
+  <div class="onboarding-card">
+    <div class="onboarding-logo">FD</div>
+    <div class="eyebrow">Your fitness system</div>
+    <h2>Welcome to FitDeck.</h2>
+    <p>Create your profile to personalize the app. Your workouts, water, activity, and progress will save automatically on this device.</p>
+    <div class="name-grid">
+      <div class="field"><label>First name</label><input id="firstNameInput" type="text" autocomplete="given-name" placeholder="First name"></div>
+      <div class="field"><label>Last name</label><input id="lastNameInput" type="text" autocomplete="family-name" placeholder="Last name"></div>
+    </div>
+    <button class="start-btn" id="startAppBtn">Enter FitDeck</button>
+    <div class="save-note">Data is stored in this browser using local storage. It remains after closing the app, but it will not automatically sync between different phones or browsers.</div>
+  </div>
+</div>
+
+<div class="profile-sheet" id="profileSheet">
+  <div class="profile-card">
+    <h3>Edit Profile</h3>
+    <p>Update the name shown at the top of FitDeck.</p>
+    <div class="name-grid">
+      <div class="field"><label>First name</label><input id="editFirstName" type="text"></div>
+      <div class="field"><label>Last name</label><input id="editLastName" type="text"></div>
+    </div>
+    <div class="profile-actions">
+      <button class="btn secondary" id="closeProfileBtn">Cancel</button>
+      <button class="btn" id="saveProfileBtn">Save Name</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(()=>{
+const KEY="fitdeck-pro-v2";
+const upper=[
+{name:"Shoulder Presses",suit:"♠",key:"shoulder",color:"#07111f"},
+{name:"Incline Pushups",suit:"♥",key:"pushup",color:"#d9304f"},
+{name:"Hammer Curls",suit:"♣",key:"curl",color:"#07111f"},
+{name:"Tricep Dips",suit:"♦",key:"dip",color:"#d9304f"}];
+const lower=[
+{name:"Squats",suit:"♠",key:"squat",color:"#07111f"},
+{name:"Lunges",suit:"♥",key:"lunge",color:"#d9304f"},
+{name:"Goblet Split Squats",suit:"♣",key:"split",color:"#07111f"},
+{name:"Side Lunges",suit:"♦",key:"side",color:"#d9304f"}];
+const ranks=[
+{label:"A",value:11},{label:"2",value:2},{label:"3",value:3},{label:"4",value:4},{label:"5",value:5},{label:"6",value:6},
+{label:"7",value:7},{label:"8",value:8},{label:"9",value:9},{label:"10",value:10},{label:"J",value:10},{label:"Q",value:10},{label:"K",value:10}
+];
+let db=load(),active=today();db.profile=db.profile||{first:"",last:""};
+const $=id=>document.getElementById(id);
+$("activeDate").value=active;
+
+function today(){const d=new Date(),o=d.getTimezoneOffset();return new Date(d-o*60000).toISOString().slice(0,10)}
+function load(){try{return JSON.parse(localStorage.getItem(KEY))||{days:{},settings:{goal:96},profile:{first:"",last:""}}}catch{return{days:{},settings:{goal:96},profile:{first:"",last:""}}}}
+function save(){localStorage.setItem(KEY,JSON.stringify(db))}
+function type(date){const n=new Date(date+"T12:00:00").getDay();return n===0||n===6?"rest":[1,3,5].includes(n)?"upper":"lower"}
+function set(){return type(active)==="lower"?lower:upper}
+function id(){return Math.random().toString(36).slice(2)+Date.now().toString(36)}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}}
+function ensure(){
+ if(!db.days[active])db.days[active]={type:type(active),deck:[],pointer:0,logs:[],water:0,goal:db.settings.goal||96,steps:0,activities:[]};
+ const d=db.days[active];d.type=type(active);d.logs=d.logs||[];d.activities=d.activities||[];d.deck=d.deck||[];
+ if(!d.deck.length&&d.type!=="rest")makeDeck(false);
+ return d
+}
+function makeDeck(doSave=true){
+ const d=db.days[active]||(db.days[active]={type:type(active),logs:[],water:0,goal:96,steps:0,activities:[]});
+ d.deck=[];
+ if(d.type!=="rest")set().forEach((ex,exIndex)=>ranks.forEach(r=>d.deck.push({id:id(),exIndex,label:r.label,value:r.value})));
+ shuffle(d.deck);d.pointer=0;if(doSave)save()
+}
+function svg(key){
+ const start='<svg viewBox="0 0 200 200"><defs><linearGradient id="g" x1="0" x2="1"><stop stop-color="#47f1ff"/><stop offset="1" stop-color="#a375ff"/></linearGradient></defs><g stroke="#07111f" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" fill="none"><circle cx="100" cy="40" r="16" fill="url(#g)" stroke-width="5"/>';
+ const end='</g></svg>';
+ const m={
+ shoulder:'<path d="M100 58v63M100 77L68 96M100 77l32 19M68 96V52M132 96V52M50 52h36M114 52h36M82 120l-18 55M118 120l18 55"/>',
+ pushup:'<path d="M37 145h126M54 141l36-55 63 21M90 86l-8 48M153 107l7 31M81 134l-25 5M160 138l16 1"/><circle cx="78" cy="74" r="14" fill="url(#g)" stroke-width="5"/>',
+ curl:'<path d="M100 58v65M100 77L71 96M100 77l29 19M71 96l-6 38M129 96l6 38M82 122l-18 53M118 122l18 53M51 132h26M123 132h26"/>',
+ dip:'<path d="M46 122h108M52 122v53M148 122v53M100 58l-8 53M92 111l-38 3M92 111l35 25M127 136l21-16M90 111l-13 55M127 136l16 34"/>',
+ squat:'<path d="M100 58v56M100 78L68 103M100 78l32 25M68 103h64M100 114l-28 29M100 114l28 29M72 143l-8 32M128 143l8 32M55 96h90"/>',
+ lunge:'<path d="M100 58v61M100 78L69 104M100 78l31 26M100 119L66 142M66 142l-25 31M100 119l38 28M138 147h35"/>',
+ split:'<path d="M100 58v58M100 78L65 104M100 78l35 26M65 104h70M100 116L67 145M67 145l-8 30M100 116l38 28M138 144l30 12M57 96h86"/>',
+ side:'<path d="M100 58v59M100 78L65 105M100 78l35 27M100 117L52 145M52 145l-28 4M100 117l35 47M135 164h33"/>'
+ };
+ return start+(m[key]||m.squat)+end
+}
+
+function renderProfile(){
+ const first=(db.profile.first||"").trim(),last=(db.profile.last||"").trim();
+ $("welcomeName").textContent=first?`Welcome, ${first}`:"Welcome";
+ $("onboarding").classList.toggle("hidden",Boolean(first&&last));
+ $("firstNameInput").value=first;
+ $("lastNameInput").value=last;
+ $("editFirstName").value=first;
+ $("editLastName").value=last
+}
+function render(){
+ renderProfile();
+ const d=ensure(),t=d.type;
+ $("dayPill").textContent=t==="upper"?"Upper Body Day":t==="lower"?"Lower Body Day":"Recovery Day";
+ $("heroTitle").textContent=t==="rest"?"Recover. Reset. Return.":t==="upper"?"Upper Body Day":"Lower Body Strength Day";
+ $("heroText").textContent=t==="rest"?"Saturday and Sunday are recovery days. They are stored but excluded from scoring.":t==="upper"?"Shoulder presses, incline pushups, hammer curls and tricep dips. Runs and bike rides can add bonus points.":"Squats, lunges, goblet split squats and side lunges. Swipe each card to log it.";
+ $("dayDot").style.background=t==="rest"?"#a375ff":"#4df0a9";
+ renderDeck();renderLegend();renderLogs();renderWater();renderActivity();renderScore();renderProgress()
+}
+function renderDeck(){
+ const d=ensure(),host=$("deckStage");
+ if(d.type==="rest"){host.innerHTML='<div class="empty" style="width:100%;min-height:420px"><div><div style="font-size:46px">☾</div><br><b style="color:white;font-size:16px">Recovery day</b><br><br>No workout deck assigned.</div></div>';$("deckStatus").textContent="Rest day";return}
+ if(d.pointer>=d.deck.length){host.innerHTML='<div class="empty" style="width:100%;min-height:420px"><div><div style="font-size:46px">✓</div><br><b style="color:white;font-size:16px">Deck complete</b><br><br>All 52 cards logged.</div></div>';$("deckStatus").textContent="52 of 52 complete";return}
+ const c=d.deck[d.pointer],ex=set()[c.exIndex],red=["♥","♦"].includes(ex.suit);
+ $("deckStatus").textContent=`${d.pointer} complete · ${52-d.pointer} remaining`;
+ host.innerHTML=`<div class="deck-shadow"></div><div class="deck-shadow2"></div>
+ <div class="playing-card ${red?"red":""}" id="activeCard">
+   <div class="corner tl" style="color:${ex.color}">${c.label}<small>${ex.suit}</small></div>
+   <div class="corner br" style="color:${ex.color}">${c.label}<small>${ex.suit}</small></div>
+   <div class="card-rank-label">${["J","Q","K"].includes(c.label)?"Face card · 10 reps":c.label==="A"?"Ace · 11 reps":"Workout card"}</div>
+   <div class="exercise-name">${ex.name}</div>
+   <div class="exercise-art">${svg(ex.key)}</div>
+   <div class="rep-value"><strong>${c.value}</strong><span>REPS</span></div>
+   <div class="swipe-hint">Swipe to complete</div>
+ </div>`;
+ bindSwipe($("activeCard"))
+}
+function bindSwipe(card){
+ let startX=0,currentX=0,drag=false;
+ const begin=e=>{drag=true;startX=(e.touches?e.touches[0].clientX:e.clientX);card.classList.add("dragging")};
+ const move=e=>{if(!drag)return;currentX=(e.touches?e.touches[0].clientX:e.clientX)-startX;card.style.transform=`translateX(${currentX}px) rotate(${currentX/22}deg)`};
+ const end=()=>{if(!drag)return;drag=false;card.classList.remove("dragging");if(Math.abs(currentX)>80){completeSwipe(currentX>0?"right":"left")}else{card.style.transform="";currentX=0}};
+ card.addEventListener("pointerdown",begin);window.addEventListener("pointermove",move);window.addEventListener("pointerup",end);
+ card.addEventListener("touchstart",begin,{passive:true});card.addEventListener("touchmove",move,{passive:true});card.addEventListener("touchend",end)
+}
+function completeSwipe(dir){
+ const d=ensure(),c=d.deck[d.pointer];if(!c)return;const ex=set()[c.exIndex],card=$("activeCard");
+ card.classList.add(dir==="right"?"swipe-right":"swipe-left");
+ d.logs.push({id:id(),exercise:ex.name,suit:ex.suit,label:c.label,reps:c.value,ts:Date.now()});d.pointer++;save();
+ setTimeout(()=>{toast(`${ex.name} · ${c.value} reps`);render()},220)
+}
+function renderLegend(){$("legend").innerHTML=set().map(x=>`<div class="legend-item"><b>${x.suit} ${x.name}</b><span>A=11 · J/Q/K=10</span></div>`).join("")}
+function renderLogs(){
+ const d=ensure(),logs=d.logs||[];$("cardsDone").textContent=logs.length;$("totalReps").textContent=logs.reduce((s,x)=>s+x.reps,0);
+ $("deckPercent").textContent=Math.round(logs.length/52*100)+"%";$("remainingCards").textContent=Math.max(0,52-logs.length);
+ $("workoutLog").innerHTML=logs.length?logs.slice().reverse().map(x=>`<div class="log-row"><div><b>${x.suit} ${x.exercise}</b><span>${x.label} card · ${x.reps} reps</span></div><button data-rm="${x.id}">×</button></div>`).join(""):'<div class="empty">Swipe your first card to begin.</div>';
+ document.querySelectorAll("[data-rm]").forEach(b=>b.onclick=()=>{d.logs=d.logs.filter(x=>x.id!==b.dataset.rm);d.pointer=Math.max(0,d.pointer-1);save();render()})
+}
+function renderWater(){
+ const d=ensure(),goal=d.goal||96,p=Math.min(100,(d.water||0)/goal*100);
+ $("waterOz").textContent=d.water||0;$("waterGoal").value=goal;$("waterFill").style.height=p+"%";$("waterGoalText").textContent=Math.round(p)+"% of "+goal+" oz goal";
+ $("hydrationScore").textContent=Math.round(p);$("waterRemaining").textContent=Math.max(0,goal-(d.water||0))+" oz"
+}
+function renderActivity(){
+ const d=ensure(),a=d.activities||[];
+ const runMiles=a.filter(x=>x.type==="Run").reduce((s,x)=>s+x.distance,0);
+ const bikeMiles=a.filter(x=>x.type==="Bike").reduce((s,x)=>s+x.distance,0);
+ const runBonus=Math.min(6,runMiles*1.5);
+ const bikeBonus=Math.min(6,bikeMiles*.6);
+ const bonus=Math.min(10,runBonus+bikeBonus);
+
+ $("stepsInput").value=d.steps||"";
+ $("stepsStat").textContent=(d.steps||0).toLocaleString();
+ $("runMilesStat").textContent=runMiles.toFixed(1);
+ $("bikeMilesStat").textContent=bikeMiles.toFixed(1);
+ $("bonusStat").textContent="+"+Math.round(bonus);
+
+ $("activityLog").innerHTML=a.length?a.slice().reverse().map(x=>`
+   <div class="log-row">
+     <div>
+       <b>${x.type} · ${x.distance.toFixed(2)} mi</b>
+       <span>${x.minutes} min${x.minutes&&x.distance?" · "+(x.minutes/x.distance).toFixed(1)+" min/mi":""}${x.type==="Walk"?" · logged only":x.type==="Run"?" · bonus eligible":" · bonus eligible"}</span>
+     </div>
+     <button data-ra="${x.id}">×</button>
+   </div>`).join(""):'<div class="empty">No activity logged yet.</div>';
+
+ document.querySelectorAll("[data-ra]").forEach(b=>b.onclick=()=>{
+   d.activities=d.activities.filter(x=>x.id!==b.dataset.ra);
+   save();
+   render()
+ })
+}
+function calc(d){
+ if(!d||d.type==="rest")return{fit:null,equiv:null,workout:0,water:0,activity:0,bonus:0};
+
+ const workout=Math.min(100,(d.logs||[]).length/52*100);
+ const water=Math.min(100,(d.water||0)/(d.goal||96)*100);
+ const steps=Math.min(100,(d.steps||0)/10000*100);
+
+ const activities=d.activities||[];
+ const runMiles=activities.filter(x=>x.type==="Run").reduce((s,x)=>s+x.distance,0);
+ const bikeMiles=activities.filter(x=>x.type==="Bike").reduce((s,x)=>s+x.distance,0);
+
+ // Core score: workout 50%, water 25%, steps 25%.
+ const core=workout*.50+water*.25+steps*.25;
+
+ // Bonus is intentionally capped so cardio helps without overpowering the core habits.
+ const runBonus=Math.min(6,runMiles*1.5);
+ const bikeBonus=Math.min(6,bikeMiles*.6);
+ const bonus=Math.min(10,runBonus+bikeBonus);
+
+ const raw=Math.min(100,core+bonus);
+ const fit=Math.round(raw-50);
+
+ return{
+   fit:Math.max(-50,Math.min(50,fit)),
+   equiv:Math.round(raw),
+   workout:Math.round(workout),
+   water:Math.round(water),
+   activity:Math.round(steps),
+   bonus:Math.round(bonus)
+ }
+}
+function renderScore(){
+ const s=calc(ensure());if(s.fit===null){$("fitScore").textContent="—";$("scoreEquivalent").textContent="Rest day · excluded";$("scoreOrbit").style.setProperty("--score",50)}
+ else{$("fitScore").textContent=(s.fit>0?"+":"")+s.fit;$("scoreEquivalent").textContent=s.equiv+" / 100 equivalent";$("scoreOrbit").style.setProperty("--score",s.equiv)}
+ $("workoutMetric").textContent=s.workout;
+ $("waterMetric").textContent=s.water;
+ $("activityMetric").textContent=s.activity;
+ $("bonusMetric").textContent="+"+(s.bonus||0)
+}
+function renderProgress(){
+ const data=Object.entries(db.days).map(([date,d])=>({date,d,s:calc(d)})).filter(x=>x.s.fit!==null).sort((a,b)=>a.date.localeCompare(b.date));
+ const up=data.filter(x=>x.d.type==="upper"),lo=data.filter(x=>x.d.type==="lower"),avg=a=>a.length?Math.round(a.reduce((s,x)=>s+x.s.fit,0)/a.length):null,f=v=>v===null?"—":(v>0?"+":"")+v;
+ $("upperAvg").textContent=f(avg(up));$("lowerAvg").textContent=f(avg(lo));$("overallAvg").textContent=f(avg(data));$("scoredDays").textContent=data.length;draw(data)
+}
+function draw(data){
+ const c=$("progressChart"),r=c.getBoundingClientRect(),dpr=devicePixelRatio||1;c.width=r.width*dpr;c.height=270*dpr;const x=c.getContext("2d");x.scale(dpr,dpr);
+ const w=r.width,h=270,p={l:38,r:14,t:15,b:32},pw=w-p.l-p.r,ph=h-p.t-p.b;x.clearRect(0,0,w,h);x.font="10px system-ui";x.fillStyle="#8da0b8";x.strokeStyle="rgba(255,255,255,.08)";
+ [-50,-25,0,25,50].forEach(v=>{const yy=p.t+(50-v)/100*ph;x.beginPath();x.moveTo(p.l,yy);x.lineTo(w-p.r,yy);x.stroke();x.fillText((v>0?"+":"")+v,4,yy+3)});
+ if(!data.length){x.textAlign="center";x.fillText("Complete a weekday to begin.",w/2,h/2);return}
+ const xx=i=>data.length===1?p.l+pw/2:p.l+i/(data.length-1)*pw,yy=v=>p.t+(50-v)/100*ph;let sum=0;const cum=data.map((d,i)=>(sum+=d.s.fit)/(i+1));
+ line(data.map((d,i)=>[xx(i),yy(d.s.fit)]),"#47f1ff",2.5,true);line(cum.map((v,i)=>[xx(i),yy(v)]),"#a375ff",2,false);
+ x.fillStyle="#8da0b8";x.textAlign="center";const labs=data.length<=6?data.map((_,i)=>i):[0,Math.floor((data.length-1)/2),data.length-1];labs.forEach(i=>x.fillText(data[i].date.slice(5),xx(i),h-9));
+ function line(pts,col,lw,dots){x.strokeStyle=col;x.lineWidth=lw;x.beginPath();pts.forEach((q,i)=>i?x.lineTo(q[0],q[1]):x.moveTo(q[0],q[1]));x.stroke();if(dots)pts.forEach(q=>{x.fillStyle=col;x.beginPath();x.arc(q[0],q[1],3,0,Math.PI*2);x.fill()})}
+}
+function toast(msg){const t=$("toast");t.textContent=msg;t.classList.add("show");clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove("show"),1500)}
+$("activeDate").onchange=e=>{active=e.target.value||today();render()};
+$("shuffleBtn").onclick=()=>{const d=ensure();if(d.type==="rest")return toast("No deck on recovery days");d.logs=[];makeDeck();toast("Deck shuffled");render()};
+$("clearWorkoutBtn").onclick=()=>{const d=ensure();d.logs=[];makeDeck(false);save();render();toast("Deck reset")};
+$("add12Btn").onclick=()=>{const d=ensure();d.water=(d.water||0)+12;save();render()};
+$("minus12Btn").onclick=()=>{const d=ensure();d.water=Math.max(0,(d.water||0)-12);save();render()};
+$("resetWaterBtn").onclick=()=>{const d=ensure();d.water=0;save();render()};
+$("waterGoal").onchange=e=>{const d=ensure();d.goal=Math.max(24,Number(e.target.value)||96);db.settings.goal=d.goal;save();render()};
+$("logActivityBtn").onclick=()=>{const d=ensure(),distance=Math.max(0,Number($("activityDistance").value)||0),minutes=Math.max(0,Number($("activityMinutes").value)||0);d.steps=Math.max(0,Number($("stepsInput").value)||0);if(distance||minutes)d.activities.push({id:id(),type:$("activityType").value,distance,minutes});$("activityDistance").value="";$("activityMinutes").value="";save();toast("Activity saved");render()};
+
+$("startAppBtn").onclick=()=>{
+ const first=$("firstNameInput").value.trim(),last=$("lastNameInput").value.trim();
+ if(!first||!last)return toast("Enter your first and last name");
+ db.profile={first,last};save();renderProfile();toast(`Welcome, ${first}`)
+};
+$("profileBtn").onclick=()=>{
+ $("editFirstName").value=db.profile.first||"";
+ $("editLastName").value=db.profile.last||"";
+ $("profileSheet").classList.add("show")
+};
+$("closeProfileBtn").onclick=()=>$("profileSheet").classList.remove("show");
+$("profileSheet").onclick=e=>{if(e.target===$("profileSheet"))$("profileSheet").classList.remove("show")};
+$("saveProfileBtn").onclick=()=>{
+ const first=$("editFirstName").value.trim(),last=$("editLastName").value.trim();
+ if(!first||!last)return toast("Enter both names");
+ db.profile={first,last};save();$("profileSheet").classList.remove("show");renderProfile();toast("Profile updated")
+};
+
+window.addEventListener("resize",renderProgress);render();
+})();
+</script>
+</body>
+</html>
