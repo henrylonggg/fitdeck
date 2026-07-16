@@ -67,14 +67,15 @@ button{cursor:pointer}
 .board.cols-2{grid-template-columns:repeat(2,1fr)}
 .board.cols-1{grid-template-columns:1fr;max-width:260px}
 .pile{
-  position:relative;min-height:170px;border-radius:20px;border:1px solid var(--line);
-  background:radial-gradient(circle at 50% 30%,rgba(255,255,255,.04),transparent 60%),#0d0d0d;
-  padding:12px;display:grid;place-items:center;overflow:hidden
+  position:relative;min-height:170px;border:0;background:transparent;
+  padding:28px 8px 8px;display:grid;place-items:center;overflow:visible;color:inherit
 }
 .pile.selected{outline:2px solid var(--gold);box-shadow:0 0 30px rgba(240,198,107,.16)}
 .pile-count{
-  position:absolute;right:9px;top:8px;padding:5px 8px;border-radius:999px;background:#1d1d1d;
-  font-size:9px;color:var(--muted)
+  position:absolute;right:14px;top:0;width:28px;height:28px;border-radius:50%;
+  display:grid;place-items:center;background:linear-gradient(145deg,#49b8ff,#2177ff);
+  color:#fff;font-size:11px;font-weight:1000;box-shadow:0 0 20px rgba(33,119,255,.35);
+  border:2px solid rgba(255,255,255,.75);z-index:5
 }
 .card{
   width:102px;aspect-ratio:2.5/3.5;border-radius:12px;background:#fff;color:#111;
@@ -241,6 +242,32 @@ button{cursor:pointer}
   .podium-score{font-size:23px}
 }
 
+
+.turn-strip{
+  display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:center;
+  margin-bottom:14px;padding:12px 13px;border-radius:17px;background:#0d0d0d;border:1px solid var(--line)
+}
+.turn-strip span{display:block;font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+.turn-strip strong{display:block;font-size:17px;margin-top:3px}
+.compact-streak{margin:0;min-width:120px}
+.mode-picker{display:flex;align-items:center;gap:7px}
+.mode-picker label{font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.mode-picker select{padding:9px 10px;border-radius:11px;border:1px solid var(--line);background:#151515;color:#fff;font-size:10px;font-weight:900}
+.turn-modal{position:fixed;inset:0;z-index:130;display:none;place-items:center;padding:18px;background:rgba(0,0,0,.82);backdrop-filter:blur(12px)}
+.turn-modal.show{display:grid}
+.turn-modal-card{width:min(100%,420px);padding:28px 22px;border-radius:26px;text-align:center;background:linear-gradient(145deg,#171717,#0a0a0a);border:1px solid var(--line);box-shadow:var(--shadow)}
+.turn-check{width:74px;height:74px;border-radius:50%;display:grid;place-items:center;margin:0 auto 15px;background:linear-gradient(145deg,var(--green),#baffd8);color:#062112;font-size:34px;font-weight:1000;box-shadow:0 0 35px rgba(86,227,159,.22)}
+.turn-small{font-size:9px;color:var(--green);font-weight:950;letter-spacing:.14em;text-transform:uppercase}
+.turn-modal-card h3{font-size:28px;margin:8px 0 5px}.turn-modal-card p{font-size:12px;color:var(--muted);margin:0 0 18px}
+.timer-equivalent{margin-top:8px;font-size:11px;color:#75b8ff;font-weight:900}
+.timer-shell.done{background:radial-gradient(circle at 50% 20%,rgba(33,119,255,.22),transparent 28rem),linear-gradient(180deg,#061324,#02060d)}
+.timer-shell.done .timer-number{color:#49b8ff;text-shadow:0 0 65px rgba(33,119,255,.35)}
+@media(max-width:620px){
+  .turn-strip{grid-template-columns:1fr auto}
+  .mode-picker{grid-column:1/-1;justify-content:space-between}
+  .compact-streak{min-width:105px}
+}
+
 </style>
 </head>
 <body>
@@ -255,26 +282,38 @@ button{cursor:pointer}
 </header>
 
 <main>
+
 <section class="hero">
   <article class="panel hero-copy">
     <div class="eyebrow">Party card game</div>
     <h1>Three right.<br>One turn.</h1>
-    <p>Choose higher or lower against the top card of any active pile. Get three correct in a row to finish your turn. A miss resets your streak and records a penalty score equal to the pile size. Matching ranks double the penalty.</p>
-  </article>
-  <article class="panel turn-panel">
-    <div class="turn-label">Current player</div>
-    <div class="turn-player" id="turnPlayer">Start a game</div>
-    <div class="streak"><i class="streak-dot"></i><i class="streak-dot"></i><i class="streak-dot"></i></div>
-    <div class="counter">
-      <div><span>Penalty timer</span><strong id="counterValue">0</strong></div>
-      <button class="btn gold" id="counterBtn">Open Timer</button>
-    </div>
+    <p>Choose higher or lower against the top card of any active pile. Get three correct in a row to finish your turn. Ace is always high.</p>
   </article>
 </section>
+
 
 <section class="section" id="game">
   <div class="section-head"><div><h2>Deathbox</h2><p id="phaseText">Set up players to begin.</p></div></div>
   <article class="panel board-panel">
+    <div class="turn-strip">
+      <div>
+        <span>Current player</span>
+        <strong id="turnPlayer">Start a game</strong>
+      </div>
+      <div class="streak compact-streak">
+        <i class="streak-dot"></i>
+        <i class="streak-dot"></i>
+        <i class="streak-dot"></i>
+      </div>
+      <div class="mode-picker">
+        <label for="difficultyMode">Mode</label>
+        <select id="difficultyMode">
+          <option value="easy">Easy</option>
+          <option value="normal" selected>Normal</option>
+          <option value="hard">Hard</option>
+        </select>
+      </div>
+    </div>
     <div class="board cols-3" id="board"></div>
     <div class="choice-bar">
       <button id="lowerBtn" disabled>LOWER</button>
@@ -318,6 +357,17 @@ button{cursor:pointer}
 
 <nav class="bottom-nav"><a href="#game">Game</a><a href="#setup">Players</a><a href="#logs">Leaders</a><a href="#logs">History</a></nav>
 
+
+<div class="turn-modal" id="turnModal">
+  <div class="turn-modal-card">
+    <div class="turn-check">✓</div>
+    <div class="turn-small">Three correct</div>
+    <h3 id="turnCompleteName">Turn complete</h3>
+    <p id="nextTurnText">Next player</p>
+    <button class="btn gold" id="confirmNextTurnBtn">Continue</button>
+  </div>
+</div>
+
 <div class="timer-modal" id="penaltyModal">
   <div class="timer-shell" id="timerShell">
     <div class="timer-topline">
@@ -326,7 +376,7 @@ button{cursor:pointer}
     </div>
     <div class="timer-label" id="penaltyTitle">Penalty timer</div>
     <div class="timer-number" id="fullTimerValue">0</div>
-    <div class="timer-unit">SECONDS</div>
+    <div class="timer-unit">COUNT</div><div class="timer-equivalent" id="timerEquivalent">0 penalty units</div>
     <p class="timer-message" id="penaltyText"></p>
     <div class="timer-actions">
       <button class="timer-start" id="startPenaltyTimerBtn">START TIMER</button>
@@ -346,7 +396,7 @@ const suits=["♠","♥","♣","♦"],ranks=[
  {l:"A",v:14},{l:"2",v:2},{l:"3",v:3},{l:"4",v:4},{l:"5",v:5},{l:"6",v:6},
  {l:"7",v:7},{l:"8",v:8},{l:"9",v:9},{l:"10",v:10},{l:"J",v:11},{l:"Q",v:12},{l:"K",v:13}
 ];
-const state={players:[],turn:0,streak:0,deck:[],piles:[],selected:null,phase:0,history:[],logs:[],counter:0,counterTimer:null,pendingPenalty:null,penaltyTimer:null,penaltyElapsed:0,penaltyTarget:0};
+const state={players:[],turn:0,streak:0,deck:[],piles:[],selected:null,phase:0,history:[],logs:[],counter:0,counterTimer:null,pendingPenalty:null,penaltyTimer:null,penaltyElapsed:0,penaltyTarget:0,difficulty:'normal',pendingNextTurn:false};
 const $=id=>document.getElementById(id);
 
 function createInputs(){
@@ -378,12 +428,15 @@ function activeLayout(){
 function render(){
  $("turnPlayer").textContent=state.players.length?state.players[state.turn].name:"Start a game";
  document.querySelectorAll(".streak-dot").forEach((d,i)=>d.classList.toggle("on",i<state.streak));
+
+ $("difficultyMode").value=state.difficulty||"normal";
+
  $("phaseText").textContent=state.players.length?`${state.piles.length} active pile${state.piles.length===1?"":"s"} · ${state.deck.length} cards remain`:"Set up players to begin.";
  const cols=activeLayout();$("board").className=`board cols-${cols}`;
  $("board").innerHTML=state.piles.map((pile,i)=>{
    const c=pile[pile.length-1],red=c&&["♥","♦"].includes(c.suit);
    return `<button class="pile ${state.selected===i?"selected":""}" data-pile="${i}">
-     <span class="pile-count">${pile.length} card${pile.length===1?"":"s"}</span>
+     <span class="pile-count">${pile.length}</span>
      ${c?cardHTML(c,red):'<div class="card back"></div>'}
    </button>`
  }).join("");
@@ -406,7 +459,12 @@ function choose(direction){
    if(state.streak>=3){
      const p=state.players[state.turn];p.wins++;p.turns++;
      state.logs.unshift({text:`${p.name} completed 3 in a row`,type:"win"});
-     state.streak=0;nextTurn()
+     state.streak=0;
+     state.pendingNextTurn=true;
+     const nextIndex=(state.turn+1)%state.players.length;
+     $("turnCompleteName").textContent=`${p.name} completed the turn`;
+     $("nextTurnText").textContent=`Next up: ${state.players[nextIndex].name}`;
+     $("turnModal").classList.add("show")
    }
  }else{
    const points=pile.length*(equal?2:1);
@@ -422,32 +480,42 @@ function choose(direction){
 }
 function showPenalty(points,equal){
  state.penaltyTarget=points;state.penaltyElapsed=0;
- $("penaltyTitle").textContent=`${points}-second penalty`;
+ $("penaltyTitle").textContent=`${points}-count penalty`;
  $("timerPlayer").textContent=state.players[state.turn].name;
- $("fullTimerValue").textContent="0";
+ $("fullTimerValue").textContent="0";$("timerEquivalent").textContent="0 × 12-second penalty units";
  $("penaltyText").textContent=equal
-   ?"Matching rank: the penalty is doubled. The timer starts only when START TIMER is pressed."
-   :"Wrong call. The timer starts only when START TIMER is pressed.";
+   ?"Matching rank: the penalty is doubled. Press START TIMER when ready."
+   :"Wrong call. Press START TIMER when ready.";
  $("startPenaltyTimerBtn").disabled=false;
  $("stopPenaltyTimerBtn").disabled=true;
  $("finishPenaltyBtn").disabled=true;
- $("timerShell").classList.remove("danger");
+ $("timerShell").classList.remove("danger","done");
  $("penaltyModal").classList.add("show")
+}
+function timerInterval(){
+ return state.difficulty==="easy"?700:state.difficulty==="hard"?1300:1000
+}
+function updatePenaltyUnitDisplay(){
+ const units=(state.penaltyElapsed/12).toFixed(2);
+ $("timerEquivalent").textContent=`${units} × 12-second penalty units`
 }
 function startPenaltyTimer(){
  if(!state.pendingPenalty||state.penaltyTimer)return;
- state.penaltyElapsed=0;$("fullTimerValue").textContent="0";
+ state.penaltyElapsed=0;$("fullTimerValue").textContent="0";$("timerEquivalent").textContent="0 × 12-second penalty units";
  $("startPenaltyTimerBtn").disabled=true;$("stopPenaltyTimerBtn").disabled=false;$("finishPenaltyBtn").disabled=true;
  updateTimerColor();
  state.penaltyTimer=setInterval(()=>{
    state.penaltyElapsed++;
    $("fullTimerValue").textContent=state.penaltyElapsed;
+   updatePenaltyUnitDisplay();
    updateTimerColor();
    if(state.penaltyElapsed>=state.penaltyTarget){
      stopPenaltyTimer();
+     $("timerShell").classList.remove("danger");
+     $("timerShell").classList.add("done");
      $("finishPenaltyBtn").disabled=false
    }
- },1000)
+ },timerInterval())
 }
 function updateTimerColor(){
  const remaining=Math.max(0,state.penaltyTarget-state.penaltyElapsed);
@@ -461,7 +529,7 @@ function stopPenaltyTimer(){
 function finishPenalty(){
  stopPenaltyTimer();
  if(!state.pendingPenalty)return;
- state.logs.unshift({text:`${state.players[state.pendingPenalty.playerIndex].name} completed a ${state.penaltyElapsed}-second penalty`,type:"timer"});
+ state.logs.unshift({text:`${state.players[state.pendingPenalty.playerIndex].name} completed a ${state.penaltyElapsed}-count penalty`,type:"timer"});
  state.pendingPenalty=null;$("penaltyModal").classList.remove("show");nextTurn();render()
 }
 function nextTurn(){state.turn=(state.turn+1)%state.players.length;state.selected=null}
@@ -529,12 +597,22 @@ function toggleCounter(){
 
 createInputs();render();
 $("startGameBtn").onclick=startGame;
+
+$("difficultyMode").onchange=e=>{state.difficulty=e.target.value;render()};
+$("confirmNextTurnBtn").onclick=()=>{
+ if(!state.pendingNextTurn)return;
+ state.pendingNextTurn=false;
+ $("turnModal").classList.remove("show");
+ nextTurn();
+ render()
+};
+
 $("higherBtn").onclick=()=>choose("higher");
 $("lowerBtn").onclick=()=>choose("lower");
 $("undoBtn").onclick=restore;
 $("shuffleBtn").onclick=reshuffle;
 $("newGameBtn").onclick=()=>location.reload();
-$("counterBtn").onclick=toggleCounter;
+
 $("startPenaltyTimerBtn").onclick=startPenaltyTimer;
 $("stopPenaltyTimerBtn").onclick=stopPenaltyTimer;
 $("finishPenaltyBtn").onclick=finishPenalty;
