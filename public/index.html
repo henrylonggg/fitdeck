@@ -5,684 +5,248 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#090909">
 <title>Deathbox</title>
-
 <style>
 :root{
-  --bg:#070707;
-  --panel:#111;
-  --panel2:#171717;
-  --line:#2a2a2a;
-  --text:#f8f8f8;
-  --muted:#999;
-  --red:#ff3b4f;
-  --gold:#f0c66b;
-  --green:#56e39f;
-  --shadow:0 24px 70px rgba(0,0,0,.5);
+  --bg:#070707;--panel:#111;--panel2:#171717;--line:#2a2a2a;--text:#f8f8f8;
+  --muted:#999;--red:#ff3b4f;--gold:#f0c66b;--green:#56e39f;--shadow:0 24px 70px rgba(0,0,0,.5)
 }
-
-*{
-  box-sizing:border-box;
-}
-
-html{
-  scroll-behavior:smooth;
-}
-
+*{box-sizing:border-box}
 body{
-  margin:0;
-  min-height:100vh;
-  color:var(--text);
+  margin:0;min-height:100vh;color:var(--text);
   font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
   background:
     radial-gradient(circle at 15% 0%,rgba(255,59,79,.14),transparent 28rem),
     radial-gradient(circle at 90% 5%,rgba(240,198,107,.08),transparent 24rem),
-    linear-gradient(180deg,#0a0a0a,#050505);
+    linear-gradient(180deg,#0a0a0a,#050505)
 }
-
-button,
-input,
-select{
-  font:inherit;
-}
-
-button{
-  cursor:pointer;
-}
-
-.app{
-  max-width:1080px;
-  margin:auto;
-  padding:14px 12px 110px;
-}
-
+button,input,select{font:inherit}
+button{cursor:pointer}
+.app{max-width:1080px;margin:auto;padding:14px 12px 110px}
 .topbar{
-  position:sticky;
-  top:0;
-  z-index:40;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:12px;
-  padding:10px 0 14px;
-  background:linear-gradient(
-    180deg,
-    rgba(7,7,7,.96),
-    rgba(7,7,7,.78),
-    transparent
-  );
-  backdrop-filter:blur(18px);
+  position:sticky;top:0;z-index:40;display:flex;justify-content:space-between;align-items:center;
+  padding:10px 0 14px;background:linear-gradient(180deg,rgba(7,7,7,.96),rgba(7,7,7,.78),transparent);
+  backdrop-filter:blur(18px)
 }
-
-.title{
-  font-size:28px;
-  font-weight:1000;
-  letter-spacing:-.07em;
-}
-
-.title span{
-  color:var(--red);
-}
-
-.subtitle{
-  font-size:9px;
-  color:var(--muted);
-  letter-spacing:.13em;
-  text-transform:uppercase;
-  margin-top:3px;
-}
-
-.controls{
-  display:flex;
-  gap:7px;
-  flex-wrap:wrap;
-  justify-content:flex-end;
-}
-
+.title{font-size:28px;font-weight:1000;letter-spacing:-.07em}
+.title span{color:var(--red)}
+.subtitle{font-size:9px;color:var(--muted);letter-spacing:.13em;text-transform:uppercase;margin-top:3px}
+.controls{display:flex;gap:7px;flex-wrap:wrap}
 .btn{
-  border:1px solid var(--line);
-  background:#171717;
-  color:#fff;
-  border-radius:13px;
-  padding:10px 13px;
-  font-weight:900;
-  font-size:11px;
+  border:1px solid var(--line);background:#171717;color:#fff;border-radius:13px;
+  padding:10px 13px;font-weight:900;font-size:11px
 }
-
-.btn.primary{
-  background:linear-gradient(135deg,var(--red),#ff7b5d);
-  border:0;
-  color:#090909;
-}
-
-.btn.gold{
-  background:linear-gradient(135deg,var(--gold),#fff0a8);
-  border:0;
-  color:#090909;
-}
-
-.btn:disabled{
-  opacity:.35;
-  cursor:not-allowed;
-}
-
-.panel{
-  background:linear-gradient(145deg,#151515,#0c0c0c);
-  border:1px solid var(--line);
-  border-radius:24px;
-  box-shadow:var(--shadow);
-}
-
-.hero{
-  display:grid;
-  grid-template-columns:1.15fr .85fr;
-  gap:12px;
-}
-
-.hero-copy{
-  padding:22px;
-}
-
-.eyebrow{
-  font-size:9px;
-  color:var(--red);
-  font-weight:950;
-  letter-spacing:.15em;
-  text-transform:uppercase;
-}
-
-.hero h1{
-  font-size:clamp(34px,7vw,64px);
-  line-height:.94;
-  letter-spacing:-.06em;
-  margin:12px 0;
-}
-
-.hero p{
-  font-size:12px;
-  color:var(--muted);
-  line-height:1.6;
-  margin:0;
-}
-
-.turn-panel{
-  padding:18px;
-  display:grid;
-  align-content:center;
-}
-
-.turn-label{
-  font-size:9px;
-  color:var(--muted);
-  text-transform:uppercase;
-  letter-spacing:.12em;
-}
-
-.turn-player{
-  font-size:30px;
-  font-weight:1000;
-  margin-top:5px;
-}
-
-.streak{
-  display:flex;
-  gap:7px;
-  margin-top:15px;
-}
-
-.streak-dot{
-  height:10px;
-  flex:1;
-  border-radius:999px;
-  background:#2a2a2a;
-}
-
-.streak-dot.on{
-  background:linear-gradient(90deg,var(--green),#a8ffd4);
-  box-shadow:0 0 18px rgba(86,227,159,.2);
-}
-
+.btn.primary{background:linear-gradient(135deg,var(--red),#ff7b5d);border:0;color:#090909}
+.btn.gold{background:linear-gradient(135deg,var(--gold),#fff0a8);border:0;color:#090909}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.panel{background:linear-gradient(145deg,#151515,#0c0c0c);border:1px solid var(--line);border-radius:24px;box-shadow:var(--shadow)}
+.hero{display:grid;grid-template-columns:1.15fr .85fr;gap:12px}
+.hero-copy{padding:22px}
+.eyebrow{font-size:9px;color:var(--red);font-weight:950;letter-spacing:.15em;text-transform:uppercase}
+.hero h1{font-size:clamp(34px,7vw,64px);line-height:.94;letter-spacing:-.06em;margin:12px 0}
+.hero p{font-size:12px;color:var(--muted);line-height:1.6;margin:0}
+.turn-panel{padding:18px;display:grid;align-content:center}
+.turn-label{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em}
+.turn-player{font-size:30px;font-weight:1000;margin-top:5px}
+.streak{display:flex;gap:7px;margin-top:15px}
+.streak-dot{height:10px;flex:1;border-radius:999px;background:#2a2a2a}
+.streak-dot.on{background:linear-gradient(90deg,var(--green),#a8ffd4);box-shadow:0 0 18px rgba(86,227,159,.2)}
 .counter{
-  margin-top:14px;
-  padding:14px;
-  border:1px solid var(--line);
-  border-radius:17px;
-  background:#0b0b0b;
-  display:grid;
-  grid-template-columns:1fr auto;
-  gap:10px;
-  align-items:center;
+  margin-top:14px;padding:14px;border:1px solid var(--line);border-radius:17px;background:#0b0b0b;
+  display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center
 }
-
-.counter strong{
-  font-size:32px;
-}
-
-.counter span{
-  font-size:9px;
-  color:var(--muted);
-}
-
-.section{
-  margin-top:13px;
-}
-
-.section-head{
-  display:flex;
-  justify-content:space-between;
-  align-items:end;
-  gap:10px;
-  margin:0 3px 9px;
-}
-
-.section-head h2{
-  font-size:17px;
-  margin:0;
-}
-
-.section-head p{
-  font-size:10px;
-  color:var(--muted);
-  margin:3px 0 0;
-}
-
-.board-panel{
-  padding:16px;
-}
-
+.counter strong{font-size:32px}.counter span{font-size:9px;color:var(--muted)}
+.section{margin-top:13px}
+.section-head{display:flex;justify-content:space-between;align-items:end;gap:10px;margin:0 3px 9px}
+.section-head h2{font-size:17px;margin:0}.section-head p{font-size:10px;color:var(--muted);margin:3px 0 0}
+.board-panel{padding:16px}
 .board{
-  display:grid;
-  gap:10px;
-  max-width:820px;
-  margin:auto;
-  transition:.3s ease;
+  display:grid;gap:10px;max-width:820px;margin:auto;
+  transition:.3s ease
 }
-
-.board.cols-3{
-  grid-template-columns:repeat(3,1fr);
-}
-
-.board.cols-2{
-  grid-template-columns:repeat(2,1fr);
-}
-
-.board.cols-1{
-  grid-template-columns:1fr;
-  max-width:260px;
-}
-
+.board.cols-3{grid-template-columns:repeat(3,1fr)}
+.board.cols-2{grid-template-columns:repeat(2,1fr)}
+.board.cols-1{grid-template-columns:1fr;max-width:260px}
 .pile{
-  position:relative;
-  min-height:170px;
-  border-radius:20px;
-  border:1px solid var(--line);
-  background:
-    radial-gradient(circle at 50% 30%,rgba(255,255,255,.04),transparent 60%),
-    #0d0d0d;
-  padding:12px;
-  display:grid;
-  place-items:center;
-  overflow:hidden;
-  color:inherit;
+  position:relative;min-height:170px;border-radius:20px;border:1px solid var(--line);
+  background:radial-gradient(circle at 50% 30%,rgba(255,255,255,.04),transparent 60%),#0d0d0d;
+  padding:12px;display:grid;place-items:center;overflow:hidden
 }
-
-.pile.selected{
-  outline:2px solid var(--gold);
-  box-shadow:0 0 30px rgba(240,198,107,.16);
-}
-
+.pile.selected{outline:2px solid var(--gold);box-shadow:0 0 30px rgba(240,198,107,.16)}
 .pile-count{
-  position:absolute;
-  right:9px;
-  top:8px;
-  padding:5px 8px;
-  border-radius:999px;
-  background:#1d1d1d;
-  font-size:9px;
-  color:var(--muted);
+  position:absolute;right:9px;top:8px;padding:5px 8px;border-radius:999px;background:#1d1d1d;
+  font-size:9px;color:var(--muted)
 }
-
 .card{
-  width:102px;
-  aspect-ratio:2.5/3.5;
-  border-radius:12px;
-  background:#fff;
-  color:#111;
-  border:1px solid #d8d8d8;
-  box-shadow:0 16px 30px rgba(0,0,0,.35);
-  position:relative;
-  transition:transform .35s ease,opacity .35s ease;
+  width:102px;aspect-ratio:2.5/3.5;border-radius:12px;background:#fff;color:#111;
+  border:1px solid #d8d8d8;box-shadow:0 16px 30px rgba(0,0,0,.35);position:relative;
+  transition:transform .35s ease,opacity .35s ease
 }
-
-.card.red{
-  color:#c92036;
-}
-
+.card.red{color:#c92036}
 .card.back{
   background:
-    repeating-linear-gradient(
-      45deg,
-      #111 0 6px,
-      #1d1d1d 6px 12px
-    );
-  border:5px solid #eee;
+   repeating-linear-gradient(45deg,#111 0 6px,#1d1d1d 6px 12px);
+  border:5px solid #eee
 }
-
-.card .corner{
-  position:absolute;
-  font-weight:1000;
-  font-size:20px;
-  line-height:.85;
-  text-align:center;
-}
-
-.card .corner small{
-  display:block;
-  font-size:15px;
-  margin-top:4px;
-}
-
-.card .tl{
-  top:8px;
-  left:8px;
-}
-
-.card .br{
-  right:8px;
-  bottom:8px;
-  transform:rotate(180deg);
-}
-
-.card .suit{
-  position:absolute;
-  inset:0;
-  display:grid;
-  place-items:center;
-  font-size:46px;
-}
-
-.choice-bar{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:8px;
-  margin-top:12px;
-}
-
-.choice-bar button{
-  padding:14px;
-  border-radius:15px;
-  border:1px solid var(--line);
-  background:#171717;
-  color:#fff;
-  font-weight:950;
-}
-
-.choice-bar button:hover{
-  border-color:#555;
-}
-
+.card .corner{position:absolute;font-weight:1000;font-size:20px;line-height:.85;text-align:center}
+.card .corner small{display:block;font-size:15px;margin-top:4px}
+.card .tl{top:8px;left:8px}.card .br{right:8px;bottom:8px;transform:rotate(180deg)}
+.card .suit{position:absolute;inset:0;display:grid;place-items:center;font-size:46px}
+.choice-bar{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.choice-bar button{padding:14px;border-radius:15px;border:1px solid var(--line);background:#171717;color:#fff;font-weight:950}
+.choice-bar button:hover{border-color:#555}
 .result-banner{
-  margin-top:10px;
-  padding:11px 12px;
-  border-radius:14px;
-  border:1px solid var(--line);
-  background:#101010;
-  font-size:11px;
-  color:var(--muted);
-  min-height:42px;
+  margin-top:10px;padding:11px 12px;border-radius:14px;border:1px solid var(--line);
+  background:#101010;font-size:11px;color:var(--muted);min-height:42px
 }
-
-.setup{
-  padding:18px;
+.setup{padding:18px}.section.hidden{display:none}
+.player-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.field label{display:block;font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin:0 0 5px 2px}
+.field input,.field select{width:100%;padding:12px;border-radius:13px;border:1px solid var(--line);background:#0c0c0c;color:#fff;outline:0}
+.log-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.log-panel,.leader-panel{padding:16px}
+.log-list{display:grid;gap:7px;max-height:360px;overflow:auto}
+.log-row,.leader-row{
+  padding:10px 11px;border:1px solid var(--line);border-radius:13px;background:#0d0d0d;
+  display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center
 }
-
-.player-grid{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:8px;
-}
-
-.field label{
-  display:block;
-  font-size:9px;
-  color:var(--muted);
-  text-transform:uppercase;
-  letter-spacing:.08em;
-  margin:0 0 5px 2px;
-}
-
-.field input,
-.field select{
-  width:100%;
-  padding:12px;
-  border-radius:13px;
-  border:1px solid var(--line);
-  background:#0c0c0c;
-  color:#fff;
-  outline:0;
-}
-
-.log-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:12px;
-}
-
-.log-panel,
-.leader-panel{
-  padding:16px;
-}
-
-.log-list{
-  display:grid;
-  gap:7px;
-  max-height:360px;
-  overflow:auto;
-}
-
-.log-row,
-.leader-row{
-  padding:10px 11px;
-  border:1px solid var(--line);
-  border-radius:13px;
-  background:#0d0d0d;
-  display:grid;
-  grid-template-columns:1fr auto;
-  gap:10px;
-  align-items:center;
-}
-
-.log-row b,
-.leader-row b{
-  font-size:11px;
-}
-
-.log-row span,
-.leader-row span{
-  font-size:9px;
-  color:var(--muted);
-}
-
+.log-row b,.leader-row b{font-size:11px}.log-row span,.leader-row span{font-size:9px;color:var(--muted)}
 .safety{
-  padding:12px 14px;
-  border-radius:16px;
-  border:1px solid rgba(240,198,107,.18);
-  background:rgba(240,198,107,.06);
-  font-size:10px;
-  color:#c8ad72;
-  line-height:1.55;
-  margin-top:12px;
+  padding:12px 14px;border-radius:16px;border:1px solid rgba(240,198,107,.18);
+  background:rgba(240,198,107,.06);font-size:10px;color:#c8ad72;line-height:1.55;margin-top:12px
 }
-
 .modal{
-  position:fixed;
-  inset:0;
-  z-index:100;
-  display:none;
-  place-items:center;
-  padding:18px;
-  background:rgba(0,0,0,.78);
-  backdrop-filter:blur(12px);
+  position:fixed;inset:0;z-index:100;display:none;place-items:center;padding:18px;
+  background:rgba(0,0,0,.78);backdrop-filter:blur(12px)
 }
-
-.modal.show{
-  display:grid;
-}
-
-.modal-card{
-  width:min(100%,460px);
-  padding:22px;
-  border-radius:25px;
-  background:#111;
-  border:1px solid var(--line);
-  box-shadow:var(--shadow);
-}
-
-.modal-card h3{
-  margin:0 0 8px;
-  font-size:24px;
-}
-
-.modal-card p{
-  font-size:11px;
-  color:var(--muted);
-  line-height:1.55;
-}
-
-.modal-actions{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:8px;
-  margin-top:14px;
-}
-
-.deal-anim .card{
-  animation:deal .45s ease both;
-}
-
-@keyframes deal{
-  from{
-    transform:translateY(-120px) rotate(-12deg);
-    opacity:0;
-  }
-  to{
-    transform:none;
-    opacity:1;
-  }
-}
-
+.modal.show{display:grid}
+.modal-card{width:min(100%,460px);padding:22px;border-radius:25px;background:#111;border:1px solid var(--line);box-shadow:var(--shadow)}
+.modal-card h3{margin:0 0 8px;font-size:24px}.modal-card p{font-size:11px;color:var(--muted);line-height:1.55}
+.modal-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+.deal-anim .card{animation:deal .45s ease both}
+@keyframes deal{from{transform:translateY(-120px) rotate(-12deg);opacity:0}to{transform:none;opacity:1}}
 .shuffle-overlay{
-  position:fixed;
-  inset:0;
-  z-index:90;
-  display:none;
-  place-items:center;
-  background:rgba(0,0,0,.7);
-  backdrop-filter:blur(8px);
+  position:fixed;inset:0;z-index:90;display:none;place-items:center;background:rgba(0,0,0,.7);backdrop-filter:blur(8px)
 }
-
-.shuffle-overlay.show{
-  display:grid;
-}
-
-.shuffle-stack{
-  position:relative;
-  width:120px;
-  height:170px;
-}
-
-.shuffle-stack .card{
-  position:absolute;
-  inset:0;
-  animation:shuffle 1.2s ease-in-out infinite;
-}
-
-.shuffle-stack .card:nth-child(2){
-  animation-delay:.1s;
-}
-
-.shuffle-stack .card:nth-child(3){
-  animation-delay:.2s;
-}
-
-@keyframes shuffle{
-  0%,100%{
-    transform:translateX(0) rotate(0);
-  }
-  35%{
-    transform:translateX(-80px) rotate(-14deg);
-  }
-  70%{
-    transform:translateX(80px) rotate(14deg);
-  }
-}
-
+.shuffle-overlay.show{display:grid}
+.shuffle-stack{position:relative;width:120px;height:170px}
+.shuffle-stack .card{position:absolute;inset:0;animation:shuffle 1.2s ease-in-out infinite}
+.shuffle-stack .card:nth-child(2){animation-delay:.1s}.shuffle-stack .card:nth-child(3){animation-delay:.2s}
+@keyframes shuffle{0%,100%{transform:translateX(0) rotate(0)}35%{transform:translateX(-80px) rotate(-14deg)}70%{transform:translateX(80px) rotate(14deg)}}
 .bottom-nav{
-  position:fixed;
-  left:50%;
-  bottom:10px;
-  transform:translateX(-50%);
-  z-index:50;
-  width:min(94%,520px);
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:6px;
-  padding:7px;
-  border:1px solid var(--line);
-  background:rgba(10,10,10,.92);
-  border-radius:20px;
-  backdrop-filter:blur(18px);
+  position:fixed;left:50%;bottom:10px;transform:translateX(-50%);z-index:50;width:min(94%,520px);
+  display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:7px;border:1px solid var(--line);
+  background:rgba(10,10,10,.92);border-radius:20px;backdrop-filter:blur(18px)
 }
-
-.bottom-nav a{
-  text-decoration:none;
-  color:var(--muted);
-  font-size:9px;
-  font-weight:900;
-  text-align:center;
-  padding:9px;
-  border-radius:12px;
-}
-
-@media(max-width:760px){
-  .hero,
-  .log-grid{
-    grid-template-columns:1fr;
-  }
-
-  .pile{
-    min-height:145px;
-  }
-
-  .card{
-    width:82px;
-  }
-}
-
+.bottom-nav a{text-decoration:none;color:var(--muted);font-size:9px;font-weight:900;text-align:center;padding:9px;border-radius:12px}
+@media(max-width:760px){.hero,.log-grid{grid-template-columns:1fr}.pile{min-height:145px}.card{width:82px}}
 @media(max-width:420px){
-  .app{
-    padding-left:8px;
-    padding-right:8px;
-  }
-
-  .title{
-    font-size:24px;
-  }
-
-  .hero-copy,
-  .turn-panel,
-  .board-panel,
-  .setup,
-  .log-panel,
-  .leader-panel{
-    padding:13px;
-  }
-
-  .board{
-    gap:7px;
-  }
-
-  .pile{
-    min-height:125px;
-    padding:8px;
-  }
-
-  .card{
-    width:70px;
-    border-radius:9px;
-  }
-
-  .card .corner{
-    font-size:15px;
-  }
-
-  .card .corner small{
-    font-size:12px;
-  }
-
-  .card .suit{
-    font-size:34px;
-  }
-
-  .player-grid{
-    grid-template-columns:1fr;
-  }
-
-  .controls .btn{
-    padding:9px 10px;
-  }
+  .app{padding-left:8px;padding-right:8px}.title{font-size:24px}
+  .hero-copy,.turn-panel,.board-panel,.setup,.log-panel,.leader-panel{padding:13px}
+  .board{gap:7px}.pile{min-height:125px;padding:8px}.card{width:70px;border-radius:9px}
+  .card .corner{font-size:15px}.card .corner small{font-size:12px}.card .suit{font-size:34px}
+  .player-grid{grid-template-columns:1fr}.controls .btn{padding:9px 10px}
 }
+
+.timer-modal{position:fixed;inset:0;z-index:120;display:none;background:#040404}
+.timer-modal.show{display:block}
+.timer-shell{min-height:100vh;width:100%;display:grid;grid-template-rows:auto auto 1fr auto auto auto;align-items:center;justify-items:center;padding:calc(18px + env(safe-area-inset-top)) 18px calc(22px + env(safe-area-inset-bottom));background:radial-gradient(circle at 50% 20%,rgba(86,227,159,.14),transparent 28rem),linear-gradient(180deg,#090909,#020202);transition:background .25s ease}
+.timer-shell.danger{background:radial-gradient(circle at 50% 20%,rgba(255,59,79,.22),transparent 28rem),linear-gradient(180deg,#130306,#030202)}
+.timer-topline{width:min(100%,680px);display:flex;align-items:center;justify-content:space-between;font-size:16px;font-weight:950}
+.timer-close{width:42px;height:42px;border-radius:50%;border:1px solid #2a2a2a;background:#111;color:#fff;font-size:24px}
+.timer-label{margin-top:18px;font-size:11px;letter-spacing:.18em;color:var(--muted);font-weight:950;text-transform:uppercase}
+.timer-number{align-self:center;font-size:min(34vw,230px);line-height:.8;font-weight:1000;letter-spacing:-.08em;color:var(--green);text-shadow:0 0 55px rgba(86,227,159,.22);transition:.2s}
+.timer-shell.danger .timer-number{color:var(--red);text-shadow:0 0 65px rgba(255,59,79,.32)}
+.timer-unit{font-size:13px;letter-spacing:.28em;color:var(--muted);font-weight:900}
+.timer-message{max-width:560px;text-align:center;font-size:12px;line-height:1.6;color:#aaa;margin:18px 0}
+.timer-actions{width:min(100%,620px);display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:9px}
+.timer-actions button{padding:17px 14px;border-radius:17px;font-weight:1000;border:1px solid var(--line)}
+.timer-start{background:linear-gradient(135deg,var(--green),#c5ffe0);color:#06110b;border:0!important}
+.timer-stop{background:#171717;color:#fff}.timer-done{background:linear-gradient(135deg,var(--gold),#fff0a8);color:#111;border:0!important}
+.timer-actions button:disabled{opacity:.35}
+@media(max-width:520px){.timer-actions{grid-template-columns:1fr}.timer-number{font-size:min(44vw,190px)}}
+
+
+.leaderboard-panel{padding:18px}
+.podium{
+  display:grid;grid-template-columns:1fr 1.15fr 1fr;gap:10px;align-items:end;
+  margin-bottom:16px
+}
+.podium-card{
+  position:relative;overflow:hidden;text-align:center;border-radius:22px;border:1px solid var(--line);
+  padding:18px 10px 14px;background:linear-gradient(145deg,#171717,#0b0b0b)
+}
+.podium-card:before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(135deg,rgba(255,255,255,.06),transparent 38%)
+}
+.podium-card.first{
+  min-height:190px;border-color:rgba(240,198,107,.38);
+  background:
+    radial-gradient(circle at 50% 0%,rgba(240,198,107,.24),transparent 55%),
+    linear-gradient(145deg,#221c0f,#0d0b08);
+  box-shadow:0 0 40px rgba(240,198,107,.13)
+}
+.podium-card.second{
+  min-height:155px;border-color:rgba(210,220,232,.27);
+  background:
+    radial-gradient(circle at 50% 0%,rgba(210,220,232,.14),transparent 55%),
+    linear-gradient(145deg,#1a1c1f,#0c0d0e)
+}
+.podium-card.third{
+  min-height:140px;border-color:rgba(201,127,74,.28);
+  background:
+    radial-gradient(circle at 50% 0%,rgba(201,127,74,.15),transparent 55%),
+    linear-gradient(145deg,#1d1410,#0d0a08)
+}
+.medal{
+  width:54px;height:54px;border-radius:50%;margin:0 auto 10px;display:grid;place-items:center;
+  font-size:22px;font-weight:1000;border:2px solid rgba(255,255,255,.22)
+}
+.first .medal{background:linear-gradient(145deg,#ffe59a,#c9961a);color:#241700}
+.second .medal{background:linear-gradient(145deg,#eef3f8,#9da8b3);color:#111}
+.third .medal{background:linear-gradient(145deg,#e4a36d,#8a4d25);color:#1a0b02}
+.podium-rank{font-size:9px;letter-spacing:.15em;color:var(--muted);font-weight:950;text-transform:uppercase}
+.podium-name{font-size:18px;font-weight:1000;margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.podium-score{font-size:28px;font-weight:1000;margin-top:7px}
+.podium-score span{font-size:9px;color:var(--muted);font-weight:850}
+.leader-list{display:grid;gap:8px}
+.leader-list .leader-row{
+  padding:13px 14px;border-radius:16px;background:linear-gradient(145deg,#111,#0a0a0a)
+}
+.leader-position{
+  width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:#1b1b1b;
+  color:#aaa;font-size:11px;font-weight:1000
+}
+.leader-main{display:flex;align-items:center;gap:10px}
+.leader-copy b{display:block;font-size:12px}.leader-copy span{font-size:9px;color:var(--muted)}
+.leader-score{text-align:right;font-size:18px;font-weight:1000}
+.leader-score span{display:block;font-size:8px;color:var(--muted);font-weight:800}
+.log-drawer{
+  margin-top:14px;border-top:1px solid var(--line);padding-top:12px
+}
+.log-drawer summary{
+  cursor:pointer;list-style:none;padding:11px 12px;border-radius:13px;background:#0d0d0d;
+  border:1px solid var(--line);font-size:10px;font-weight:950;color:var(--muted)
+}
+.log-drawer summary::-webkit-details-marker{display:none}
+.hidden-log{margin-top:9px;max-height:260px}
+@media(max-width:520px){
+  .podium{gap:6px}
+  .podium-card{padding:14px 7px 11px;border-radius:18px}
+  .podium-card.first{min-height:170px}
+  .podium-card.second{min-height:145px}
+  .podium-card.third{min-height:135px}
+  .medal{width:46px;height:46px;font-size:18px}
+  .podium-name{font-size:14px}
+  .podium-score{font-size:23px}
+}
+
 </style>
 </head>
-
 <body>
 <div class="app">
-
 <header class="topbar">
-  <div>
-    <div class="title">DEATH<span>BOX</span></div>
-    <div class="subtitle">High · Low · Survive</div>
-  </div>
-
+  <div><div class="title">DEATH<span>BOX</span></div><div class="subtitle">High · Low · Survive</div></div>
   <div class="controls">
     <button class="btn" id="undoBtn">Undo</button>
     <button class="btn" id="shuffleBtn">Shuffle</button>
@@ -691,788 +255,290 @@ button{
 </header>
 
 <main>
-
 <section class="hero">
   <article class="panel hero-copy">
     <div class="eyebrow">Party card game</div>
-
-    <h1>
-      Three right.<br>
-      One turn.
-    </h1>
-
-    <p>
-      Choose higher or lower against the top card of any active pile.
-      Get three correct in a row to finish your turn.
-      A miss resets your streak and records a penalty score equal to
-      the pile size. Matching ranks double the penalty.
-    </p>
+    <h1>Three right.<br>One turn.</h1>
+    <p>Choose higher or lower against the top card of any active pile. Get three correct in a row to finish your turn. A miss resets your streak and records a penalty score equal to the pile size. Matching ranks double the penalty.</p>
   </article>
-
   <article class="panel turn-panel">
     <div class="turn-label">Current player</div>
     <div class="turn-player" id="turnPlayer">Start a game</div>
-
-    <div class="streak">
-      <i class="streak-dot"></i>
-      <i class="streak-dot"></i>
-      <i class="streak-dot"></i>
-    </div>
-
+    <div class="streak"><i class="streak-dot"></i><i class="streak-dot"></i><i class="streak-dot"></i></div>
     <div class="counter">
-      <div>
-        <span>Penalty timer</span>
-        <strong id="counterValue">0</strong>
-      </div>
-
-      <button class="btn gold" id="counterBtn">Start Count</button>
+      <div><span>Penalty timer</span><strong id="counterValue">0</strong></div>
+      <button class="btn gold" id="counterBtn">Open Timer</button>
     </div>
   </article>
 </section>
 
 <section class="section" id="game">
-  <div class="section-head">
-    <div>
-      <h2>Deathbox</h2>
-      <p id="phaseText">Set up players to begin.</p>
-    </div>
-  </div>
-
+  <div class="section-head"><div><h2>Deathbox</h2><p id="phaseText">Set up players to begin.</p></div></div>
   <article class="panel board-panel">
     <div class="board cols-3" id="board"></div>
-
     <div class="choice-bar">
       <button id="lowerBtn" disabled>LOWER</button>
       <button id="higherBtn" disabled>HIGHER</button>
     </div>
-
-    <div class="result-banner" id="resultBanner">
-      Select a pile, then choose higher or lower.
-    </div>
+    <div class="result-banner" id="resultBanner">Select a pile, then choose higher or lower. Ace is high.</div>
   </article>
 </section>
 
 <section class="section" id="setup">
-  <div class="section-head">
-    <div>
-      <h2>Players</h2>
-      <p>Enter 2–8 players.</p>
-    </div>
-  </div>
-
+  <div class="section-head"><div><h2>Players</h2><p>Enter 2–8 players.</p></div></div>
   <article class="panel setup">
     <div class="player-grid" id="playerInputs"></div>
-
-    <button
-      class="btn primary"
-      id="startGameBtn"
-      style="width:100%;margin-top:10px"
-    >
-      Start Game
-    </button>
-
-    <div class="safety">
-      Use points or non-alcoholic drinks by default.
-      If adults choose alcohol, keep penalties capped at one small sip,
-      pause between rounds, provide water and food, and never pressure
-      anyone to participate.
-    </div>
+    <button class="btn primary" id="startGameBtn" style="width:100%;margin-top:10px">Start Game</button>
+    <div class="safety">Use points or non-alcoholic drinks by default. If adults choose alcohol, keep penalties capped at one small sip, pause between rounds, provide water and food, and never pressure anyone to participate.</div>
   </article>
 </section>
+
 
 <section class="section" id="logs">
   <div class="section-head">
     <div>
-      <h2>Game Log</h2>
-      <p>Penalty points and turn history.</p>
+      <h2>Leaderboard</h2>
+      <p>Lowest penalty score ranks first.</p>
     </div>
   </div>
 
-  <div class="log-grid">
-    <article class="panel log-panel">
-      <div class="log-list" id="gameLog"></div>
-    </article>
+  <article class="panel leaderboard-panel">
+    <div class="podium" id="podium"></div>
+    <div class="leader-list" id="leaderboard"></div>
 
-    <article class="panel leader-panel">
-      <div class="log-list" id="leaderboard"></div>
-    </article>
-  </div>
+    <details class="log-drawer">
+      <summary>View game log</summary>
+      <div class="log-list hidden-log" id="gameLog"></div>
+    </details>
+  </article>
 </section>
 
 </main>
 </div>
 
-<nav class="bottom-nav">
-  <a href="#game">Game</a>
-  <a href="#setup">Players</a>
-  <a href="#logs">Log</a>
-  <a href="#logs">Leaders</a>
-</nav>
+<nav class="bottom-nav"><a href="#game">Game</a><a href="#setup">Players</a><a href="#logs">Leaders</a><a href="#logs">History</a></nav>
 
-<div class="modal" id="penaltyModal">
-  <div class="modal-card">
-    <h3 id="penaltyTitle">Penalty</h3>
-
-    <p id="penaltyText"></p>
-
-    <div class="field">
-      <label>Optional redirect</label>
-
-      <select id="redirectPlayer"></select>
+<div class="timer-modal" id="penaltyModal">
+  <div class="timer-shell" id="timerShell">
+    <div class="timer-topline">
+      <span id="timerPlayer">Player</span>
+      <button class="timer-close" id="closeTimerBtn">×</button>
     </div>
-
-    <div class="modal-actions">
-      <button class="btn" id="keepPenaltyBtn">
-        Keep Points
-      </button>
-
-      <button class="btn gold" id="redirectPenaltyBtn">
-        Redirect Points
-      </button>
+    <div class="timer-label" id="penaltyTitle">Penalty timer</div>
+    <div class="timer-number" id="fullTimerValue">0</div>
+    <div class="timer-unit">SECONDS</div>
+    <p class="timer-message" id="penaltyText"></p>
+    <div class="timer-actions">
+      <button class="timer-start" id="startPenaltyTimerBtn">START TIMER</button>
+      <button class="timer-stop" id="stopPenaltyTimerBtn" disabled>STOP</button>
+      <button class="timer-done" id="finishPenaltyBtn" disabled>DONE</button>
     </div>
   </div>
 </div>
 
 <div class="shuffle-overlay" id="shuffleOverlay">
-  <div class="shuffle-stack">
-    <div class="card back"></div>
-    <div class="card back"></div>
-    <div class="card back"></div>
-  </div>
+  <div class="shuffle-stack"><div class="card back"></div><div class="card back"></div><div class="card back"></div></div>
 </div>
 
 <script>
-(() => {
-
-  const suits = ["♠", "♥", "♣", "♦"];
-
-  const ranks = [
-    { label: "A", value: 14 },
-    { label: "2", value: 2 },
-    { label: "3", value: 3 },
-    { label: "4", value: 4 },
-    { label: "5", value: 5 },
-    { label: "6", value: 6 },
-    { label: "7", value: 7 },
-    { label: "8", value: 8 },
-    { label: "9", value: 9 },
-    { label: "10", value: 10 },
-    { label: "J", value: 11 },
-    { label: "Q", value: 12 },
-    { label: "K", value: 13 }
-  ];
-
-  const state = {
-    players: [],
-    turn: 0,
-    streak: 0,
-    deck: [],
-    piles: [],
-    selected: null,
-    phase: 0,
-    history: [],
-    logs: [],
-    counter: 0,
-    counterTimer: null,
-    pendingPenalty: null
-  };
-
-  const $ = id => document.getElementById(id);
-
-  function createInputs() {
-    $("playerInputs").innerHTML = Array
-      .from({ length: 8 }, (_, i) => `
-        <div class="field">
-          <label>Player ${i + 1}</label>
-
-          <input
-            data-player="${i}"
-            placeholder="${i < 2 ? "Required" : "Optional"}"
-          >
-        </div>
-      `)
-      .join("");
-  }
-
-  function makeDeck() {
-    return suits.flatMap(suit =>
-      ranks.map(rank => ({
-        suit,
-        label: rank.label,
-        value: rank.value,
-        id: Math.random().toString(36).slice(2)
-      }))
-    );
-  }
-
-  function shuffle(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-
-      [array[i], array[j]] = [array[j], array[i]];
-    }
-  }
-
-  function snapshot() {
-    state.history.push(JSON.stringify({
-      turn: state.turn,
-      streak: state.streak,
-      deck: state.deck,
-      piles: state.piles,
-      selected: state.selected,
-      phase: state.phase,
-      logs: state.logs,
-      players: state.players
-    }));
-  }
-
-  function restore() {
-    const raw = state.history.pop();
-
-    if (!raw) {
-      return;
-    }
-
-    Object.assign(state, JSON.parse(raw));
-
-    render();
-  }
-
-  function startGame() {
-    const names = [
-      ...document.querySelectorAll("[data-player]")
-    ]
-      .map(input => input.value.trim())
-      .filter(Boolean)
-      .slice(0, 8);
-
-    if (names.length < 2) {
-      alert("Enter at least 2 players.");
-      return;
-    }
-
-    state.players = names.map(name => ({
-      name,
-      penalty: 0,
-      turns: 0,
-      wins: 0
-    }));
-
-    state.turn = 0;
-    state.streak = 0;
-    state.phase = 0;
-    state.logs = [];
-    state.history = [];
-    state.deck = makeDeck();
-
-    shuffle(state.deck);
-
-    animateShuffle(() => {
-      dealInitial();
-      render();
-    });
-  }
-
-  function dealInitial() {
-    state.piles = Array.from({ length: 9 }, () => []);
-
-    for (let i = 0; i < 9; i++) {
-      state.piles[i].push(state.deck.pop());
-    }
-
-    state.selected = null;
-  }
-
-  function activeLayout() {
-    const pileCount = state.piles.length;
-
-    if (pileCount >= 7) {
-      return 3;
-    }
-
-    if (pileCount >= 4) {
-      return 2;
-    }
-
-    return 1;
-  }
-
-  function render() {
-    $("turnPlayer").textContent =
-      state.players.length
-        ? state.players[state.turn].name
-        : "Start a game";
-
-    document
-      .querySelectorAll(".streak-dot")
-      .forEach((dot, index) => {
-        dot.classList.toggle("on", index < state.streak);
-      });
-
-    $("phaseText").textContent =
-      state.players.length
-        ? `${state.piles.length} active ${
-            state.piles.length === 1 ? "pile" : "piles"
-          } · ${state.deck.length} cards remain`
-        : "Set up players to begin.";
-
-    const columns = activeLayout();
-
-    $("board").className = `board cols-${columns}`;
-
-    $("board").innerHTML = state.piles
-      .map((pile, index) => {
-        const card = pile[pile.length - 1];
-
-        const isRed =
-          card &&
-          ["♥", "♦"].includes(card.suit);
-
-        return `
-          <button
-            class="pile ${
-              state.selected === index ? "selected" : ""
-            }"
-            data-pile="${index}"
-          >
-            <span class="pile-count">
-              ${pile.length} ${
-                pile.length === 1 ? "card" : "cards"
-              }
-            </span>
-
-            ${
-              card
-                ? cardHTML(card, isRed)
-                : '<div class="card back"></div>'
-            }
-          </button>
-        `;
-      })
-      .join("");
-
-    document
-      .querySelectorAll("[data-pile]")
-      .forEach(button => {
-        button.onclick = () => {
-          state.selected = Number(button.dataset.pile);
-
-          render();
-        };
-      });
-
-    const ready =
-      state.players.length &&
-      state.selected !== null &&
-      state.deck.length;
-
-    $("higherBtn").disabled = !ready;
-    $("lowerBtn").disabled = !ready;
-
-    renderLogs();
-    renderLeaders();
-  }
-
-  function cardHTML(card, isRed) {
-    return `
-      <div class="card ${isRed ? "red" : ""}">
-        <div class="corner tl">
-          ${card.label}
-          <small>${card.suit}</small>
-        </div>
-
-        <div class="suit">
-          ${card.suit}
-        </div>
-
-        <div class="corner br">
-          ${card.label}
-          <small>${card.suit}</small>
-        </div>
-      </div>
-    `;
-  }
-
-  function choose(direction) {
-    if (
-      state.selected === null ||
-      !state.deck.length
-    ) {
-      return;
-    }
-
-    snapshot();
-
-    const pile = state.piles[state.selected];
-
-    const current = pile[pile.length - 1];
-
-    const next = state.deck.pop();
-
-    pile.push(next);
-
-    const equal =
-      next.value === current.value;
-
-    const correct =
-      direction === "higher"
-        ? next.value > current.value
-        : next.value < current.value;
-
-    if (correct) {
-      state.streak++;
-
-      $("resultBanner").textContent =
-        `Correct — ${next.label}${next.suit} was ${direction}.`;
-
-      if (state.streak >= 3) {
-        const player =
-          state.players[state.turn];
-
-        player.wins++;
-        player.turns++;
-
-        state.logs.unshift({
-          text: `${player.name} completed 3 in a row`,
-          type: "win"
-        });
-
-        state.streak = 0;
-
-        nextTurn();
-      }
-    } else {
-      const points =
-        pile.length *
-        (equal ? 2 : 1);
-
-      state.pendingPenalty = {
-        playerIndex: state.turn,
-        points,
-        equal,
-        pile: state.selected
-      };
-
-      state.players[state.turn].turns++;
-
-      state.players[state.turn].penalty += points;
-
-      state.logs.unshift({
-        text:
-          `${state.players[state.turn].name} missed for ` +
-          `${points} penalty points` +
-          `${equal ? " (double rank)" : ""}`,
-        type: "loss"
-      });
-
-      state.streak = 0;
-
-      showPenalty(points, equal);
-    }
-
-    checkPhase();
-
-    render();
-  }
-
-  function showPenalty(points, equal) {
-    $("penaltyTitle").textContent =
-      `${points} penalty points`;
-
-    $("penaltyText").textContent =
-      equal
-        ? "Matching rank: the pile penalty is doubled. Use points or cap any optional drinking penalty at one small sip."
-        : "Missed call. Use the pile size as penalty points, or cap any optional drinking penalty at one small sip.";
-
-    $("redirectPlayer").innerHTML =
-      state.players
-        .map((player, index) =>
-          index === state.turn
-            ? ""
-            : `
-              <option value="${index}">
-                ${player.name}
-              </option>
-            `
-        )
-        .join("");
-
-    $("penaltyModal").classList.add("show");
-  }
-
-  function nextTurn() {
-    state.turn =
-      (state.turn + 1) %
-      state.players.length;
-
-    state.selected = null;
-  }
-
-  function closePenalty(redirect) {
-    const penalty =
-      state.pendingPenalty;
-
-    if (!penalty) {
-      return;
-    }
-
-    if (redirect) {
-      const selectedIndex =
-        Number($("redirectPlayer").value);
-
-      if (
-        Number.isInteger(selectedIndex) &&
-        state.players[selectedIndex]
-      ) {
-        state.players[
-          penalty.playerIndex
-        ].penalty -= penalty.points;
-
-        state.players[
-          selectedIndex
-        ].penalty += penalty.points;
-
-        state.logs.unshift({
-          text:
-            `${state.players[penalty.playerIndex].name} ` +
-            `redirected ${penalty.points} points to ` +
-            `${state.players[selectedIndex].name}`,
-          type: "redirect"
-        });
-      }
-    }
-
-    state.pendingPenalty = null;
-
-    $("penaltyModal").classList.remove("show");
-
-    nextTurn();
-
-    render();
-  }
-
-  function checkPhase() {
-    if (state.deck.length) {
-      return;
-    }
-
-    if (state.piles.length === 9) {
-      transitionPiles(6);
-    } else if (state.piles.length === 6) {
-      transitionPiles(4);
-    } else if (state.piles.length === 4) {
-      transitionPiles(1);
-    } else {
-      $("resultBanner").textContent =
-        "Game complete. Lowest penalty score wins.";
-
-      state.logs.unshift({
-        text: "Game completed",
-        type: "end"
-      });
-    }
-  }
-
-  function transitionPiles(targetCount) {
-    const removedCards = [];
-
-    while (
-      state.piles.length >
-      targetCount
-    ) {
-      const randomIndex =
-        Math.floor(
-          Math.random() *
-          state.piles.length
-        );
-
-      removedCards.push(
-        ...state.piles.splice(
-          randomIndex,
-          1
-        )[0]
-      );
-    }
-
-    state.deck = removedCards;
-
-    shuffle(state.deck);
-
-    state.selected = null;
-
-    state.phase++;
-
-    animateShuffle(() => {
-      render();
-    });
-  }
-
-  function animateShuffle(callback) {
-    $("shuffleOverlay").classList.add("show");
-
-    setTimeout(() => {
-      $("shuffleOverlay").classList.remove("show");
-
-      if (callback) {
-        callback();
-      }
-    }, 1200);
-  }
-
-  function reshuffle() {
-    if (!state.players.length) {
-      return;
-    }
-
-    snapshot();
-
-    const allCards = [
-      ...state.deck,
-      ...state.piles.flat()
-    ];
-
-    shuffle(allCards);
-
-    state.deck = allCards;
-
-    dealInitial();
-
-    state.streak = 0;
-
-    animateShuffle(() => {
-      render();
-    });
-  }
-
-  function renderLogs() {
-    $("gameLog").innerHTML =
-      state.logs.length
-        ? state.logs
-            .map(log => `
-              <div class="log-row">
-                <div>
-                  <b>${log.text}</b>
-
-                  <span>
-                    ${new Date().toLocaleTimeString([], {
-                      hour: "numeric",
-                      minute: "2-digit"
-                    })}
-                  </span>
-                </div>
-              </div>
-            `)
-            .join("")
-        : `
-          <div class="log-row">
-            <div>
-              <b>No game events yet.</b>
-              <span>Start a game to begin.</span>
-            </div>
-          </div>
-        `;
-  }
-
-  function renderLeaders() {
-    const sortedPlayers = [
-      ...state.players
-    ].sort(
-      (a, b) =>
-        a.penalty - b.penalty
-    );
-
-    $("leaderboard").innerHTML =
-      sortedPlayers.length
-        ? sortedPlayers
-            .map((player, index) => `
-              <div class="leader-row">
-                <div>
-                  <b>
-                    #${index + 1}
-                    ${player.name}
-                  </b>
-
-                  <span>
-                    ${player.wins}
-                    completed turns
-                  </span>
-                </div>
-
-                <b>
-                  ${player.penalty} pts
-                </b>
-              </div>
-            `)
-            .join("")
-        : `
-          <div class="leader-row">
-            <div>
-              <b>No leaderboard yet.</b>
-              <span>Add players first.</span>
-            </div>
-          </div>
-        `;
-  }
-
-  function toggleCounter() {
-    if (state.counterTimer) {
-      clearInterval(
-        state.counterTimer
-      );
-
-      state.counterTimer = null;
-
-      $("counterBtn").textContent =
-        "Start Count";
-    } else {
-      state.counter = 0;
-
-      $("counterValue").textContent =
-        0;
-
-      $("counterBtn").textContent =
-        "Stop";
-
-      state.counterTimer =
-        setInterval(() => {
-          state.counter++;
-
-          $("counterValue").textContent =
-            state.counter;
-        }, 1000);
-    }
-  }
-
-  createInputs();
-  render();
-
-  $("startGameBtn").onclick =
-    startGame;
-
-  $("higherBtn").onclick =
-    () => choose("higher");
-
-  $("lowerBtn").onclick =
-    () => choose("lower");
-
-  $("undoBtn").onclick =
-    restore;
-
-  $("shuffleBtn").onclick =
-    reshuffle;
-
-  $("newGameBtn").onclick =
-    () => location.reload();
-
-  $("counterBtn").onclick =
-    toggleCounter;
-
-  $("keepPenaltyBtn").onclick =
-    () => closePenalty(false);
-
-  $("redirectPenaltyBtn").onclick =
-    () => closePenalty(true);
-
+(()=>{
+const suits=["♠","♥","♣","♦"],ranks=[
+ {l:"A",v:14},{l:"2",v:2},{l:"3",v:3},{l:"4",v:4},{l:"5",v:5},{l:"6",v:6},
+ {l:"7",v:7},{l:"8",v:8},{l:"9",v:9},{l:"10",v:10},{l:"J",v:11},{l:"Q",v:12},{l:"K",v:13}
+];
+const state={players:[],turn:0,streak:0,deck:[],piles:[],selected:null,phase:0,history:[],logs:[],counter:0,counterTimer:null,pendingPenalty:null,penaltyTimer:null,penaltyElapsed:0,penaltyTarget:0};
+const $=id=>document.getElementById(id);
+
+function createInputs(){
+ $("playerInputs").innerHTML=Array.from({length:8},(_,i)=>`<div class="field"><label>Player ${i+1}</label><input data-player="${i}" placeholder="${i<2?"Required":"Optional"}"></div>`).join("")
+}
+function makeDeck(){return suits.flatMap(s=>ranks.map(r=>({suit:s,label:r.l,value:r.v,id:Math.random().toString(36).slice(2)})))}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}}
+function snapshot(){state.history.push(JSON.stringify({turn:state.turn,streak:state.streak,deck:state.deck,piles:state.piles,selected:state.selected,phase:state.phase,logs:state.logs,players:state.players}))}
+function restore(){
+ const raw=state.history.pop();if(!raw)return;
+ Object.assign(state,JSON.parse(raw));render()
+}
+function startGame(){
+ const names=[...document.querySelectorAll("[data-player]")].map(x=>x.value.trim()).filter(Boolean).slice(0,8);
+ if(names.length<2)return alert("Enter at least 2 players.");
+ state.players=names.map(name=>({name,penalty:0,turns:0,wins:0}));
+ state.turn=0;state.streak=0;state.phase=0;state.logs=[];state.history=[];state.deck=makeDeck();$("setup").classList.add("hidden");shuffle(state.deck);
+ animateShuffle(()=>{dealInitial();render()})
+}
+function dealInitial(){
+ state.piles=Array.from({length:9},()=>[]);
+ for(let i=0;i<9;i++)state.piles[i].push(state.deck.pop());
+ state.selected=null
+}
+function activeLayout(){
+ const n=state.piles.length;
+ if(n>=7)return 3;if(n>=4)return 2;return 1
+}
+function render(){
+ $("turnPlayer").textContent=state.players.length?state.players[state.turn].name:"Start a game";
+ document.querySelectorAll(".streak-dot").forEach((d,i)=>d.classList.toggle("on",i<state.streak));
+ $("phaseText").textContent=state.players.length?`${state.piles.length} active pile${state.piles.length===1?"":"s"} · ${state.deck.length} cards remain`:"Set up players to begin.";
+ const cols=activeLayout();$("board").className=`board cols-${cols}`;
+ $("board").innerHTML=state.piles.map((pile,i)=>{
+   const c=pile[pile.length-1],red=c&&["♥","♦"].includes(c.suit);
+   return `<button class="pile ${state.selected===i?"selected":""}" data-pile="${i}">
+     <span class="pile-count">${pile.length} card${pile.length===1?"":"s"}</span>
+     ${c?cardHTML(c,red):'<div class="card back"></div>'}
+   </button>`
+ }).join("");
+ document.querySelectorAll("[data-pile]").forEach(b=>b.onclick=()=>{state.selected=Number(b.dataset.pile);render()});
+ const ready=state.players.length&&state.selected!==null&&state.deck.length;
+ $("higherBtn").disabled=!ready;$("lowerBtn").disabled=!ready;
+ renderLogs();renderLeaders()
+}
+function cardHTML(c,red){return `<div class="card ${red?"red":""}"><div class="corner tl">${c.label}<small>${c.suit}</small></div><div class="suit">${c.suit}</div><div class="corner br">${c.label}<small>${c.suit}</small></div></div>`}
+function choose(direction){
+ if(state.selected===null||!state.deck.length)return;
+ snapshot();
+ const pile=state.piles[state.selected],current=pile[pile.length-1],next=state.deck.pop();
+ pile.push(next);
+ const equal=next.value===current.value;
+ const correct=direction==="higher"?next.value>current.value:next.value<current.value;
+ if(correct){
+   state.streak++;
+   $("resultBanner").textContent=`Correct — ${next.label}${next.suit} was ${direction}.`;
+   if(state.streak>=3){
+     const p=state.players[state.turn];p.wins++;p.turns++;
+     state.logs.unshift({text:`${p.name} completed 3 in a row`,type:"win"});
+     state.streak=0;nextTurn()
+   }
+ }else{
+   const points=pile.length*(equal?2:1);
+   state.pendingPenalty={playerIndex:state.turn,points,equal,pile:state.selected};
+   state.players[state.turn].turns++;
+   state.players[state.turn].penalty+=points;
+   state.logs.unshift({text:`${state.players[state.turn].name} missed for ${points} penalty points${equal?" (double rank)":""}`,type:"loss"});
+   state.streak=0;
+   showPenalty(points,equal)
+ }
+ checkPhase();
+ render()
+}
+function showPenalty(points,equal){
+ state.penaltyTarget=points;state.penaltyElapsed=0;
+ $("penaltyTitle").textContent=`${points}-second penalty`;
+ $("timerPlayer").textContent=state.players[state.turn].name;
+ $("fullTimerValue").textContent="0";
+ $("penaltyText").textContent=equal
+   ?"Matching rank: the penalty is doubled. The timer starts only when START TIMER is pressed."
+   :"Wrong call. The timer starts only when START TIMER is pressed.";
+ $("startPenaltyTimerBtn").disabled=false;
+ $("stopPenaltyTimerBtn").disabled=true;
+ $("finishPenaltyBtn").disabled=true;
+ $("timerShell").classList.remove("danger");
+ $("penaltyModal").classList.add("show")
+}
+function startPenaltyTimer(){
+ if(!state.pendingPenalty||state.penaltyTimer)return;
+ state.penaltyElapsed=0;$("fullTimerValue").textContent="0";
+ $("startPenaltyTimerBtn").disabled=true;$("stopPenaltyTimerBtn").disabled=false;$("finishPenaltyBtn").disabled=true;
+ updateTimerColor();
+ state.penaltyTimer=setInterval(()=>{
+   state.penaltyElapsed++;
+   $("fullTimerValue").textContent=state.penaltyElapsed;
+   updateTimerColor();
+   if(state.penaltyElapsed>=state.penaltyTarget){
+     stopPenaltyTimer();
+     $("finishPenaltyBtn").disabled=false
+   }
+ },1000)
+}
+function updateTimerColor(){
+ const remaining=Math.max(0,state.penaltyTarget-state.penaltyElapsed);
+ $("timerShell").classList.toggle("danger",remaining>0&&remaining<=3)
+}
+function stopPenaltyTimer(){
+ if(state.penaltyTimer){clearInterval(state.penaltyTimer);state.penaltyTimer=null}
+ $("stopPenaltyTimerBtn").disabled=true;
+ $("finishPenaltyBtn").disabled=state.penaltyElapsed<state.penaltyTarget
+}
+function finishPenalty(){
+ stopPenaltyTimer();
+ if(!state.pendingPenalty)return;
+ state.logs.unshift({text:`${state.players[state.pendingPenalty.playerIndex].name} completed a ${state.penaltyElapsed}-second penalty`,type:"timer"});
+ state.pendingPenalty=null;$("penaltyModal").classList.remove("show");nextTurn();render()
+}
+function nextTurn(){state.turn=(state.turn+1)%state.players.length;state.selected=null}
+function checkPhase(){
+ if(state.deck.length)return;
+ if(state.piles.length===9)transitionPiles(6);
+ else if(state.piles.length===6)transitionPiles(4);
+ else if(state.piles.length===4)transitionPiles(1);
+ else{$("resultBanner").textContent="Game complete. Lowest penalty score wins.";state.logs.unshift({text:"Game completed",type:"end"})}
+}
+function transitionPiles(target){
+ const removed=[];
+ while(state.piles.length>target){
+   const idx=Math.floor(Math.random()*state.piles.length);
+   removed.push(...state.piles.splice(idx,1)[0])
+ }
+ state.deck=removed;shuffle(state.deck);state.selected=null;state.phase++;
+ animateShuffle(()=>render())
+}
+function animateShuffle(cb){$("shuffleOverlay").classList.add("show");setTimeout(()=>{$("shuffleOverlay").classList.remove("show");cb&&cb()},1200)}
+function reshuffle(){
+ if(!state.players.length)return;
+ snapshot();
+ const all=[...state.deck,...state.piles.flat()];shuffle(all);state.deck=all;dealInitial();state.streak=0;
+ animateShuffle(()=>render())
+}
+function renderLogs(){
+ $("gameLog").innerHTML=state.logs.length?state.logs.map(x=>`<div class="log-row"><div><b>${x.text}</b><span>${new Date().toLocaleTimeString([], {hour:"numeric",minute:"2-digit"})}</span></div></div>`).join(""):'<div class="log-row"><div><b>No game events yet.</b><span>Start a game to begin.</span></div></div>'
+}
+function renderLeaders(){
+ const sorted=[...state.players].sort((a,b)=>a.penalty-b.penalty);
+ const top=sorted.slice(0,3);
+ const slots=[
+   {player:top[1],place:2,cls:"second",medal:"2"},
+   {player:top[0],place:1,cls:"first",medal:"1"},
+   {player:top[2],place:3,cls:"third",medal:"3"}
+ ];
+
+ $("podium").innerHTML=sorted.length?slots.map(slot=>{
+   const p=slot.player;
+   return `<div class="podium-card ${slot.cls}">
+     <div class="medal">${slot.medal}</div>
+     <div class="podium-rank">${slot.place===1?"Gold":slot.place===2?"Silver":"Bronze"}</div>
+     <div class="podium-name">${p?p.name:"—"}</div>
+     <div class="podium-score">${p?p.penalty:"—"} <span>PTS</span></div>
+   </div>`
+ }).join(""):'';
+
+ $("leaderboard").innerHTML=sorted.length>3?sorted.slice(3).map((p,i)=>`
+   <div class="leader-row">
+     <div class="leader-main">
+       <div class="leader-position">${i+4}</div>
+       <div class="leader-copy"><b>${p.name}</b><span>${p.wins} completed turns</span></div>
+     </div>
+     <div class="leader-score">${p.penalty}<span>PENALTY PTS</span></div>
+   </div>`).join(""):(sorted.length?'<div class="log-row"><div><b>Top three shown above.</b><span>Additional players will appear here.</span></div></div>':'<div class="log-row"><div><b>No leaderboard yet.</b><span>Add players first.</span></div></div>')
+}
+function toggleCounter(){
+ if(!state.pendingPenalty){
+   $("resultBanner").textContent="The full-screen timer appears after a wrong guess.";
+   return
+ }
+ $("penaltyModal").classList.add("show")
+}
+
+createInputs();render();
+$("startGameBtn").onclick=startGame;
+$("higherBtn").onclick=()=>choose("higher");
+$("lowerBtn").onclick=()=>choose("lower");
+$("undoBtn").onclick=restore;
+$("shuffleBtn").onclick=reshuffle;
+$("newGameBtn").onclick=()=>location.reload();
+$("counterBtn").onclick=toggleCounter;
+$("startPenaltyTimerBtn").onclick=startPenaltyTimer;
+$("stopPenaltyTimerBtn").onclick=stopPenaltyTimer;
+$("finishPenaltyBtn").onclick=finishPenalty;
+$("closeTimerBtn").onclick=()=>{stopPenaltyTimer();$("penaltyModal").classList.remove("show")};
 })();
 </script>
 </body>
