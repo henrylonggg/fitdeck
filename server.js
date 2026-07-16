@@ -1,17 +1,13 @@
-boxconst express = require("express");
+const express = require("express");
 const path = require("path");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.disable("x-powered-by");
-app.use(express.static(path.join(__dirname, "public"), {
-  extensions: ["html"],
-  maxAge: "1h"
-}));
+app.use(express.static(path.join(__dirname, "public")));
 
 app.get("/health", (req, res) => {
-  res.status(200).json({ status: "ok", app: "DeathBox" });
+  res.json({ status: "ok", app: "Deathbox" });
 });
 
 app.get("*", (req, res) => {
@@ -19,5 +15,5 @@ app.get("*", (req, res) => {
 });
 
 app.listen(PORT, "0.0.0.0", () => {
-  console.log(`FitDeck Pro running on port ${PORT}`);
+  console.log(`Deathbox running on port ${PORT}`);
 });
