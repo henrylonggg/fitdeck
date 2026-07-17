@@ -8,11 +8,44 @@
 <section class="section hidden" id="leaderSection"><div class="section-head"><div><h2>Leaderboard</h2><p>Ranked by correct percentage, then risk-adjusted points.</p></div></div><article class="panel leader-panel"><div class="leader-list" id="leaderboard"></div><details class="log"><summary>View live game log</summary><div class="log-list" id="logs"></div></details></article></section>
 <section class="section hidden" id="statsSection"><div class="section-head"><div><h2>Player Statistics</h2><p id="conversionLabel"></p></div></div><article class="panel stats-panel"><div class="stat-list" id="stats"></div></article></section></main></div>
 <div class="timer" id="timer"><div class="timer-inner"><small id="timerPlayer">Penalty timer</small><strong id="timerValue">0</strong><p id="timerText"></p><button class="primary" id="timerAction">Start Timer</button></div></div>
-<script src="/socket.io/socket.io.js"></script><script>
-const socket=io();let mode='create',state=null,myId=null;const $=id=>document.getElementById(id);const drinkBase={easy:18,normal:15,hard:13};
+<script src="https://cdn.socket.io/4.8.1/socket.io.min.js" crossorigin="anonymous"></script><script>
+let mode='create',state=null,myId=null;const $=id=>document.getElementById(id);const drinkBase={easy:18,normal:15,hard:13};
+let socket=null;
+function bootSocket(){
+  if(typeof window.io!=='function'){
+    showError('The multiplayer library could not load. Open the deployed Node app, not the HTML file or GitHub Pages.');
+    $('connectionNotice').classList.remove('hidden');
+    $('connectionNotice').textContent='Multiplayer unavailable: Socket.IO did not load.';
+    return;
+  }
+  socket=window.io(window.DEATHBOX_SERVER_URL||undefined,{transports:['websocket','polling'],timeout:10000,reconnection:true});
+  bindSocketEvents();
+}
+
 function showError(msg){const e=$('error');e.textContent=msg;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),2600)}
 $('createTab').onclick=()=>setMode('create');$('joinTab').onclick=()=>setMode('join');$('codeInput').addEventListener('input',e=>{e.target.value=e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,5)});function setMode(v){mode=v;const joining=v==='join';$('createTab').classList.toggle('on',!joining);$('joinTab').classList.toggle('on',joining);$('codeField').classList.toggle('hidden',!joining);$('difficultyField').classList.toggle('hidden',joining);$('codeInput').required=joining;$('roomSubmit').textContent=joining?'Join Room':'Create Room';if(joining)setTimeout(()=>$('codeInput').focus(),0)}
-$('roomForm').onsubmit=e=>{e.preventDefault();const name=$('nameInput').value.trim();const code=$('codeInput').value.trim().toUpperCase();if(!name){$('nameInput').focus();return showError('Enter your name.')}if(mode==='join'&&code.length!==5){$('codeInput').focus();return showError('Enter the full 5-character access code.')}if(!socket.connected)return showError('Game server is offline. Open the deployed Node app, not index.html by itself.');const btn=$('roomSubmit');btn.disabled=true;btn.textContent=mode==='create'?'Creating Room…':'Joining Room…';if(mode==='create')socket.emit('createRoom',{name,difficulty:$('difficultyInput').value});else socket.emit('joinRoom',{name,code});const pendingMode=mode;setTimeout(()=>{if(!state){btn.disabled=false;btn.textContent=pendingMode==='create'?'Create Room':'Join Room';showError(pendingMode==='create'?'Room creation timed out. Try again.':'Could not join the room. Check the code and try again.')}},5000)};
+$('roomForm').onsubmit=e=>{
+  e.preventDefault();
+  const name=$('nameInput').value.trim();
+  const code=$('codeInput').value.trim().toUpperCase();
+  if(!name){$('nameInput').focus();return showError('Enter your name.');}
+  if(mode==='join'&&code.length!==5){$('codeInput').focus();return showError('Enter the full 5-character access code.');}
+  if(!socket||!socket.connected)return showError('Game server is offline. Open the deployed Node app URL, not GitHub Pages or index.html by itself.');
+  const btn=$('roomSubmit');
+  btn.disabled=true;
+  btn.textContent=mode==='create'?'Creating Room…':'Joining Room…';
+  if(mode==='create') socket.emit('createRoom',{name,difficulty:$('difficultyInput').value});
+  else socket.emit('joinRoom',{name,code});
+  const pendingMode=mode;
+  setTimeout(()=>{
+    if(!state){
+      btn.disabled=false;
+      btn.textContent=pendingMode==='create'?'Create Room':'Join Room';
+      showError(pendingMode==='create'?'Room creation timed out. Try again.':'Could not join the room. Check the code and try again.');
+    }
+  },7000);
+};
+function bindSocketEvents(){
 socket.on('connect',()=>{$('connectionNotice').classList.add('hidden')});socket.on('connect_error',()=>{$('connectionNotice').classList.remove('hidden');$('connectionNotice').textContent='Cannot reach the multiplayer server. Run the Node app or open the deployed website URL.'});socket.on('errorMessage',msg=>{const btn=$('roomSubmit');btn.disabled=false;btn.textContent=mode==='create'?'Create Room':'Join Room';showError(msg)});socket.on('roomJoined',payload=>{if(!payload?.playerId||!payload?.room)return showError('The server returned an invalid room response.');myId=payload.playerId;state=payload.room;sessionStorage.setItem('deathboxPlayerId',myId);sessionStorage.setItem('deathboxRoomCode',state.code);render();window.scrollTo({top:0,behavior:'smooth'})});socket.on('roomState',room=>{state=room;if(!myId)myId=sessionStorage.getItem('deathboxPlayerId');render()});
 function pct(p){return p.guesses?100*p.correct/p.guesses:0}function riskScore(p){return p.riskGuesses?Math.round((p.riskTotal/(p.riskGuesses*10))*100):0}function drinks(p){return p.penalty/drinkBase[state.difficulty]}
 function cardHTML(c){if(!c)return'';const red=c.suit==='♥'||c.suit==='♦';return `<div class="card ${red?'red':''}"><div class="corner tl">${c.label}<small>${c.suit}</small></div><div class="suit">${c.suit}</div><div class="corner br">${c.label}<small>${c.suit}</small></div></div>`}
@@ -25,5 +58,7 @@ function renderLeaders(){$('leaderboard').innerHTML=ordered().map((p,i)=>`<div c
 function renderStats(){const base=drinkBase[state.difficulty];$('conversionLabel').textContent=`${base} penalty points = 1 drink in ${state.difficulty} mode.`;$('stats').innerHTML=ordered().map(p=>`<div class="stat-row"><div class="rank">${escapeHtml(p.name).slice(0,1).toUpperCase()}</div><div class="copy"><b>${escapeHtml(p.name)}</b><div class="metrics"><div class="metric"><span>Correct</span><strong>${pct(p).toFixed(1)}%</strong></div><div class="metric"><span>Points</span><strong>${p.points}</strong></div><div class="metric"><span>Risk score</span><strong>${riskScore(p)}</strong></div><div class="metric"><span>Drink conversion</span><strong>${drinks(p).toFixed(2)}</strong></div></div></div><div class="score">${p.penalty}<span>penalty pts</span></div></div>`).join('')}
 function renderLogs(){$('logs').innerHTML=state.logs.length?state.logs.map(l=>`<div class="log-row">${escapeHtml(l.text)}</div>`).join(''):'<div class="log-row">No picks yet.</div>'}
 function renderTimer(mine){const t=state.timer,active=t&&t.playerId===myId;$('timer').classList.toggle('show',!!t);if(!t)return;const owner=state.players.find(p=>p.id===t.playerId);$('timerPlayer').textContent=active?'Your penalty timer':`${owner?.name||'Player'} penalty timer`;$('timerValue').textContent=t.elapsed;$('timerText').textContent=`${t.target} count penalty · everyone sees this live`;$('timerAction').classList.toggle('hidden',!active);$('timerAction').textContent=t.complete?'Finish & Pass Turn':t.running?'Running…':'Start Timer';$('timerAction').disabled=t.running}
-$('startBtn').onclick=()=>socket.emit('startGame');$('lowerBtn').onclick=()=>socket.emit('choose','lower');$('higherBtn').onclick=()=>socket.emit('choose','higher');$('timerAction').onclick=()=>{if(!state.timer)return;if(state.timer.complete)socket.emit('finishTimer');else socket.emit('startTimer')};function escapeHtml(s){return String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+}
+$('startBtn').onclick=()=>socket.emit('startGame');$('lowerBtn').onclick=()=>socket.emit('choose','lower');$('higherBtn').onclick=()=>socket.emit('choose','higher');$('timerAction').onclick=()=>{if(!state.timer)return;if(state.timer.complete)socket.emit('finishTimer');else socket.emit('startTimer')};window.addEventListener('DOMContentLoaded',bootSocket);
+function escapeHtml(s){return String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
 </script></body></html>
