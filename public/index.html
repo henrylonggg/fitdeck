@@ -18,7 +18,7 @@ function bootSocket(){
     $('connectionNotice').textContent='Multiplayer unavailable: Socket.IO did not load.';
     return;
   }
-  socket=window.io(window.DEATHBOX_SERVER_URL||undefined,{transports:['websocket'],upgrade:false,timeout:12000,reconnection:true,reconnectionAttempts:8});
+  socket=window.io(window.DEATHBOX_SERVER_URL||undefined,{transports:['polling','websocket'],upgrade:true,timeout:20000,reconnection:true,reconnectionAttempts:Infinity,reconnectionDelay:1000});
   bindSocketEvents();
 }
 
