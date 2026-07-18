@@ -9,7 +9,7 @@ app.get('/health',async(_q,res)=>{try{res.json({ok:true,storage:storageMode,room
 const suits=['♠','♥','♣','♦'],ranks=[['A',14],['2',2],['3',3],['4',4],['5',5],['6',6],['7',7],['8',8],['9',9],['10',10],['J',11],['Q',12],['K',13]];const makeDeck=()=>suits.flatMap(s=>ranks.map(([label,value])=>({suit:s,label,value,id:randomId()})));function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}const ALPH='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';async function makeCode(){for(let a=0;a<100;a++){const c=Array.from({length:5},()=>ALPH[crypto.randomInt(0,ALPH.length)]).join('');if(!(await roomExists(c)))return c}throw Error('No room code')}const norm=v=>String(v||'').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,5),clean=v=>String(v||'').trim().replace(/\s+/g,' ').slice(0,20),playerFor=(r,s)=>r?.players.find(p=>p.id===s.data.playerId);
 function validBadgeColor(c){const colors=['#ff4055','#ff6b35','#ff9f1c','#ffd166','#d9ed92','#57e3a0','#2ec4b6','#22d3ee','#4aa8ff','#4361ee','#6c63ff','#8b5cf6','#b15cff','#e056fd','#ff5ca8','#f72585','#ffffff','#a8a8a8','#7a5c3e','#111827'];return colors.includes(c)?c:colors[0]}
 const XP_MULTIPLIER={easy:1,normal:1.5,hard:2.25};
-function xpNeededForLevel(level){if(level>=20)return 0;if(level<5)return 500;if(level<10)return 1000;return 1500}
+function xpNeededForLevel(level){if(level>=20)return 0;if(level<5)return 1500;if(level<10)return 3000;return 4500}
 function xpProgress(total=0){let level=1,spent=0;total=Math.max(0,Math.floor(Number(total)||0));while(level<20){const need=xpNeededForLevel(level);if(total<spent+need)break;spent+=need;level++}const need=xpNeededForLevel(level),current=level>=20?0:total-spent;return{total,level,current,needed:need,remaining:level>=20?0:Math.max(0,need-current),percent:level>=20?100:Math.min(100,Math.round(current/need*100)),rank:level<=5?'Amateur':level<=10?'Pro':level<=15?'Veteran':'Hall of Fame'}}
 async function awardXP(r,p,riskScore){const base=Math.max(10,Math.round((Number(riskScore)||1)*10)),earned=Math.round(base*(XP_MULTIPLIER[r.difficulty]||1));p.xpTotal=Math.max(0,Math.floor(Number(p.xpTotal)||0))+earned;p.xpEarned=(p.xpEarned||0)+earned;const before=xpProgress(p.xpTotal-earned),after=xpProgress(p.xpTotal);if(p.profileToken){const pr=await getProfile(p.profileToken);if(pr){pr.xpTotal=p.xpTotal;await saveProfile(pr);if(p.socketId)io.to(p.socketId).emit('profileReady',profilePublic(pr))}}return{earned,leveled:after.level>before.level,level:after.level,rank:after.rank}}
 function newPlayer(name,socketId,profileToken=null,badgeColor='#ff4055',medals={easy:0,normal:0,hard:0},xpTotal=0){return{id:randomId(),socketId,profileToken,name,badgeColor:validBadgeColor(badgeColor),medals:{easy:medals.easy||0,normal:medals.normal||0,hard:medals.hard||0},xpTotal:Math.max(0,Math.floor(Number(xpTotal)||0)),connected:true,guesses:0,correct:0,points:0,xpEarned:0,penalty:0,riskTotal:0,riskGuesses:0}}
@@ -17,13 +17,31 @@ function resetStats(r){r.players.forEach(p=>Object.assign(p,{guesses:0,correct:0
 function startDeathbox(r){r.gameId=randomId();r.startedAt=Date.now();r.started=true;r.naturalComplete=false;r.medalsAwarded=false;r.shuffleReady=false;r.round=0;r.turn=0;r.streak=0;r.selected=null;r.deck=shuffle(makeDeck());r.piles=Array.from({length:9},()=>[r.deck.pop()]);r.phase='outside';r.outsideCorrect=0;r.logs=[];r.result=`${r.players[0].name} goes first.`;resetStats(r)}
 function startLethal(r){r.gameId=randomId();r.startedAt=Date.now();r.started=true;r.naturalComplete=false;r.medalsAwarded=false;r.shuffleReady=false;r.finalColorMode=false;r.finalTurnsRemaining=0;r.turn=0;r.streak=0;r.selected=null;r.deck=shuffle(makeDeck());r.piles=[[],[],[],[],[]];for(const i of[0,1,2,3,4])r.piles[i].push(r.deck.pop());r.phase='outside';r.outsideCorrect=0;r.logs=[];r.result=`${r.players[0].name} starts. Get two outside guesses, then the center color.`;resetStats(r)}
 function start(r){r.game==='lethalcross'?startLethal(r):startDeathbox(r)}
-function phaseLabel(r){if(r.game!=='lethalcross')return'';if(r.phase==='outside')return `${r.outsideCorrect}/2 outside`;if(r.phase==='center')return'Center color';return'Bonus center streak'}
+function phaseLabel(r){if(r.game!=='lethalcross')return'';if(r.phase==='outside')return `${r.outsideCorrect}/2 outside`;if(r.phase==='center')return'Center color';if(r.phase==='finalColor')return `Final colors · ${r.deck.length} left`;return'Bonus center streak'}
 function pub(r){return{code:r.code,gameId:r.gameId||null,hostId:r.hostId,started:r.started,naturalComplete:Boolean(r.naturalComplete),difficulty:r.difficulty,game:r.game,turn:r.turn,streak:r.streak,selected:r.selected,phase:r.phase,phaseLabel:phaseLabel(r),outsideCorrect:r.outsideCorrect||0,shuffleReady:Boolean(r.shuffleReady),round:r.round||0,finalColorMode:Boolean(r.finalColorMode),finalTurnsRemaining:r.finalTurnsRemaining||0,deckCount:r.deck.length,centerCount:r.game==='lethalcross'?(r.piles[2]?.length||0):0,piles:r.piles.map(p=>({count:p.length,top:p[p.length-1]||null})),players:r.players.map(p=>({id:p.id,name:p.name,badgeColor:validBadgeColor(p.badgeColor),medals:p.medals||{easy:0,normal:0,hard:0},xp:xpProgress(p.xpTotal||0),connected:p.connected,guesses:p.guesses,correct:p.correct,points:p.points,xpEarned:p.xpEarned||0,penalty:p.penalty,riskTotal:p.riskTotal,riskGuesses:p.riskGuesses})),logs:r.logs.slice(0,120),result:r.result,timer:r.timer,reveal:r.reveal||null,currentPlayerId:r.players[r.turn]?.id||null}}
 async function broadcast(r){await saveRoom(r);if(r.started||r.gameId)await snapshotRoom(r,r.started?'active':'completed');io.to(r.code).emit('roomState',pub(r))}async function socketRoom(s){return s.data.roomCode?getRoom(s.data.roomCode):null}function addLog(r,p,text,type='info'){r.logs.unshift({at:Date.now(),playerId:p?.id||null,player:p?.name||'',text,type})}function advance(r){r.turn=(r.turn+1)%r.players.length;r.streak=0;r.selected=null;r.phase='outside';r.outsideCorrect=0}function clearTimer(r){const h=timerHandles.get(r.code);if(h)clearInterval(h);timerHandles.delete(r.code);r.timer=null}
 function chance(r,current,direction){if(!r.deck.length)return 0;return r.deck.filter(c=>direction==='higher'?c.value>current.value:c.value<current.value).length/r.deck.length}function riskPoints(x){return Math.max(1,Math.min(10,Math.round(1+(1-x)*9)))}function facePenalty(c){if(c.label==='A')return 11;if(['J','Q','K'].includes(c.label))return 10;return Number(c.label)}
 const modeSeconds={easy:.4,normal:.8,hard:1.1};
-function recycleLethal(r){const outside=[0,1,3,4],pool=[];for(const i of outside)pool.push(...r.piles[i]);r.deck=shuffle(pool);for(const i of outside)r.piles[i]=r.deck.length?[r.deck.pop()]:[];r.selected=null;r.shuffleReady=false;if(r.deck.length<8){r.finalColorMode=true;r.finalTurnsRemaining=r.players.length;r.phase='finalColor';r.result='Final color round: every player gets one color guess.'}else{r.phase='outside';r.result='Outside piles reshuffled. The center pile stayed secured.'}}
-function ensureLethalDeck(r){if(r.deck.length)return true;r.shuffleReady=true;r.result='All draw cards are dealt. Press Shuffle Cards to continue.';return false}
+function enterLethalFinal(r){
+ if(r.finalColorMode)return;
+ const outside=[0,1,3,4],pool=[...r.deck];
+ for(const i of outside){pool.push(...r.piles[i]);r.piles[i]=[]}
+ r.deck=shuffle(pool);r.finalColorMode=true;r.finalTurnsRemaining=r.deck.length;r.phase='finalColor';r.outsideCorrect=0;r.streak=0;r.selected=null;r.shuffleReady=false;
+ r.result=`Final color round unlocked at 44 center cards. ${r.deck.length} color calls remain — one guess per player turn.`;
+}
+function recycleLethal(r){
+ const outside=[0,1,3,4],pool=[];
+ for(const i of outside){pool.push(...r.piles[i]);r.piles[i]=[]}
+ r.deck=shuffle(pool);
+ for(const i of outside)r.piles[i]=r.deck.length?[r.deck.pop()]:[];
+ r.selected=null;r.shuffleReady=false;r.phase='outside';r.outsideCorrect=0;r.streak=0;
+ r.result='The four outside piles were shuffled and redealt. The center pile stayed secured.';
+}
+function ensureLethalDeck(r){
+ if(r.deck.length)return true;
+ if(r.finalColorMode)return false;
+ r.shuffleReady=true;r.result='All draw cards are dealt. Press Shuffle Cards to recycle the four outside piles.';return false
+}
 function setPenalty(r,p,seconds,nextTurn,reason){p.penalty+=seconds;const durationMs=Math.max(1,seconds)*modeSeconds[r.difficulty]*1000;r.timer={playerId:p.id,target:seconds,durationMs,startedAt:null,endAt:null,running:false,complete:false,nextTurn:Boolean(nextTurn),reason};r.streak=0;r.selected=null}
 async function createRoom(host,s,difficulty,game){const code=await makeCode(),r={code,hostId:host.id,players:[host],difficulty:['easy','normal','hard'].includes(difficulty)?difficulty:'normal',game:game==='lethalcross'?'lethalcross':'deathbox',started:false,turn:0,streak:0,deck:[],piles:[],selected:null,phase:'outside',outsideCorrect:0,logs:[],result:'Waiting for the creator to start.',timer:null,lastActive:Date.now()};await saveRoom(r);await s.join(code);s.data.roomCode=code;s.data.playerId=host.id;return r}
 
@@ -46,15 +64,21 @@ s.on('choose',async direction=>{const r=await socketRoom(s),p=playerFor(r,s);if(
 s.on('chooseColor',async color=>{
  const r=await socketRoom(s),p=playerFor(r,s);
  if(!r?.started||r.game!=='lethalcross'||!p||r.timer||r.reveal||r.players[r.turn]?.id!==p.id||!['red','black'].includes(color)||r.phase==='outside')return;
- if(!ensureLethalDeck(r)){await broadcast(r);return}
+ if(!r.deck.length){if(r.finalColorMode){await completeNaturally(r,'LethalCross complete — all 52 cards reached the center pile!')}else ensureLethalDeck(r);await broadcast(r);return}
  const wasFinal=Boolean(r.finalColorMode),next=r.deck.pop(),actual=['♥','♦'].includes(next.suit)?'red':'black';
  r.piles[2].push(next);p.guesses++;p.riskGuesses++;p.riskTotal+=5;
  const correct=color===actual;
  if(correct){
-  p.correct++;const xpAward=await awardXP(r,p,5);r.streak++;r.result=`${p.name} called ${color.toUpperCase()} correctly: ${next.label}${next.suit}. +${xpAward.earned} XP${xpAward.leveled?` · LEVEL ${xpAward.level} ${xpAward.rank.toUpperCase()}!`:''}`;addLog(r,p,r.result,'correct');
-  if(!wasFinal&&r.phase==='center'){r.phase='bonus';r.result+=' All three required guesses are complete — keep calling colors to build the center pile.'}
+  p.correct++;const xpAward=await awardXP(r,p,5);r.streak++;
+  r.result=`${p.name} called ${color.toUpperCase()} correctly: ${next.label}${next.suit}. +${xpAward.earned} XP${xpAward.leveled?` · LEVEL ${xpAward.level} ${xpAward.rank.toUpperCase()}!`:''}`;addLog(r,p,r.result,'correct');
+  if(wasFinal){
+   r.finalTurnsRemaining=r.deck.length;
+   if(!r.deck.length)await completeNaturally(r,'LethalCross complete — all 52 cards reached the center pile!');
+   else{advance(r);r.finalColorMode=true;r.phase='finalColor';r.result+=` ${r.players[r.turn].name} has the next color call. ${r.deck.length} cards remain.`}
+  }else if(r.phase==='center'){r.phase='bonus';r.result+=' All three required guesses are complete — keep calling colors to build the center pile.'}
  }else if(wasFinal){
-  const penalty=facePenalty(next);r.result=`${p.name} missed the final color call: ${next.label}${next.suit} was ${actual.toUpperCase()}. Drink for ${penalty}.`;addLog(r,p,r.result,'wrong');
+  const penalty=facePenalty(next);r.finalTurnsRemaining=r.deck.length;
+  r.result=`${p.name} missed the final color call: ${next.label}${next.suit} was ${actual.toUpperCase()}. Drink for ${penalty}.`;addLog(r,p,r.result,'wrong');
   r.reveal={playerId:p.id,card:next,message:r.result,penalty,nextTurn:true,reason:'final-center',until:Date.now()+1800};
   setTimeout(async()=>{const x=await getRoom(r.code);if(!x?.reveal)return;const xp=x.players.find(z=>z.id===p.id);x.reveal=null;setPenalty(x,xp,penalty,true,'final-center');await broadcast(x)},1800);
  }else{
@@ -62,13 +86,15 @@ s.on('chooseColor',async color=>{
   if(bonus){r.result=`${p.name} called ${color.toUpperCase()}, but ${next.label}${next.suit} was ${actual.toUpperCase()}. Bonus streak ended — no penalty.`;addLog(r,p,r.result,'wrong');advance(r);r.result+=` ${r.players[r.turn].name} is up.`}
   else{const penalty=facePenalty(next);r.result=`${p.name} called ${color.toUpperCase()}, but ${next.label}${next.suit} was ${actual.toUpperCase()}. Drink for ${penalty}.`;addLog(r,p,r.result,'wrong');r.reveal={playerId:p.id,card:next,message:r.result,penalty,nextTurn:false,reason:'center',until:Date.now()+1800};r.phase='outside';r.outsideCorrect=0;setTimeout(async()=>{const x=await getRoom(r.code);if(!x?.reveal)return;const xp=x.players.find(z=>z.id===p.id);x.reveal=null;setPenalty(x,xp,penalty,false,'center');await broadcast(x)},1800)}
  }
- if(wasFinal&&!r.reveal){r.finalTurnsRemaining=Math.max(0,(r.finalTurnsRemaining||1)-1);if(r.finalTurnsRemaining<=0)await completeNaturally(r,'LethalCross final color round complete!');else{advance(r);r.phase='finalColor';r.result+=` ${r.players[r.turn].name} has the next final color guess.`}}
- if((r.piles[2]?.length||0)>=52&&!r.naturalComplete)await completeNaturally(r,'LethalCross complete — all 52 cards reached the center pile!');
- if(!r.deck.length&&!r.naturalComplete&&!wasFinal){r.shuffleReady=true;r.result+=' Press Shuffle Cards to continue.'}
+ if(!r.naturalComplete&&!r.finalColorMode&&(r.piles[2]?.length||0)>=44){
+  enterLethalFinal(r);
+  if(r.reveal){r.reveal.nextTurn=true;r.reveal.reason='final-center'}
+ }
+ if(!r.naturalComplete&&!r.finalColorMode&&!r.deck.length){r.shuffleReady=true;r.result+=' Press Shuffle Cards to recycle the outside piles.'}
  await broadcast(r)
 });
 s.on('startTimer',async()=>{const r=await socketRoom(s),p=playerFor(r,s);if(!r?.timer||r.timer.playerId!==p?.id||r.timer.running)return;r.timer.running=true;r.timer.startedAt=Date.now();r.timer.endAt=r.timer.startedAt+r.timer.durationMs;await broadcast(r);const h=setTimeout(async()=>{const x=await getRoom(r.code);if(!x?.timer)return;x.timer.complete=true;x.timer.running=false;await broadcast(x)},r.timer.durationMs);timerHandles.set(r.code,h)});
-s.on('finishTimer',async()=>{const r=await socketRoom(s),p=playerFor(r,s);if(!r?.timer||r.timer.playerId!==p?.id||!r.timer.complete)return;const nextTurn=r.timer.nextTurn,reason=r.timer.reason;clearTimer(r);if(reason==='final-center'){r.finalTurnsRemaining=Math.max(0,(r.finalTurnsRemaining||1)-1);if(r.finalTurnsRemaining<=0)await completeNaturally(r,'LethalCross final color round complete!');else{advance(r);r.phase='finalColor';r.result=`Penalty complete. ${r.players[r.turn].name} has the next final color guess.`}}else if(nextTurn){advance(r);r.result=`Penalty complete. ${r.players[r.turn].name} is up.`}else{r.phase='outside';r.outsideCorrect=0;r.streak=0;r.selected=null;r.result=`Penalty complete. ${p.name} restarts the turn.`}await broadcast(r)});
+s.on('finishTimer',async()=>{const r=await socketRoom(s),p=playerFor(r,s);if(!r?.timer||r.timer.playerId!==p?.id||!r.timer.complete)return;const nextTurn=r.timer.nextTurn,reason=r.timer.reason;clearTimer(r);if(reason==='final-center'){r.finalTurnsRemaining=r.deck.length;if(!r.deck.length)await completeNaturally(r,'LethalCross complete — all 52 cards reached the center pile!');else{advance(r);r.finalColorMode=true;r.phase='finalColor';r.result=`Penalty complete. ${r.players[r.turn].name} has the next final color guess. ${r.deck.length} cards remain.`}}else if(nextTurn){advance(r);r.result=`Penalty complete. ${r.players[r.turn].name} is up.`}else{r.phase='outside';r.outsideCorrect=0;r.streak=0;r.selected=null;r.result=`Penalty complete. ${p.name} restarts the turn.`}await broadcast(r)});
 s.on('shuffleCards',async()=>{const r=await socketRoom(s),p=playerFor(r,s);if(!r?.started||!p||!r.shuffleReady||r.timer||r.reveal)return;if(r.game==='deathbox'){if(!deathboxShuffle(r))return;if(r.piles.length===1&&r.deck.length===0)await completeNaturally(r,'Deathbox complete — one pile remains.')}else recycleLethal(r);addLog(r,p,`${p.name} shuffled the cards.`,'info');await broadcast(r)});
 s.on('updateProfileName',async({name}={})=>{try{const n=clean(name),token=s.data.profileToken;if(!n||!token)return s.emit('errorMessage','Enter a valid name.');const pr=await getProfile(token);if(!pr)return s.emit('errorMessage','Profile not found.');pr.name=n;await saveProfile(pr);const r=await socketRoom(s),pl=playerFor(r,s);if(r&&pl){pl.name=n;await broadcast(r)}s.emit('profileReady',profilePublic(pr))}catch(e){s.emit('errorMessage','Could not update your name.')}});
 s.on('updateBadgeColor',async({badgeColor}={})=>{try{const token=s.data.profileToken,pr=await getProfile(token);if(!pr)return s.emit('errorMessage','Profile not found.');pr.badgeColor=validBadgeColor(badgeColor);await saveProfile(pr);const r=await socketRoom(s),pl=playerFor(r,s);if(r&&pl){pl.badgeColor=pr.badgeColor;await broadcast(r)}s.emit('profileReady',profilePublic(pr))}catch(e){s.emit('errorMessage','Could not update badge color.')}});
