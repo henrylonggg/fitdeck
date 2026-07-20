@@ -23,15 +23,16 @@
   function gameKey(room){return room&&(room.gameId||room.code)||''}
   function currentManual(){var el=byId('lockManualBeer');return Math.max(0,Number(el&&el.textContent)||manualBeers||0)}
   function removeAsshole(){var select=byId('gameInput');if(!select)return;var opt=select.querySelector('option[value="asshole"]');if(opt)opt.remove();if(select.value==='asshole'){select.value='deathbox';select.dispatchEvent(new Event('change',{bubbles:true}))}var cfg=byId('assholeConfig');if(cfg)cfg.classList.add('hidden')}
+  function forceDisplay(el,show){if(!el)return;el.classList.toggle('hidden',!show);el.style.display=show?'grid':'none'}
   function enforceGameControls(){
     var s=getState(),dir=byId('directionChoices'),colors=byId('colorChoices'),shuffle=byId('shuffleWrap');
     if(!dir||!colors||!s)return;
     var lethal=s.game==='lethalcross';
     var colorPhase=lethal&&s.phase!=='outside';
-    dir.classList.toggle('hidden',colorPhase);
-    colors.classList.toggle('hidden',!colorPhase);
-    if(!lethal){colors.classList.add('hidden');dir.classList.remove('hidden')}
-    if(shuffle)shuffle.classList.toggle('hidden',!s.shuffleReady||!s.started);
+    forceDisplay(dir,!colorPhase);
+    forceDisplay(colors,colorPhase);
+    if(!lethal){forceDisplay(colors,false);forceDisplay(dir,true)}
+    if(shuffle){shuffle.classList.toggle('hidden',!s.shuffleReady||!s.started);shuffle.style.display=(s.shuffleReady&&s.started)?'block':'none'}
   }
   function ensureBeerLockPanel(){
     var panel=byId('lockBeerPanel');
@@ -103,5 +104,5 @@
   }
   function polish(){removeAsshole();enforceGameControls();updateDifficultyLabels();enhanceProfileClose();attachBeerPanel();updateBeerPanel();renderVarianceStats();correctSavedHardGames();hookSaves()}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',polish);else polish();
-  setInterval(polish,500);
+  setInterval(polish,200);
 }());
