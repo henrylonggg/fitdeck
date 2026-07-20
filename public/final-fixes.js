@@ -22,7 +22,32 @@
   function gameKey(room){return room&&(room.gameId||room.code)||''}
   function currentManual(){var el=byId('lockManualBeer');return Math.max(0,Number(el&&el.textContent)||0)}
   function isAssholeVisible(){var el=byId('assholeGame');return !!(el&&!el.classList.contains('hidden'))}
-  function unlockAsshole(){var select=byId('gameInput');if(!select)return;var opt=select.querySelector('option[value="asshole"]');if(opt){opt.disabled=false;opt.textContent='Asshole · online or AI'}}
+  function forceOptionUsable(opt){if(!opt)return;opt.disabled=false;opt.removeAttribute('disabled');opt.hidden=false;opt.removeAttribute('hidden');opt.textContent='Asshole · online or AI'}
+  function unlockAsshole(){
+    var select=byId('gameInput');if(!select)return;
+    var opt=select.querySelector('option[value="asshole"]');
+    if(!opt){opt=document.createElement('option');opt.value='asshole';select.appendChild(opt)}
+    forceOptionUsable(opt);
+    if(select.value==='asshole'){
+      var cfg=byId('assholeConfig'),diff=byId('difficultyField'),note=byId('assholeModeNote'),mode=byId('assholeMode'),ai=byId('assholeAiCountField'),submit=byId('roomSubmit');
+      if(cfg)cfg.classList.remove('hidden');
+      if(diff)diff.classList.add('hidden');
+      if(ai)ai.classList.toggle('hidden',mode&&mode.value==='online');
+      if(note)note.textContent=(mode&&mode.value==='online')?'Online games require at least 4 players and award placement-based XP when completed naturally.':'AI games are practice-only and award no XP.';
+      if(submit)submit.textContent=(mode&&mode.value==='online')?'Create Online Room':'Start AI Game';
+    }
+  }
+  function installAssholeDropdownGuard(){
+    if(window.__assholeDropdownGuard)return;window.__assholeDropdownGuard=true;
+    try{
+      var desc=Object.getOwnPropertyDescriptor(HTMLOptionElement.prototype,'disabled');
+      if(desc&&desc.configurable){
+        Object.defineProperty(HTMLOptionElement.prototype,'disabled',{configurable:true,get:function(){return desc.get?desc.get.call(this):this.hasAttribute('disabled')},set:function(v){if(this&&this.value==='asshole')v=false;return desc.set?desc.set.call(this,!!v):(v?this.setAttribute('disabled',''):this.removeAttribute('disabled'))}});
+      }
+    }catch(e){}
+    document.addEventListener('change',function(e){if(e.target&&e.target.id==='gameInput')setTimeout(unlockAsshole,0)},true);
+  }
+  installAssholeDropdownGuard();
   function upsertCurrent(){var s=getState(),p=getPlayer();if(!s||!p||!s.gameId)return;var rows=history(),id=gameKey(s),i=rows.findIndex(function(r){return r.id===id});var row={id:id,game:s.game,difficulty:s.difficulty,at:Date.now(),actual:currentManual(),estimated:estimatedBeers(s,p)};if(i>=0)rows[i]=row;else rows.push(row);saveHistory(rows)}
   function updateDifficultyLabels(){
     var select=byId('difficultyInput');if(!select)return;
@@ -80,5 +105,5 @@
   }
   function polish(){unlockAsshole();updateDifficultyLabels();enhanceProfileClose();attachBeerPanel();updateBeerPanel();renderVarianceStats();correctSavedHardGames();hookSaves()}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',polish);else polish();
-  setInterval(polish,500);
+  setInterval(polish,120);
 }());
