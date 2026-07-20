@@ -1,5 +1,16 @@
 (function(){
   var BEER_KEY='deathboxBeerHistoryV1';
+  function installBeerSaveGuard(){
+    if(window.__deathboxBeerSaveGuard)return;
+    window.__deathboxBeerSaveGuard=true;
+    window.__deathboxAllowBeerSave=false;
+    var realSet=localStorage.setItem.bind(localStorage);
+    localStorage.setItem=function(key,value){
+      if(key===BEER_KEY&&!window.__deathboxAllowBeerSave)return;
+      return realSet(key,value);
+    };
+  }
+  installBeerSaveGuard();
   function byId(id){return document.getElementById(id)}
   function getState(){try{return state}catch(e){return null}}
   function getMyId(){try{return myId}catch(e){return null}}
@@ -7,10 +18,11 @@
   function beerBase(game,difficulty){return game==='lethalcross'?12:({easy:45,normal:22.5,hard:18}[difficulty]||22.5)}
   function estimatedBeers(room,player){if(!room||!player)return 0;return Math.max(0,(Number(player.penalty)||0)/beerBase(room.game,room.difficulty))}
   function history(){try{return JSON.parse(localStorage.getItem(BEER_KEY)||'[]')}catch(e){return []}}
-  function saveHistory(rows){localStorage.setItem(BEER_KEY,JSON.stringify(rows.slice(-160)))}
+  function saveHistory(rows){window.__deathboxAllowBeerSave=true;try{localStorage.setItem(BEER_KEY,JSON.stringify(rows.slice(-160)))}finally{setTimeout(function(){window.__deathboxAllowBeerSave=false},0)}}
   function gameKey(room){return room&&(room.gameId||room.code)||''}
   function currentManual(){var el=byId('lockManualBeer');return Math.max(0,Number(el&&el.textContent)||0)}
   function isAssholeVisible(){var el=byId('assholeGame');return !!(el&&!el.classList.contains('hidden'))}
+  function unlockAsshole(){var select=byId('gameInput');if(!select)return;var opt=select.querySelector('option[value="asshole"]');if(opt){opt.disabled=false;opt.textContent='Asshole · online or AI'}}
   function upsertCurrent(){var s=getState(),p=getPlayer();if(!s||!p||!s.gameId)return;var rows=history(),id=gameKey(s),i=rows.findIndex(function(r){return r.id===id});var row={id:id,game:s.game,difficulty:s.difficulty,at:Date.now(),actual:currentManual(),estimated:estimatedBeers(s,p)};if(i>=0)rows[i]=row;else rows.push(row);saveHistory(rows)}
   function updateDifficultyLabels(){
     var select=byId('difficultyInput');if(!select)return;
@@ -64,9 +76,9 @@
     var rows=history(),changed=false;rows.forEach(function(r){if(r.game==='deathbox'&&r.difficulty==='hard'&&r.penaltySeconds){r.estimated=Math.max(0,Number(r.penaltySeconds)/18);changed=true}});if(changed)saveHistory(rows)
   }
   function hookSaves(){
-    try{if(typeof socket==='undefined'||!socket||socket.datasetFinalBeer)return;socket.datasetFinalBeer='1';socket.on('gameFinished',upsertCurrent);socket.on('roomState',function(){setTimeout(function(){updateBeerPanel();renderVarianceStats()},40)})}catch(e){}
+    try{if(typeof socket==='undefined'||!socket||socket.datasetFinalBeer)return;socket.datasetFinalBeer='1';socket.on('gameFinished',upsertCurrent);socket.on('roomState',function(){setTimeout(function(){updateBeerPanel();renderVarianceStats();unlockAsshole()},40)})}catch(e){}
   }
-  function polish(){updateDifficultyLabels();enhanceProfileClose();attachBeerPanel();updateBeerPanel();renderVarianceStats();correctSavedHardGames();hookSaves()}
+  function polish(){unlockAsshole();updateDifficultyLabels();enhanceProfileClose();attachBeerPanel();updateBeerPanel();renderVarianceStats();correctSavedHardGames();hookSaves()}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',polish);else polish();
   setInterval(polish,500);
 }());
