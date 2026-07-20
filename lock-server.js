@@ -26,21 +26,10 @@ const replacement=`function sendApp(req,res){
    .replace('🥉 Easy · 0.4 sec per count','🥉 Easy · 45 sec beer · 0.4 sec/count')
    .replace('🥈 Normal · 0.8 sec per count','🥈 Normal · 22.5 sec beer · 0.8 sec/count')
    .replace('🥇 Hard · 1.1 sec per count','🥇 Hard · 18 sec beer · 1.0 sec/count')
-   .replace('Against AI','Against CPUs')
-   .replace('AI opponents','CPU opponents')
-   .replace('3 AI · 4 players total','3 CPUs · 4 players total')
-   .replace('4 AI · 5 players total','4 CPUs · 5 players total')
-   .replace('5 AI · 6 players total','5 CPUs · 6 players total')
-   .replace('AI games are practice-only and award no XP.','CPU games are practice-only and award no XP.')
-   .replace('Start AI Game','Start CPU Game')
-   .replace('Online or AI','Online or CPUs')
-   .replace('Asshole - locked for rebuild','Asshole · online or CPUs')
+   .replace('Asshole - locked for rebuild','')
    .replace('Asshole is locked while it gets rebuilt.','');
-  html=html.replace('function ahSort(h){return h.sort((a,b)=>a.value-b.value||a.suit.localeCompare(b.suit))}','function ahCardPower(c,count=1){try{return ahEffective(c,count)}catch(e){return c.value}}function ahSort(h){return h.sort((a,b)=>ahCardPower(a,1)-ahCardPower(b,1)||a.suit.localeCompare(b.suit))}');
-  html=html.replace('function ahBest(hand,n){return [...hand].sort((a,b)=>b.value-a.value).slice(0,n)}function ahWorst(hand,n){return [...hand].sort((a,b)=>a.value-b.value).slice(0,n)}','function ahBest(hand,n){return [...hand].sort((a,b)=>ahCardPower(b,1)-ahCardPower(a,1)||b.value-a.value).slice(0,n)}function ahWorst(hand,n){return [...hand].sort((a,b)=>ahCardPower(a,1)-ahCardPower(b,1)||a.value-b.value).slice(0,n)}');
-  const early='<script>window.__forceAssholeUnlocked=function(){var s=document.getElementById("gameInput");if(!s)return;var o=s.querySelector("option[value=asshole]");if(!o){o=document.createElement("option");o.value="asshole";o.setAttribute("data-clean-asshole","1");s.appendChild(o)}o.disabled=false;o.removeAttribute("disabled");o.hidden=false;o.textContent="Asshole · online or CPUs"};document.addEventListener("DOMContentLoaded",function(){window.__forceAssholeUnlocked();setInterval(window.__forceAssholeUnlocked,60)});</script>';
-  const assets='<link rel="stylesheet" href="/lock-mode.css?v=asshole-reset-2"><link rel="stylesheet" href="/final-fixes.css?v=asshole-reset-2"><script defer src="/lock-mode.js?v=asshole-reset-2"></script><script defer src="/final-fixes.js?v=asshole-reset-2"></script>';
-  res.type('html').send(html.replace('</body>',early+assets+'</body>'));
+  const assets='<link rel="stylesheet" href="/lock-mode.css?v=beer-layout-1"><link rel="stylesheet" href="/final-fixes.css?v=beer-layout-1"><script defer src="/lock-mode.js?v=beer-layout-1"></script><script defer src="/final-fixes.js?v=beer-layout-1"></script>';
+  res.type('html').send(html.replace('</body>',assets+'</body>'));
  });
 }
 app.get('/health',async(_q,res)=>{try{res.json({ok:true,storage:storageMode,rooms:await roomCount()})}catch(e){res.status(503).json({ok:false,error:e.message})}});app.get('/',sendApp);app.get('*',sendApp);`;
