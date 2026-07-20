@@ -3,13 +3,13 @@
   "version": "2.1.0",
   "private": true,
   "description": "Live multiplayer Deathbox game with shared Redis room storage",
-  "main": "server.js",
+  "main": "lock-server.js",
   "engines": {
     "node": ">=20 <23"
   },
   "scripts": {
-    "start": "node server.js",
-    "check": "node --check server.js"
+    "start": "node lock-server.js",
+    "check": "node --check server.js && node --check lock-server.js && node --check public/lock-mode.js"
   },
   "dependencies": {
     "@socket.io/redis-adapter": "^8.3.0",
