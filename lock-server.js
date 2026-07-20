@@ -26,7 +26,7 @@ source=source.replace("const modeSeconds={easy:.4,normal:.8,hard:1.1};","const m
 const patchedSend=`function sendApp(req,res){
   fs.readFile(path.join(__dirname,'public','index.html'),'utf8',(err,html)=>{
     if(err)return res.status(500).send('Could not load Deathbox.');
-    html=html.replace(/<script>\\n\\(function\\(\\)\\{function golfCard[\\s\\S]*?\\}\\)\\(\\);\\n<\\/script>/,'');
+    html=html.replace(/<script>\s*\(function\(\)\{function golfCard[\s\S]*?<\/script>/,'');
     html=html.replace('const drinkBase={easy:40,normal:30,hard:18};','const drinkBase={easy:45,normal:22.5,hard:18};')
       .replace('🥉 Easy · 0.4 sec per count','🥉 Easy · 45 sec beer · 0.4 sec/count')
       .replace('🥈 Normal · 0.8 sec per count','🥈 Normal · 22.5 sec beer · 0.8 sec/count')
