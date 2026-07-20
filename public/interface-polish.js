@@ -146,7 +146,7 @@
     ctx.clearRect(0,0,w,h);ctx.fillStyle='#07090d';ctx.fillRect(0,0,w,h);
     ctx.strokeStyle='rgba(255,255,255,.08)';ctx.lineWidth=1;
     for(var i=0;i<5;i++){var y=pad+(h-pad*2)*i/4;ctx.beginPath();ctx.moveTo(pad,y);ctx.lineTo(w-pad,y);ctx.stroke()}
-    var max=Math.max(1].concat(rows.map(function(r){return Math.max(r.actual,r.estimated)})).reduce(function(a,b){return Math.max(a,b)},1));
+    var max=[1].concat(rows.map(function(r){return Math.max(r.actual,r.estimated)})).reduce(function(a,b){return Math.max(a,b)},1);
     var denom=Math.max(1,rows.length-1);
     var actualPts=rows.map(function(r,i){return{x:pad+(w-pad*2)*i/denom,y:h-pad-(h-pad*2)*(r.actual/max)}});
     var estimatePts=rows.map(function(r,i){return{x:pad+(w-pad*2)*i/denom,y:h-pad-(h-pad*2)*(r.estimated/max)}});
@@ -181,7 +181,8 @@
     if(store&&snap)storeSnapshot({id:snap.id,game:snap.game,at:Date.now(),actual:manualBeers,estimated:est});
   }
   function hookSocket(){
-    if(hookedSocket||!window.socket)return;
+    if(hookedSocket)return;
+    try{if(typeof socket==='undefined'||!socket)return}catch(e){return}
     hookedSocket=true;
     socket.on('roomState',function(){setTimeout(function(){updateBeerPanel(false);renderBeerChart()},30)});
     socket.on('roomJoined',function(){manualBeers=0;setTimeout(function(){updateBeerPanel(false);renderBeerChart()},60)});
