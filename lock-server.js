@@ -1,0 +1,13 @@
+'use strict';
+const fs=require('fs');
+const path=require('path');
+const Module=require('module');
+const file=path.join(__dirname,'server.js');
+let source=fs.readFileSync(file,'utf8');
+source=source.replace("const express=require('express');const http=require('http');const path=require('path');const crypto=require('crypto');","const express=require('express');const http=require('http');const path=require('path');const fs=require('fs');const crypto=require('crypto');");
+source=source.replace("app.use(express.static(path.join(__dirname,'public')));","app.use(express.static(path.join(__dirname,'public'),{index:false}));");
+source=source.replace("app.get('/health',async(_q,res)=>{try{res.json({ok:true,storage:storageMode,rooms:await roomCount()})}catch(e){res.status(503).json({ok:false,error:e.message})}});app.get('*',(_q,res)=>res.sendFile(path.join(__dirname,'public','index.html')));","function sendApp(req,res){fs.readFile(path.join(__dirname,'public','index.html'),'utf8',(err,html)=>{if(err)return res.status(500).send('Could not load Deathbox.');const lockAssets='<link rel=\"stylesheet\" href=\"/lock-mode.css\"><script defer src=\"/lock-mode.js\"></script>';res.type('html').send(html.includes('/lock-mode.js')?html:html.replace('</body>',lockAssets+'</body>'))})}\napp.get('/health',async(_q,res)=>{try{res.json({ok:true,storage:storageMode,rooms:await roomCount()})}catch(e){res.status(503).json({ok:false,error:e.message})}});app.get('/',sendApp);app.get('*',sendApp);");
+const mod=new Module(file,module.parent);
+mod.filename=file;
+mod.paths=Module._nodeModulePaths(__dirname);
+mod._compile(source,file);
