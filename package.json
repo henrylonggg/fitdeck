@@ -5,11 +5,11 @@
   "description": "Live multiplayer Deathbox game with shared Redis room storage",
   "main": "lock-server.js",
   "engines": {
-    "node": ">=20 <23"
+    "node": ">=20"
   },
   "scripts": {
     "start": "node lock-server.js",
-    "check": "node --check server.js && node --check lock-server.js && node --check public/lock-mode.js && node --check public/interface-polish.js && node --check public/final-fixes.js"
+    "check": "node --check server.js && node --check lock-server.js && node --check public/lock-mode.js"
   },
   "dependencies": {
     "@socket.io/redis-adapter": "^8.3.0",
