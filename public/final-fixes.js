@@ -4,13 +4,24 @@
   function getState(){try{return state}catch(e){return null}}
   function getMyId(){try{return myId}catch(e){return null}}
   function getPlayer(){var s=getState(),id=getMyId();return s&&s.players&&s.players.find(function(p){return p.id===id})}
-  function beerBase(game,difficulty){return game==='lethalcross'?12:({easy:40,normal:30,hard:20}[difficulty]||30)}
+  function beerBase(game,difficulty){return game==='lethalcross'?12:({easy:45,normal:22.5,hard:18}[difficulty]||22.5)}
   function estimatedBeers(room,player){if(!room||!player)return 0;return Math.max(0,(Number(player.penalty)||0)/beerBase(room.game,room.difficulty))}
   function history(){try{return JSON.parse(localStorage.getItem(BEER_KEY)||'[]')}catch(e){return []}}
   function saveHistory(rows){localStorage.setItem(BEER_KEY,JSON.stringify(rows.slice(-160)))}
   function gameKey(room){return room&&(room.gameId||room.code)||''}
   function currentManual(){var el=byId('lockManualBeer');return Math.max(0,Number(el&&el.textContent)||0)}
-  function upsertCurrent(){var s=getState(),p=getPlayer();if(!s||!p||!s.gameId)return;var rows=history(),id=gameKey(s),i=rows.findIndex(function(r){return r.id===id});var row={id:id,game:s.game,at:Date.now(),actual:currentManual(),estimated:estimatedBeers(s,p)};if(i>=0)rows[i]=row;else rows.push(row);saveHistory(rows)}
+  function upsertCurrent(){var s=getState(),p=getPlayer();if(!s||!p||!s.gameId)return;var rows=history(),id=gameKey(s),i=rows.findIndex(function(r){return r.id===id});var row={id:id,game:s.game,difficulty:s.difficulty,at:Date.now(),actual:currentManual(),estimated:estimatedBeers(s,p)};if(i>=0)rows[i]=row;else rows.push(row);saveHistory(rows)}
+  function updateDifficultyLabels(){
+    var select=byId('difficultyInput');if(!select)return;
+    var labels={easy:'🥉 Easy · 45 sec beer · 0.4 sec/count',normal:'🥈 Normal · 22.5 sec beer · 0.8 sec/count',hard:'🥇 Hard · 18 sec beer · 1.0 sec/count'};
+    Object.keys(labels).forEach(function(key){var opt=select.querySelector('option[value="'+key+'"]');if(opt)opt.textContent=labels[key]});
+    var field=byId('difficultyField');
+    if(field&&!byId('beerRuleNote')){
+      var note=document.createElement('div');note.id='beerRuleNote';note.className='difficulty-beer-note';
+      note.textContent='Beer conversion: Easy 45s at .4, Normal 22.5s at .8, Hard 18s at 1.0.';
+      field.appendChild(note);
+    }
+  }
   function enhanceProfileClose(){
     var details=byId('profileDetails'),panel=byId('profilePanel'),btn=byId('profileOpenToggle'),title=byId('profileTitle');
     if(!details||!panel)return;
@@ -50,12 +61,12 @@
     box.innerHTML='<div><span>Variance</span><strong>'+(variance>=0?'+':'')+variance.toFixed(1)+' beers</strong></div><p>'+stat.text+' overall. The goal is to stay at least on pace with the estimate.</p>';
   }
   function correctSavedHardGames(){
-    var rows=history(),changed=false;rows.forEach(function(r){if(r.game==='deathbox'&&r.difficulty==='hard'&&r.penaltySeconds){r.estimated=Math.max(0,Number(r.penaltySeconds)/20);changed=true}});if(changed)saveHistory(rows)
+    var rows=history(),changed=false;rows.forEach(function(r){if(r.game==='deathbox'&&r.difficulty==='hard'&&r.penaltySeconds){r.estimated=Math.max(0,Number(r.penaltySeconds)/18);changed=true}});if(changed)saveHistory(rows)
   }
   function hookSaves(){
     try{if(typeof socket==='undefined'||!socket||socket.datasetFinalBeer)return;socket.datasetFinalBeer='1';socket.on('gameFinished',upsertCurrent);socket.on('leftGame',upsertCurrent);socket.on('roomState',function(){setTimeout(function(){updateBeerPanel();renderVarianceStats()},40)})}catch(e){}
   }
-  function polish(){enhanceProfileClose();attachBeerPanel();updateBeerPanel();renderVarianceStats();correctSavedHardGames();hookSaves()}
+  function polish(){updateDifficultyLabels();enhanceProfileClose();attachBeerPanel();updateBeerPanel();renderVarianceStats();correctSavedHardGames();hookSaves()}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',polish);else polish();
   setInterval(polish,500);
 }());
