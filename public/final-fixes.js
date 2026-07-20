@@ -34,16 +34,34 @@
     if(!lethal){forceDisplay(colors,false);forceDisplay(dir,true)}
     if(shuffle){shuffle.classList.toggle('hidden',!s.shuffleReady||!s.started);shuffle.style.display=(s.shuffleReady&&s.started)?'block':'none'}
   }
+  function playerIndex(s,id){if(!s||!s.players||!s.players.length)return -1;var current=id||s.currentPlayerId||(s.players[s.turn]&&s.players[s.turn].id);var i=s.players.findIndex(function(p){return p.id===current});return i>=0?i:(Number.isInteger(s.turn)?s.turn:-1)}
+  function nextPlayerName(){var s=getState();if(!s||!s.players||!s.players.length)return 'Waiting';var i=playerIndex(s);if(i<0)return 'Waiting';return s.players[(i+1)%s.players.length].name||'Next player'}
+  function enhanceTurnbar(){
+    var s=getState(),bar=document.querySelector('#gameSection .turnbar');if(!s||!bar||!(s.game==='deathbox'||s.game==='lethalcross'))return;
+    var next=byId('nextPlayerLine');
+    if(!next){next=document.createElement('div');next.id='nextPlayerLine';next.className='next-player-line';bar.appendChild(next)}
+    next.innerHTML='<span>Next</span><strong>'+nextPlayerName().replace(/[&<>]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c]})+'</strong>';
+  }
+  function installBeerButtons(){
+    if(window.__deathboxBeerButtons)return;window.__deathboxBeerButtons=true;
+    document.addEventListener('click',function(e){
+      var plus=e.target.closest&&e.target.closest('#beerPlus'),minus=e.target.closest&&e.target.closest('#beerMinus');
+      if(!plus&&!minus)return;
+      e.preventDefault();e.stopPropagation();
+      manualBeers=currentManual()+(plus?1:-1);
+      manualBeers=Math.max(0,manualBeers);
+      updateBeerPanel();
+    },true);
+  }
   function ensureBeerLockPanel(){
     var panel=byId('lockBeerPanel');
     if(panel)return panel;
     panel=document.createElement('aside');
     panel.id='lockBeerPanel';
     panel.className='lock-beer-panel';
-    panel.innerHTML='<div class="lock-beer-label">Beer tracker</div><div class="lock-beer-row"><span>Estimated</span><strong id="lockEstimatedBeer">0.0</strong></div><div class="lock-beer-manual"><span>Actual beers</span><div><button id="beerMinus" type="button">-</button><strong id="lockManualBeer">0</strong><button id="beerPlus" type="button">+</button></div></div>';
+    panel.innerHTML='<div class="lock-beer-label">Beer</div><div class="lock-beer-row"><span>Estimate</span><strong id="lockEstimatedBeer">0.0</strong></div><div class="lock-beer-manual"><span>Actual</span><div><button id="beerMinus" type="button" aria-label="Subtract actual beer">−</button><strong id="lockManualBeer">0</strong><button id="beerPlus" type="button" aria-label="Add actual beer">+</button></div></div>';
     document.body.appendChild(panel);
-    byId('beerMinus').onclick=function(){manualBeers=Math.max(0,manualBeers-1);updateBeerPanel()};
-    byId('beerPlus').onclick=function(){manualBeers+=1;updateBeerPanel()};
+    installBeerButtons();
     return panel;
   }
   function upsertCurrent(){var s=getState(),p=getPlayer();if(!s||!p||!s.gameId)return;var rows=history(),id=gameKey(s),i=rows.findIndex(function(r){return r.id===id});var row={id:id,game:s.game,difficulty:s.difficulty,at:Date.now(),actual:currentManual(),estimated:estimatedBeers(s,p)};if(i>=0)rows[i]=row;else rows.push(row);saveHistory(rows)}
@@ -75,8 +93,9 @@
     var panel=ensureBeerLockPanel(),board=document.querySelector('#gameSection .board-panel');
     if(panel&&board&&panel.parentElement!==board)board.insertBefore(panel,board.firstChild);
   }
-  function beerStatus(actual,estimated){var variance=actual-estimated;if(variance>=0)return {text:'On pace +' + variance.toFixed(1),cls:'ahead'};return {text:'Behind ' + Math.abs(variance).toFixed(1),cls:'behind'}}
+  function beerStatus(actual,estimated){var variance=actual-estimated;if(variance>=0)return {text:'+' + variance.toFixed(1),cls:'ahead'};return {text:'-' + Math.abs(variance).toFixed(1),cls:'behind'}}
   function updateBeerPanel(){
+    installBeerButtons();
     var s=getState(),p=getPlayer(),panel=ensureBeerLockPanel();
     attachBeerPanel();
     var active=Boolean(s&&s.gameId&&(s.game==='deathbox'||s.game==='lethalcross'));
@@ -86,7 +105,7 @@
     var row=byId('lockBeerVariance');
     if(!row){row=document.createElement('div');row.id='lockBeerVariance';row.className='lock-beer-variance';panel.appendChild(row)}
     row.className='lock-beer-variance '+stat.cls;
-    row.innerHTML='<span>Variance</span><strong>'+stat.text+'</strong><small>Saved only with Save & Finish</small>';
+    row.innerHTML='<span>Variance</span><strong>'+stat.text+'</strong>';
   }
   function renderVarianceStats(){
     var card=byId('beerChartCard');if(!card)return;
@@ -100,9 +119,9 @@
     var rows=history(),changed=false;rows.forEach(function(r){if(r.game==='deathbox'&&r.difficulty==='hard'&&r.penaltySeconds){r.estimated=Math.max(0,Number(r.penaltySeconds)/18);changed=true}});if(changed)saveHistory(rows)
   }
   function hookSaves(){
-    try{if(typeof socket==='undefined'||!socket||socket.datasetFinalBeer)return;socket.datasetFinalBeer='1';socket.on('gameFinished',upsertCurrent);socket.on('roomState',function(){setTimeout(function(){enforceGameControls();updateBeerPanel();renderVarianceStats();removeAsshole()},40)});socket.on('roomJoined',function(){manualBeers=0;setTimeout(function(){enforceGameControls();updateBeerPanel()},80)});socket.on('leftGame',function(){manualBeers=0;setTimeout(updateBeerPanel,80)})}catch(e){}
+    try{if(typeof socket==='undefined'||!socket||socket.datasetFinalBeer)return;socket.datasetFinalBeer='1';socket.on('gameFinished',upsertCurrent);socket.on('roomState',function(){setTimeout(function(){enforceGameControls();enhanceTurnbar();updateBeerPanel();renderVarianceStats();removeAsshole()},40)});socket.on('roomJoined',function(){manualBeers=0;setTimeout(function(){enforceGameControls();enhanceTurnbar();updateBeerPanel()},80)});socket.on('leftGame',function(){manualBeers=0;setTimeout(updateBeerPanel,80)})}catch(e){}
   }
-  function polish(){removeAsshole();enforceGameControls();updateDifficultyLabels();enhanceProfileClose();attachBeerPanel();updateBeerPanel();renderVarianceStats();correctSavedHardGames();hookSaves()}
+  function polish(){removeAsshole();enforceGameControls();enhanceTurnbar();updateDifficultyLabels();enhanceProfileClose();attachBeerPanel();updateBeerPanel();renderVarianceStats();correctSavedHardGames();hookSaves()}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',polish);else polish();
   setInterval(polish,200);
 }());
