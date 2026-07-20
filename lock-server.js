@@ -28,7 +28,7 @@ const replacement=`function sendApp(req,res){
    .replace('🥇 Hard · 1.1 sec per count','🥇 Hard · 18 sec beer · 1.0 sec/count')
    .replace('Asshole - locked for rebuild','')
    .replace('Asshole is locked while it gets rebuilt.','');
-  const assets='<link rel="stylesheet" href="/lock-mode.css?v=beer-layout-2"><link rel="stylesheet" href="/final-fixes.css?v=beer-layout-2"><script defer src="/lock-mode.js?v=beer-layout-2"></script><script defer src="/final-fixes.js?v=beer-layout-2"></script>';
+  const assets='<link rel="stylesheet" href="/lock-mode.css?v=lock-reveal-1"><link rel="stylesheet" href="/final-fixes.css?v=lock-reveal-1"><script defer src="/lock-mode.js?v=lock-reveal-1"></script><script defer src="/final-fixes.js?v=lock-reveal-1"></script>';
   res.type('html').send(html.replace('</body>',assets+'</body>'));
  });
 }
