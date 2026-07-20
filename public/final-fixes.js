@@ -23,6 +23,16 @@
   function gameKey(room){return room&&(room.gameId||room.code)||''}
   function currentManual(){var el=byId('lockManualBeer');return Math.max(0,Number(el&&el.textContent)||manualBeers||0)}
   function removeAsshole(){var select=byId('gameInput');if(!select)return;var opt=select.querySelector('option[value="asshole"]');if(opt)opt.remove();if(select.value==='asshole'){select.value='deathbox';select.dispatchEvent(new Event('change',{bubbles:true}))}var cfg=byId('assholeConfig');if(cfg)cfg.classList.add('hidden')}
+  function enforceGameControls(){
+    var s=getState(),dir=byId('directionChoices'),colors=byId('colorChoices'),shuffle=byId('shuffleWrap');
+    if(!dir||!colors||!s)return;
+    var lethal=s.game==='lethalcross';
+    var colorPhase=lethal&&s.phase!=='outside';
+    dir.classList.toggle('hidden',colorPhase);
+    colors.classList.toggle('hidden',!colorPhase);
+    if(!lethal){colors.classList.add('hidden');dir.classList.remove('hidden')}
+    if(shuffle)shuffle.classList.toggle('hidden',!s.shuffleReady||!s.started);
+  }
   function ensureBeerLockPanel(){
     var panel=byId('lockBeerPanel');
     if(panel)return panel;
@@ -89,9 +99,9 @@
     var rows=history(),changed=false;rows.forEach(function(r){if(r.game==='deathbox'&&r.difficulty==='hard'&&r.penaltySeconds){r.estimated=Math.max(0,Number(r.penaltySeconds)/18);changed=true}});if(changed)saveHistory(rows)
   }
   function hookSaves(){
-    try{if(typeof socket==='undefined'||!socket||socket.datasetFinalBeer)return;socket.datasetFinalBeer='1';socket.on('gameFinished',upsertCurrent);socket.on('roomState',function(){setTimeout(function(){updateBeerPanel();renderVarianceStats();removeAsshole()},40)});socket.on('roomJoined',function(){manualBeers=0;setTimeout(updateBeerPanel,80)});socket.on('leftGame',function(){manualBeers=0;setTimeout(updateBeerPanel,80)})}catch(e){}
+    try{if(typeof socket==='undefined'||!socket||socket.datasetFinalBeer)return;socket.datasetFinalBeer='1';socket.on('gameFinished',upsertCurrent);socket.on('roomState',function(){setTimeout(function(){enforceGameControls();updateBeerPanel();renderVarianceStats();removeAsshole()},40)});socket.on('roomJoined',function(){manualBeers=0;setTimeout(function(){enforceGameControls();updateBeerPanel()},80)});socket.on('leftGame',function(){manualBeers=0;setTimeout(updateBeerPanel,80)})}catch(e){}
   }
-  function polish(){removeAsshole();updateDifficultyLabels();enhanceProfileClose();attachBeerPanel();updateBeerPanel();renderVarianceStats();correctSavedHardGames();hookSaves()}
+  function polish(){removeAsshole();enforceGameControls();updateDifficultyLabels();enhanceProfileClose();attachBeerPanel();updateBeerPanel();renderVarianceStats();correctSavedHardGames();hookSaves()}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',polish);else polish();
   setInterval(polish,500);
 }());
