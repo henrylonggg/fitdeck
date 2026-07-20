@@ -30,7 +30,7 @@ const replacement=`function sendApp(req,res){
    .replace('🥇 Hard · 1.1 sec per count','🥇 Hard · 18 sec beer · 1.0 sec/count')
    .replace('Asshole - locked for rebuild','')
    .replace('Asshole is locked while it gets rebuilt.','');
-  const assets='<link rel="stylesheet" href="/lock-mode.css?v=controls-1"><link rel="stylesheet" href="/final-fixes.css?v=controls-1"><script defer src="/lock-mode.js?v=controls-1"></script><script defer src="/final-fixes.js?v=controls-1"></script>';
+  const assets='<link rel="stylesheet" href="/lock-mode.css?v=controls-2"><link rel="stylesheet" href="/final-fixes.css?v=controls-2"><script defer src="/lock-mode.js?v=controls-2"></script><script defer src="/final-fixes.js?v=controls-2"></script>';
   res.type('html').send(html.replace('</body>',assets+'</body>'));
  });
 }
