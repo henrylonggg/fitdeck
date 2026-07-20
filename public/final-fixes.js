@@ -22,33 +22,7 @@
   function saveHistory(rows){window.__deathboxAllowBeerSave=true;try{localStorage.setItem(BEER_KEY,JSON.stringify(rows.slice(-160)))}finally{setTimeout(function(){window.__deathboxAllowBeerSave=false},0)}}
   function gameKey(room){return room&&(room.gameId||room.code)||''}
   function currentManual(){var el=byId('lockManualBeer');return Math.max(0,Number(el&&el.textContent)||manualBeers||0)}
-  function isAssholeVisible(){var el=byId('assholeGame');return !!(el&&!el.classList.contains('hidden'))}
-  function forceOptionUsable(opt){if(!opt)return;opt.disabled=false;opt.removeAttribute('disabled');opt.hidden=false;opt.removeAttribute('hidden');opt.textContent='Asshole · online or CPUs'}
-  function unlockAsshole(){
-    var select=byId('gameInput');if(!select)return;
-    var opt=select.querySelector('option[value="asshole"]');
-    if(!opt){opt=document.createElement('option');opt.value='asshole';select.appendChild(opt)}
-    forceOptionUsable(opt);
-    if(select.value==='asshole'){
-      var cfg=byId('assholeConfig'),diff=byId('difficultyField'),note=byId('assholeModeNote'),mode=byId('assholeMode'),ai=byId('assholeAiCountField'),submit=byId('roomSubmit');
-      if(cfg)cfg.classList.remove('hidden');
-      if(diff)diff.classList.add('hidden');
-      if(ai)ai.classList.toggle('hidden',mode&&mode.value==='online');
-      if(note)note.textContent=(mode&&mode.value==='online')?'Online games require at least 4 players and award placement-based XP when completed naturally.':'CPU games are practice-only and award no XP.';
-      if(submit)submit.textContent=(mode&&mode.value==='online')?'Create Online Room':'Start CPU Game';
-    }
-  }
-  function installAssholeDropdownGuard(){
-    if(window.__assholeDropdownGuard)return;window.__assholeDropdownGuard=true;
-    try{
-      var desc=Object.getOwnPropertyDescriptor(HTMLOptionElement.prototype,'disabled');
-      if(desc&&desc.configurable){
-        Object.defineProperty(HTMLOptionElement.prototype,'disabled',{configurable:true,get:function(){return desc.get?desc.get.call(this):this.hasAttribute('disabled')},set:function(v){if(this&&this.value==='asshole')v=false;return desc.set?desc.set.call(this,!!v):(v?this.setAttribute('disabled',''):this.removeAttribute('disabled'))}});
-      }
-    }catch(e){}
-    document.addEventListener('change',function(e){if(e.target&&e.target.id==='gameInput')setTimeout(unlockAsshole,0)},true);
-  }
-  installAssholeDropdownGuard();
+  function removeAsshole(){var select=byId('gameInput');if(!select)return;var opt=select.querySelector('option[value="asshole"]');if(opt)opt.remove();if(select.value==='asshole'){select.value='deathbox';select.dispatchEvent(new Event('change',{bubbles:true}))}var cfg=byId('assholeConfig');if(cfg)cfg.classList.add('hidden')}
   function ensureBeerLockPanel(){
     var panel=byId('lockBeerPanel');
     if(panel)return panel;
@@ -87,14 +61,14 @@
     if(title&&!title.dataset.finalCollapse){title.dataset.finalCollapse='1';title.onclick=function(e){e.preventDefault();e.stopPropagation();setOpen(details.classList.contains('hidden'))}}
   }
   function attachBeerPanel(){
-    var panel=ensureBeerLockPanel(),board=isAssholeVisible()?document.querySelector('#assholeGame .asshole-table'):document.querySelector('#gameSection .board-panel');
+    var panel=ensureBeerLockPanel(),board=document.querySelector('#gameSection .board-panel');
     if(panel&&board&&panel.parentElement!==board)board.insertBefore(panel,board.firstChild);
   }
   function beerStatus(actual,estimated){var variance=actual-estimated;if(variance>=0)return {text:'On pace +' + variance.toFixed(1),cls:'ahead'};return {text:'Behind ' + Math.abs(variance).toFixed(1),cls:'behind'}}
   function updateBeerPanel(){
     var s=getState(),p=getPlayer(),panel=ensureBeerLockPanel();
     attachBeerPanel();
-    var active=Boolean((s&&s.gameId&&(s.game==='deathbox'||s.game==='lethalcross'))||isAssholeVisible());
+    var active=Boolean(s&&s.gameId&&(s.game==='deathbox'||s.game==='lethalcross'));
     panel.classList.toggle('available',active);
     var est=(s&&p)?estimatedBeers(s,p):0,actual=currentManual(),stat=beerStatus(actual,est);
     var estEl=byId('lockEstimatedBeer'),manualEl=byId('lockManualBeer');if(estEl)estEl.textContent=est.toFixed(1);if(manualEl)manualEl.textContent=String(actual);
@@ -115,9 +89,9 @@
     var rows=history(),changed=false;rows.forEach(function(r){if(r.game==='deathbox'&&r.difficulty==='hard'&&r.penaltySeconds){r.estimated=Math.max(0,Number(r.penaltySeconds)/18);changed=true}});if(changed)saveHistory(rows)
   }
   function hookSaves(){
-    try{if(typeof socket==='undefined'||!socket||socket.datasetFinalBeer)return;socket.datasetFinalBeer='1';socket.on('gameFinished',upsertCurrent);socket.on('roomState',function(){setTimeout(function(){updateBeerPanel();renderVarianceStats();unlockAsshole()},40)});socket.on('roomJoined',function(){manualBeers=0;setTimeout(updateBeerPanel,80)});socket.on('leftGame',function(){manualBeers=0;setTimeout(updateBeerPanel,80)})}catch(e){}
+    try{if(typeof socket==='undefined'||!socket||socket.datasetFinalBeer)return;socket.datasetFinalBeer='1';socket.on('gameFinished',upsertCurrent);socket.on('roomState',function(){setTimeout(function(){updateBeerPanel();renderVarianceStats();removeAsshole()},40)});socket.on('roomJoined',function(){manualBeers=0;setTimeout(updateBeerPanel,80)});socket.on('leftGame',function(){manualBeers=0;setTimeout(updateBeerPanel,80)})}catch(e){}
   }
-  function polish(){unlockAsshole();updateDifficultyLabels();enhanceProfileClose();attachBeerPanel();updateBeerPanel();renderVarianceStats();correctSavedHardGames();hookSaves()}
+  function polish(){removeAsshole();updateDifficultyLabels();enhanceProfileClose();attachBeerPanel();updateBeerPanel();renderVarianceStats();correctSavedHardGames();hookSaves()}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',polish);else polish();
-  setInterval(polish,250);
+  setInterval(polish,500);
 }());
