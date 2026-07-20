@@ -7,6 +7,8 @@ let source=fs.readFileSync(file,'utf8');
 source=source.replace("const express=require('express');const http=require('http');const path=require('path');const crypto=require('crypto');","const express=require('express');const http=require('http');const path=require('path');const fs=require('fs');const crypto=require('crypto');");
 source=source.replace("app.use(express.static(path.join(__dirname,'public')));","app.use(express.static(path.join(__dirname,'public'),{index:false,setHeaders:(res)=>res.setHeader('Cache-Control','no-store')}));");
 source=source.replace("const modeSeconds={easy:.4,normal:.8,hard:1.1};","const modeSeconds={easy:.4,normal:.8,hard:1};");
+source=source.replace("function enterLethalFinal(r){\n if(r.finalColorMode)return;\n const outside=[0,1,3,4],pool=[...r.deck];\n for(const i of outside){pool.push(...r.piles[i]);r.piles[i]=[]}\n r.deck=shuffle(pool);r.finalColorMode=true;r.finalTurnsRemaining=r.deck.length;r.phase='finalColor';r.outsideCorrect=0;r.streak=0;r.selected=null;r.shuffleReady=false;\n r.result=`Final color round unlocked at 44 center cards. ${r.deck.length} color calls remain — one guess per player turn.`;\n}","function enterLethalFinal(r){\n if(r.finalColorMode)return;\n const outside=[0,1,3,4],pool=[...r.deck];\n for(const i of outside){pool.push(...r.piles[i]);r.piles[i]=[]}\n r.deck=shuffle(pool);r.finalColorMode=true;r.finalTurnsRemaining=r.deck.length;r.phase='finalColor';r.outsideCorrect=0;r.streak=0;r.selected=null;r.shuffleReady=false;\n r.result=`Final color round unlocked. Outside piles cleared, center stayed secured, and ${r.deck.length} remaining cards will be called by color.`;\n}");
+source=source.replace("if(!r.naturalComplete&&!r.finalColorMode&&(r.piles[2]?.length||0)>=44){\n  enterLethalFinal(r);\n  if(r.reveal){r.reveal.nextTurn=true;r.reveal.reason='final-center'}\n }","const lethalRemaining=(r.deck?.length||0)+(r.piles?.[0]?.length||0)+(r.piles?.[1]?.length||0)+(r.piles?.[3]?.length||0)+(r.piles?.[4]?.length||0);\n if(!r.naturalComplete&&!r.finalColorMode&&lethalRemaining<=8){\n  enterLethalFinal(r);\n  if(r.reveal){r.reveal.nextTurn=true;r.reveal.reason='final-center'}\n }");
 const original="app.get('/health',async(_q,res)=>{try{res.json({ok:true,storage:storageMode,rooms:await roomCount()})}catch(e){res.status(503).json({ok:false,error:e.message})}});app.get('*',(_q,res)=>res.sendFile(path.join(__dirname,'public','index.html')));";
 const replacement=`function sendApp(req,res){
  fs.readFile(path.join(__dirname,'public','index.html'),'utf8',(err,html)=>{
@@ -28,7 +30,7 @@ const replacement=`function sendApp(req,res){
    .replace('🥇 Hard · 1.1 sec per count','🥇 Hard · 18 sec beer · 1.0 sec/count')
    .replace('Asshole - locked for rebuild','')
    .replace('Asshole is locked while it gets rebuilt.','');
-  const assets='<link rel="stylesheet" href="/lock-mode.css?v=lock-reveal-1"><link rel="stylesheet" href="/final-fixes.css?v=lock-reveal-1"><script defer src="/lock-mode.js?v=lock-reveal-1"></script><script defer src="/final-fixes.js?v=lock-reveal-1"></script>';
+  const assets='<link rel="stylesheet" href="/lock-mode.css?v=controls-1"><link rel="stylesheet" href="/final-fixes.css?v=controls-1"><script defer src="/lock-mode.js?v=controls-1"></script><script defer src="/final-fixes.js?v=controls-1"></script>';
   res.type('html').send(html.replace('</body>',assets+'</body>'));
  });
 }
