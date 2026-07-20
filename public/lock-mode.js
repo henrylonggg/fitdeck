@@ -11,11 +11,14 @@
     }
     return '';
   }
-  function label(game){return locked&&lockedGame===game?'Unlock screen':'Lock screen'}
+  function label(game){return locked&&lockedGame===game?'🔓':'🔒'}
+  function ariaLabel(game){return locked&&lockedGame===game?'Unlock screen':'Lock screen'}
   function refreshButtons(){
     document.querySelectorAll('[data-game-lock]').forEach(function(b){
       var game=b.dataset.gameLock;
       b.textContent=label(game);
+      b.title=ariaLabel(game);
+      b.setAttribute('aria-label',ariaLabel(game));
       b.classList.toggle('on',locked&&lockedGame===game);
       b.setAttribute('aria-pressed',String(locked&&lockedGame===game));
     });
