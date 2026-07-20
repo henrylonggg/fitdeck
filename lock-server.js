@@ -18,11 +18,14 @@ const replacement=`function sendApp(req,res){
   html=html.split('<script defer src="/lock-mode.js"></script>').join('');
   html=html.split('<script defer src="/interface-polish.js"></script>').join('');
   html=html.split('<script defer src="/final-fixes.js"></script>').join('');
+  html=html.replace('<option value="asshole">Asshole · online or AI</option>','');
+  html=html.replace('<option value="asshole">Asshole · online or CPUs</option>','');
+  html=html.replace('<option value="asshole" disabled="">Asshole - locked for rebuild</option>','');
+  html=html.replace('<option value="asshole" disabled>Asshole - locked for rebuild</option>','');
   html=html.replace('const drinkBase={easy:40,normal:30,hard:18};','const drinkBase={easy:45,normal:22.5,hard:18};')
    .replace('🥉 Easy · 0.4 sec per count','🥉 Easy · 45 sec beer · 0.4 sec/count')
    .replace('🥈 Normal · 0.8 sec per count','🥈 Normal · 22.5 sec beer · 0.8 sec/count')
    .replace('🥇 Hard · 1.1 sec per count','🥇 Hard · 18 sec beer · 1.0 sec/count')
-   .replace('Asshole · online or AI','Asshole · online or CPUs')
    .replace('Against AI','Against CPUs')
    .replace('AI opponents','CPU opponents')
    .replace('3 AI · 4 players total','3 CPUs · 4 players total')
@@ -35,8 +38,8 @@ const replacement=`function sendApp(req,res){
    .replace('Asshole is locked while it gets rebuilt.','');
   html=html.replace('function ahSort(h){return h.sort((a,b)=>a.value-b.value||a.suit.localeCompare(b.suit))}','function ahCardPower(c,count=1){try{return ahEffective(c,count)}catch(e){return c.value}}function ahSort(h){return h.sort((a,b)=>ahCardPower(a,1)-ahCardPower(b,1)||a.suit.localeCompare(b.suit))}');
   html=html.replace('function ahBest(hand,n){return [...hand].sort((a,b)=>b.value-a.value).slice(0,n)}function ahWorst(hand,n){return [...hand].sort((a,b)=>a.value-b.value).slice(0,n)}','function ahBest(hand,n){return [...hand].sort((a,b)=>ahCardPower(b,1)-ahCardPower(a,1)||b.value-a.value).slice(0,n)}function ahWorst(hand,n){return [...hand].sort((a,b)=>ahCardPower(a,1)-ahCardPower(b,1)||a.value-b.value).slice(0,n)}');
-  const early='<script>window.__forceAssholeUnlocked=function(){var s=document.getElementById("gameInput");if(!s)return;var o=s.querySelector("option[value=asshole]");if(!o){o=document.createElement("option");o.value="asshole";s.appendChild(o)}o.disabled=false;o.removeAttribute("disabled");o.hidden=false;o.textContent="Asshole · online or CPUs"};document.addEventListener("DOMContentLoaded",function(){window.__forceAssholeUnlocked();setInterval(window.__forceAssholeUnlocked,60)});</script>';
-  const assets='<link rel="stylesheet" href="/lock-mode.css?v=asshole-unlocked-3"><link rel="stylesheet" href="/final-fixes.css?v=asshole-unlocked-3"><script defer src="/lock-mode.js?v=asshole-unlocked-3"></script><script defer src="/final-fixes.js?v=asshole-unlocked-3"></script>';
+  const early='<script>window.__forceAssholeUnlocked=function(){var s=document.getElementById("gameInput");if(!s)return;var o=s.querySelector("option[value=asshole]");if(!o){o=document.createElement("option");o.value="asshole";o.setAttribute("data-clean-asshole","1");s.appendChild(o)}o.disabled=false;o.removeAttribute("disabled");o.hidden=false;o.textContent="Asshole · online or CPUs"};document.addEventListener("DOMContentLoaded",function(){window.__forceAssholeUnlocked();setInterval(window.__forceAssholeUnlocked,60)});</script>';
+  const assets='<link rel="stylesheet" href="/lock-mode.css?v=asshole-reset-1"><link rel="stylesheet" href="/final-fixes.css?v=asshole-reset-1"><script defer src="/lock-mode.js?v=asshole-reset-1"></script><script defer src="/final-fixes.js?v=asshole-reset-1"></script>';
   res.type('html').send(html.replace('</body>',early+assets+'</body>'));
  });
 }
