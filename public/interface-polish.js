@@ -170,15 +170,15 @@
   }
   function updateBeerPanel(store){
     var snap=rememberSnapshot(),panel=ensureBeerLockPanel();
-    var show=Boolean(state&&state.gameId&&(state.game==='deathbox'||state.game==='lethalcross'));
+    var assholeVisible=Boolean(byId('assholeGame')&&!byId('assholeGame').classList.contains('hidden'));
+    var show=Boolean((state&&state.gameId&&(state.game==='deathbox'||state.game==='lethalcross'))||assholeVisible);
     panel.classList.toggle('available',show);
     if(!show)return;
-    var key=gameKey(state),saved=beerHistory().find(function(r){return r.id===key});
+    var key=gameKey(state||{}),saved=beerHistory().find(function(r){return r.id===key});
     if(!store&&saved&&manualBeers===0)manualBeers=Math.max(0,Number(saved.actual)||0);
     var est=snap?Number(snap.estimated)||0:0;
     byId('lockEstimatedBeer').textContent=est.toFixed(1);
     byId('lockManualBeer').textContent=String(manualBeers);
-    if(store&&snap)storeSnapshot({id:snap.id,game:snap.game,difficulty:snap.difficulty,at:Date.now(),actual:manualBeers,estimated:est});
   }
   function hookSocket(){
     if(hookedSocket)return;
@@ -187,22 +187,17 @@
     socket.on('roomState',function(){setTimeout(function(){updateBeerPanel(false);renderBeerChart()},30)});
     socket.on('roomJoined',function(){manualBeers=0;setTimeout(function(){updateBeerPanel(false);renderBeerChart()},60)});
     socket.on('gameFinished',function(){storeSnapshot(lastSnapshot||currentSnapshot());manualBeers=0;setTimeout(renderBeerChart,80)});
-    socket.on('leftGame',function(){storeSnapshot(lastSnapshot||currentSnapshot());manualBeers=0;setTimeout(renderBeerChart,80)});
+    socket.on('leftGame',function(){manualBeers=0;setTimeout(renderBeerChart,80)});
     socket.on('profileReady',function(){setTimeout(function(){ensureBeerChart();renderBeerChart()},120)});
   }
-  function forceAssholeLocked(){
+  function keepAssholeUnlocked(){
     var select=byId('gameInput');
     if(!select)return;
     var opt=select.querySelector('option[value="asshole"]');
-    if(opt){opt.disabled=true;opt.textContent='Asshole - locked for rebuild'}
-    if(select.value==='asshole'){
-      select.value='deathbox';
-      select.dispatchEvent(new Event('change',{bubbles:true}));
-      showErrorSoft('Asshole is locked while it gets rebuilt.');
-    }
+    if(opt){opt.disabled=false;opt.textContent='Asshole · online or AI'}
   }
   function polish(){
-    ensureProfileButton();moveCustomize();wrapExistingTabs();forceAssholeLocked();ensureBeerChart();updateBeerPanel(false);renderBeerChart();hookSocket();
+    ensureProfileButton();moveCustomize();wrapExistingTabs();keepAssholeUnlocked();ensureBeerChart();updateBeerPanel(false);renderBeerChart();hookSocket();
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',polish);else polish();
   document.addEventListener('click',function(e){if(e.target&&e.target.matches('[data-profile-tab="customize"]'))openCustomize()});
