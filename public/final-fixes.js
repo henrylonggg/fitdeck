@@ -22,7 +22,7 @@
   function gameKey(room){return room&&(room.gameId||room.code)||''}
   function currentManual(){var el=byId('lockManualBeer');return Math.max(0,Number(el&&el.textContent)||0)}
   function isAssholeVisible(){var el=byId('assholeGame');return !!(el&&!el.classList.contains('hidden'))}
-  function forceOptionUsable(opt){if(!opt)return;opt.disabled=false;opt.removeAttribute('disabled');opt.hidden=false;opt.removeAttribute('hidden');opt.textContent='Asshole · online or AI'}
+  function forceOptionUsable(opt){if(!opt)return;opt.disabled=false;opt.removeAttribute('disabled');opt.hidden=false;opt.removeAttribute('hidden');opt.textContent='Asshole · online or CPUs'}
   function unlockAsshole(){
     var select=byId('gameInput');if(!select)return;
     var opt=select.querySelector('option[value="asshole"]');
@@ -33,8 +33,8 @@
       if(cfg)cfg.classList.remove('hidden');
       if(diff)diff.classList.add('hidden');
       if(ai)ai.classList.toggle('hidden',mode&&mode.value==='online');
-      if(note)note.textContent=(mode&&mode.value==='online')?'Online games require at least 4 players and award placement-based XP when completed naturally.':'AI games are practice-only and award no XP.';
-      if(submit)submit.textContent=(mode&&mode.value==='online')?'Create Online Room':'Start AI Game';
+      if(note)note.textContent=(mode&&mode.value==='online')?'Online games require at least 4 players and award placement-based XP when completed naturally.':'CPU games are practice-only and award no XP.';
+      if(submit)submit.textContent=(mode&&mode.value==='online')?'Create Online Room':'Start CPU Game';
     }
   }
   function installAssholeDropdownGuard(){
