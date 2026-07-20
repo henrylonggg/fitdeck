@@ -9,7 +9,7 @@
   },
   "scripts": {
     "start": "node lock-server.js",
-    "check": "node --check server.js && node --check lock-server.js && node --check public/lock-mode.js"
+    "check": "node --check server.js && node --check lock-server.js && node --check public/lock-mode.js && node --check public/interface-polish.js && node --check public/final-fixes.js"
   },
   "dependencies": {
     "@socket.io/redis-adapter": "^8.3.0",
@@ -18,4 +18,3 @@
     "socket.io": "^4.8.1"
   }
 }
-
