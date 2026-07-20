@@ -10,20 +10,20 @@
     if(!room||!player)return 0;
     var raw=Number(player.penalty||0);
     if(room.game==='lethalcross')return Math.max(0,raw/12);
-    var base={easy:40,normal:30,hard:18}[room.difficulty]||30;
-    return Math.max(0,(raw/base)/12);
+    var base={easy:45,normal:22.5,hard:18}[room.difficulty]||22.5;
+    return Math.max(0,raw/base);
   }
   function gameKey(room){return room&&(room.gameId||room.code)||'practice'}
   function currentSnapshot(){
     var p=myPlayer();
     if(!state||!p)return null;
-    return {id:gameKey(state),game:state.game||'deathbox',at:Date.now(),actual:manualBeers,estimated:estimatedBeersFor(state,p)};
+    return {id:gameKey(state),game:state.game||'deathbox',difficulty:state.difficulty,at:Date.now(),actual:manualBeers,estimated:estimatedBeersFor(state,p)};
   }
   function rememberSnapshot(){var snap=currentSnapshot();if(snap)lastSnapshot=snap;return snap}
   function storeSnapshot(snap){
     if(!snap||!snap.id)return;
     var rows=beerHistory(),i=rows.findIndex(function(r){return r.id===snap.id});
-    var row={id:snap.id,game:snap.game,at:Date.now(),actual:Math.max(0,Number(snap.actual)||0),estimated:Math.max(0,Number(snap.estimated)||0)};
+    var row={id:snap.id,game:snap.game,difficulty:snap.difficulty,at:Date.now(),actual:Math.max(0,Number(snap.actual)||0),estimated:Math.max(0,Number(snap.estimated)||0)};
     if(i>=0)rows[i]=row;else rows.push(row);
     saveBeerHistory(rows);
   }
@@ -178,7 +178,7 @@
     var est=snap?Number(snap.estimated)||0:0;
     byId('lockEstimatedBeer').textContent=est.toFixed(1);
     byId('lockManualBeer').textContent=String(manualBeers);
-    if(store&&snap)storeSnapshot({id:snap.id,game:snap.game,at:Date.now(),actual:manualBeers,estimated:est});
+    if(store&&snap)storeSnapshot({id:snap.id,game:snap.game,difficulty:snap.difficulty,at:Date.now(),actual:manualBeers,estimated:est});
   }
   function hookSocket(){
     if(hookedSocket)return;
