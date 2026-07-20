@@ -77,8 +77,50 @@
     }
     if(!row.querySelector('[data-game-lock]'))row.appendChild(button('asshole'));
   }
+  function lockAssholeChoice(){
+    var select=byId('gameInput');
+    if(!select)return;
+    var option=select.querySelector('option[value="asshole"]');
+    if(option){
+      option.disabled=true;
+      option.className='locked-game-option';
+      option.textContent='Asshole - locked for rebuild';
+    }
+    if(select.value==='asshole'){
+      select.value='deathbox';
+      select.dispatchEvent(new Event('change',{bubbles:true}));
+      if(typeof showError==='function')showError('Asshole is locked while it gets rebuilt. DeathBox and Lethal Cross are ready.');
+    }
+    var config=byId('assholeConfig');
+    if(config){
+      config.classList.add('hidden');
+      if(!config.querySelector('.game-locked-note')){
+        var note=document.createElement('div');
+        note.className='game-locked-note';
+        note.textContent='Asshole is temporarily locked while the gameplay and layout are rebuilt.';
+        config.insertBefore(note,config.firstChild);
+      }
+    }
+  }
+  function blockAssholeSubmit(){
+    var form=byId('roomForm');
+    if(!form||form.dataset.assholeLocked)return;
+    form.dataset.assholeLocked='1';
+    form.addEventListener('submit',function(e){
+      var select=byId('gameInput');
+      if(select&&select.value==='asshole'){
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        select.value='deathbox';
+        select.dispatchEvent(new Event('change',{bubbles:true}));
+        if(typeof showError==='function')showError('Asshole is locked for now. Start DeathBox or Lethal Cross.');
+      }
+    },true);
+  }
   function enforce(){
     var game=activeGame();
+    lockAssholeChoice();
+    blockAssholeSubmit();
     mountMain();
     mountAsshole();
     if(locked&&(!game||game!==lockedGame))release();
