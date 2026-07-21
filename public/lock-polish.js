@@ -4,7 +4,7 @@
   function stateSafe(){try{return state}catch(e){return null}}
   function myIdSafe(){try{return myId}catch(e){return null}}
   function player(){var s=stateSafe(),id=myIdSafe();return s&&s.players&&s.players.find(function(p){return p.id===id})}
-  function beerBase(game,difficulty){return game==='lethalcross'?12:({easy:45,normal:22.5,hard:18}[difficulty]||22.5)}
+  function beerBase(game,difficulty){return ({easy:45,normal:22.5,hard:18}[difficulty]||22.5)}
   function estimate(){var s=stateSafe(),p=player();return s&&p?Math.max(0,(Number(p.penalty)||0)/beerBase(s.game,s.difficulty)):0}
   function safe(txt){return String(txt||'').replace(/[&<>]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c]})}
   function currentIndex(s){if(!s||!s.players||!s.players.length)return -1;var id=s.currentPlayerId||(s.players[s.turn]&&s.players[s.turn].id);var i=s.players.findIndex(function(p){return p.id===id});return i>=0?i:(Number.isInteger(s.turn)?s.turn:-1)}
