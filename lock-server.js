@@ -49,7 +49,7 @@ const replacement=`function sendApp(req,res){
    .replace('<option value="asshole">Asshole · online or CPUs</option>','')
    .replace('<option value="asshole" disabled="">Asshole - locked for rebuild</option>','')
    .replace('<option value="asshole" disabled>Asshole - locked for rebuild</option>','');
-  const v='absolute-final-1';
+  const v='lc-logo-1';
   const assets='<link rel="stylesheet" href="/final-fixes.css?v='+v+'"><script defer src="/final-fixes.js?v='+v+'"></script><script defer src="/home-nav-polish.js?v='+v+'"></script><script defer src="/home-auth-guard.js?v='+v+'"></script><script defer src="/game-flow-polish.js?v='+v+'"></script><script defer src="/nav-popup-final.js?v='+v+'"></script><script defer src="/home-profile-stats-upgrade.js?v='+v+'"></script><script defer src="/create-room-lobby-fix.js?v='+v+'"></script><script defer src="/logo-branding-fix.js?v='+v+'"></script><script defer src="/lobby-game-launch-fix.js?v='+v+'"></script><script defer src="/game-selection-hard-fix.js?v='+v+'"></script><script defer src="/no-lock-beer-controls.js?v='+v+'"></script><script defer src="/home-game-exit-prompt.js?v='+v+'"></script><script defer src="/game-home-logo-stats-final.js?v='+v+'"></script><script defer src="/absolute-final-fix.js?v='+v+'"></script>';
   res.type('html').send(html.replace('</body>',assets+'</body>'));
  });
