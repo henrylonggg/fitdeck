@@ -16,7 +16,7 @@
   function getState(){try{return state}catch(e){return null}}
   function getMyId(){try{return myId}catch(e){return null}}
   function getPlayer(){var s=getState(),id=getMyId();return s&&s.players&&s.players.find(function(p){return p.id===id})}
-  function beerBase(game,difficulty){return game==='lethalcross'?12:({easy:45,normal:22.5,hard:18}[difficulty]||22.5)}
+  function beerBase(game,difficulty){return ({easy:45,normal:22.5,hard:18}[difficulty]||22.5)}
   function estimatedBeers(room,player){if(!room||!player)return 0;return Math.max(0,(Number(player.penalty)||0)/beerBase(room.game,room.difficulty))}
   function history(){try{return JSON.parse(localStorage.getItem(BEER_KEY)||'[]')}catch(e){return []}}
   function saveHistory(rows){window.__deathboxAllowBeerSave=true;try{localStorage.setItem(BEER_KEY,JSON.stringify(rows.slice(-160)))}finally{setTimeout(function(){window.__deathboxAllowBeerSave=false},0)}}
