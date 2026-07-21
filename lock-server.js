@@ -25,17 +25,14 @@ const replacement=`function sendApp(req,res){
   html=html.split('<script defer src="/home-auth-guard.js"></script>').join('');
   html=html.split('<script defer src="/game-flow-polish.js"></script>').join('');
   html=html.split('<script defer src="/lock-button-pin.js"></script>').join('');
-  html=html.replace('<option value="asshole">Asshole · online or AI</option>','');
-  html=html.replace('<option value="asshole">Asshole · online or CPUs</option>','');
-  html=html.replace('<option value="asshole" disabled="">Asshole - locked for rebuild</option>','');
-  html=html.replace('<option value="asshole" disabled>Asshole - locked for rebuild</option>','');
+  html=html.split('<script defer src="/asshole-return-polish.js"></script>').join('');
   html=html.replace('const drinkBase={easy:40,normal:30,hard:18};','const drinkBase={easy:45,normal:22.5,hard:18};')
    .replace('🥉 Easy · 0.4 sec per count','🥉 Easy · 45 sec beer · 0.4 sec/count')
    .replace('🥈 Normal · 0.8 sec per count','🥈 Normal · 22.5 sec beer · 0.8 sec/count')
    .replace('🥇 Hard · 1.1 sec per count','🥇 Hard · 18 sec beer · 1.0 sec/count')
    .replace('Asshole - locked for rebuild','')
    .replace('Asshole is locked while it gets rebuilt.','');
-  const assets='<link rel="stylesheet" href="/lock-mode.css?v=flow-2"><link rel="stylesheet" href="/final-fixes.css?v=flow-2"><script defer src="/lock-mode.js?v=flow-2"></script><script defer src="/final-fixes.js?v=flow-2"></script><script defer src="/lock-polish.js?v=flow-2"></script><script defer src="/home-nav-polish.js?v=flow-2"></script><script defer src="/home-auth-guard.js?v=flow-2"></script><script defer src="/game-flow-polish.js?v=flow-2"></script><script defer src="/lock-button-pin.js?v=flow-2"></script>';
+  const assets='<link rel="stylesheet" href="/lock-mode.css?v=asshole-1"><link rel="stylesheet" href="/final-fixes.css?v=asshole-1"><script defer src="/lock-mode.js?v=asshole-1"></script><script defer src="/final-fixes.js?v=asshole-1"></script><script defer src="/lock-polish.js?v=asshole-1"></script><script defer src="/home-nav-polish.js?v=asshole-1"></script><script defer src="/home-auth-guard.js?v=asshole-1"></script><script defer src="/game-flow-polish.js?v=asshole-1"></script><script defer src="/lock-button-pin.js?v=asshole-1"></script><script defer src="/asshole-return-polish.js?v=asshole-1"></script>';
   res.type('html').send(html.replace('</body>',assets+'</body>'));
  });
 }
