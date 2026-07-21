@@ -31,7 +31,7 @@ const replacement=`function sendApp(req,res){
    .replace('🥉 Easy · 0.4 sec per count','🥉 Easy · 45 sec beer · 0.4 sec/count')
    .replace('🥈 Normal · 0.8 sec per count','🥈 Normal · 22.5 sec beer · 0.8 sec/count')
    .replace('🥇 Hard · 1.1 sec per count','🥇 Hard · 18 sec beer · 1.0 sec/count')
-   .replace('const speed={easy:400,normal:800,hard:1100}[$(\'assholeTimerDifficulty\')?.value]||800;','const speed={easy:400,normal:800,hard:1000}[$(\'difficultyInput\')?.value]||800;')
+   .replace("const speed={easy:400,normal:800,hard:1100}[$('assholeTimerDifficulty')?.value]||800;","const speed={easy:400,normal:800,hard:1000}[$('difficultyInput')?.value]||800;")
    .replace('Asshole - locked for rebuild','')
    .replace('Asshole is locked while it gets rebuilt.','');
   const assets='<link rel="stylesheet" href="/lock-mode.css?v=asshole-2"><link rel="stylesheet" href="/final-fixes.css?v=asshole-2"><script defer src="/lock-mode.js?v=asshole-2"></script><script defer src="/final-fixes.js?v=asshole-2"></script><script defer src="/lock-polish.js?v=asshole-2"></script><script defer src="/home-nav-polish.js?v=asshole-2"></script><script defer src="/home-auth-guard.js?v=asshole-2"></script><script defer src="/game-flow-polish.js?v=asshole-2"></script><script defer src="/lock-button-pin.js?v=asshole-2"></script><script defer src="/asshole-return-polish.js?v=asshole-2"></script><script defer src="/asshole-beer-stats.js?v=asshole-2"></script>';
