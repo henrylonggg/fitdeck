@@ -2,8 +2,6 @@
   var locked=false,lockedGame='',scrollY=0;
   function byId(id){return document.getElementById(id)}
   function activeGame(){
-    var asshole=byId('assholeGame');
-    if(asshole&&!asshole.classList.contains('hidden'))return 'asshole';
     var section=byId('gameSection');
     if(section&&!section.classList.contains('hidden')){
       var board=byId('board');
@@ -92,31 +90,17 @@
     existing.dataset.gameLock=game;
     existing.onclick=function(e){e.preventDefault();e.stopPropagation();toggle(game)};
   }
-  function mountAsshole(){
-    var game=byId('assholeGame');
-    if(!game||game.classList.contains('hidden'))return;
-    var arena=game.querySelector('.asshole-arena')||game;
-    var row=game.querySelector('.asshole-lock-row');
-    if(!row){
-      row=document.createElement('div');
-      row.className='asshole-lock-row';
-      arena.insertBefore(row,arena.firstChild);
-    }
-    if(!row.querySelector('[data-game-lock]'))row.appendChild(button('asshole'));
-  }
-  function lockAssholeChoice(){
+  function eraseAsshole(){
+    document.querySelectorAll('#assholeGame,#assholeConfig,#assholeFlowModal,#ahRulesLockModal,[data-nav="asshole"],[data-home-act="asshole"],[data-game-lock="asshole"]').forEach(function(n){n.remove()});
+    document.querySelectorAll('option[value="asshole"]').forEach(function(n){n.remove()});
     var select=byId('gameInput');
-    if(!select)return;
-    var option=select.querySelector('option[value="asshole"]');
-    if(option){option.disabled=false;option.className='';option.textContent='Asshole · online or CPUs'}
+    if(select&&select.value==='asshole')select.value='deathbox';
+    if(locked&&lockedGame==='asshole')release();
   }
-  function blockAssholeSubmit(){return}
   function enforce(){
     var game=activeGame();
-    lockAssholeChoice();
-    blockAssholeSubmit();
+    eraseAsshole();
     mountMain();
-    mountAsshole();
     if(locked&&(!game||game!==lockedGame))release();
     refreshButtons();
   }
