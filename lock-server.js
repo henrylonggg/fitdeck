@@ -35,8 +35,12 @@ const replacement=`function sendApp(req,res){
    .replace('🥇 Hard · 1.1 sec per count','🥇 Hard · 18 sec beer · 1.0 sec/count')
    .replace("const speed={easy:400,normal:800,hard:1100}[$('assholeTimerDifficulty')?.value]||800;","const speed={easy:400,normal:800,hard:1000}[$('difficultyInput')?.value]||800;")
    .replace('Asshole - locked for rebuild','')
-   .replace('Asshole is locked while it gets rebuilt.','');
-  const assets='<link rel="stylesheet" href="/lock-mode.css?v=appflow-1"><link rel="stylesheet" href="/final-fixes.css?v=appflow-1"><script defer src="/lock-mode.js?v=appflow-1"></script><script defer src="/final-fixes.js?v=appflow-1"></script><script defer src="/lock-polish.js?v=appflow-1"></script><script defer src="/home-nav-polish.js?v=appflow-1"></script><script defer src="/home-auth-guard.js?v=appflow-1"></script><script defer src="/game-flow-polish.js?v=appflow-1"></script><script defer src="/lock-button-pin.js?v=appflow-1"></script><script defer src="/asshole-return-polish.js?v=appflow-1"></script><script defer src="/asshole-beer-stats.js?v=appflow-1"></script><script defer src="/asshole-lock-final.js?v=appflow-1"></script><script defer src="/nav-popup-final.js?v=appflow-1"></script>';
+   .replace('Asshole is locked while it gets rebuilt.','')
+   .replace('<option value="asshole">Asshole · online or AI</option>','')
+   .replace('<option value="asshole">Asshole · online or CPUs</option>','')
+   .replace('<option value="asshole" disabled="">Asshole - locked for rebuild</option>','')
+   .replace('<option value="asshole" disabled>Asshole - locked for rebuild</option>','');
+  const assets='<link rel="stylesheet" href="/lock-mode.css?v=noasshole-1"><link rel="stylesheet" href="/final-fixes.css?v=noasshole-1"><script defer src="/lock-mode.js?v=noasshole-1"></script><script defer src="/final-fixes.js?v=noasshole-1"></script><script defer src="/lock-polish.js?v=noasshole-1"></script><script defer src="/home-nav-polish.js?v=noasshole-1"></script><script defer src="/home-auth-guard.js?v=noasshole-1"></script><script defer src="/game-flow-polish.js?v=noasshole-1"></script><script defer src="/lock-button-pin.js?v=noasshole-1"></script><script defer src="/nav-popup-final.js?v=noasshole-1"></script>';
   res.type('html').send(html.replace('</body>',assets+'</body>'));
  });
 }
