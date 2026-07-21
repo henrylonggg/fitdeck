@@ -34,7 +34,7 @@ const replacement=`function sendApp(req,res){
    .replace("const speed={easy:400,normal:800,hard:1100}[$('assholeTimerDifficulty')?.value]||800;","const speed={easy:400,normal:800,hard:1000}[$('difficultyInput')?.value]||800;")
    .replace('Asshole - locked for rebuild','')
    .replace('Asshole is locked while it gets rebuilt.','');
-  const assets='<link rel="stylesheet" href="/lock-mode.css?v=unlock-1"><link rel="stylesheet" href="/final-fixes.css?v=unlock-1"><script defer src="/lock-mode.js?v=unlock-1"></script><script defer src="/final-fixes.js?v=unlock-1"></script><script defer src="/lock-polish.js?v=unlock-1"></script><script defer src="/home-nav-polish.js?v=unlock-1"></script><script defer src="/home-auth-guard.js?v=unlock-1"></script><script defer src="/game-flow-polish.js?v=unlock-1"></script><script defer src="/lock-button-pin.js?v=unlock-1"></script><script defer src="/asshole-return-polish.js?v=unlock-1"></script><script defer src="/asshole-beer-stats.js?v=unlock-1"></script>';
+  const assets='<link rel="stylesheet" href="/lock-mode.css?v=ah-rules-1"><link rel="stylesheet" href="/final-fixes.css?v=ah-rules-1"><script defer src="/lock-mode.js?v=ah-rules-1"></script><script defer src="/final-fixes.js?v=ah-rules-1"></script><script defer src="/lock-polish.js?v=ah-rules-1"></script><script defer src="/home-nav-polish.js?v=ah-rules-1"></script><script defer src="/home-auth-guard.js?v=ah-rules-1"></script><script defer src="/game-flow-polish.js?v=ah-rules-1"></script><script defer src="/lock-button-pin.js?v=ah-rules-1"></script><script defer src="/asshole-return-polish.js?v=ah-rules-1"></script><script defer src="/asshole-beer-stats.js?v=ah-rules-1"></script>';
   res.type('html').send(html.replace('</body>',assets+'</body>'));
  });
 }
