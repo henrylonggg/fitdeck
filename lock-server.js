@@ -28,6 +28,8 @@ const replacement=`function sendApp(req,res){
   html=html.split('<script defer src="/nav-popup-final.js"></script>').join('');
   html=html.split('<script defer src="/home-profile-stats-upgrade.js"></script>').join('');
   html=html.split('<script defer src="/create-room-lobby-fix.js"></script>').join('');
+  html=html.split('<script defer src="/logo-branding-fix.js"></script>').join('');
+  html=html.replace('<link rel="manifest" href="/manifest.json">','<link rel="manifest" href="/site.webmanifest">');
   html=html.replace('const drinkBase={easy:40,normal:30,hard:18};','const drinkBase={easy:45,normal:22.5,hard:18};')
    .replace('🥉 Easy · 0.4 sec per count','🥉 Easy · 45 sec beer · 0.4 sec/count')
    .replace('🥈 Normal · 0.8 sec per count','🥈 Normal · 22.5 sec beer · 0.8 sec/count')
@@ -39,7 +41,7 @@ const replacement=`function sendApp(req,res){
    .replace('<option value="asshole">Asshole · online or CPUs</option>','')
    .replace('<option value="asshole" disabled="">Asshole - locked for rebuild</option>','')
    .replace('<option value="asshole" disabled>Asshole - locked for rebuild</option>','');
-  const assets='<link rel="stylesheet" href="/lock-mode.css?v=createlobby-1"><link rel="stylesheet" href="/final-fixes.css?v=createlobby-1"><script defer src="/lock-mode.js?v=createlobby-1"></script><script defer src="/final-fixes.js?v=createlobby-1"></script><script defer src="/lock-polish.js?v=createlobby-1"></script><script defer src="/home-nav-polish.js?v=createlobby-1"></script><script defer src="/home-auth-guard.js?v=createlobby-1"></script><script defer src="/game-flow-polish.js?v=createlobby-1"></script><script defer src="/lock-button-pin.js?v=createlobby-1"></script><script defer src="/nav-popup-final.js?v=createlobby-1"></script><script defer src="/home-profile-stats-upgrade.js?v=createlobby-1"></script><script defer src="/create-room-lobby-fix.js?v=createlobby-1"></script>';
+  const assets='<link rel="stylesheet" href="/lock-mode.css?v=logosmanifest-1"><link rel="stylesheet" href="/final-fixes.css?v=logosmanifest-1"><script defer src="/lock-mode.js?v=logosmanifest-1"></script><script defer src="/final-fixes.js?v=logosmanifest-1"></script><script defer src="/lock-polish.js?v=logosmanifest-1"></script><script defer src="/home-nav-polish.js?v=logosmanifest-1"></script><script defer src="/home-auth-guard.js?v=logosmanifest-1"></script><script defer src="/game-flow-polish.js?v=logosmanifest-1"></script><script defer src="/lock-button-pin.js?v=logosmanifest-1"></script><script defer src="/nav-popup-final.js?v=logosmanifest-1"></script><script defer src="/home-profile-stats-upgrade.js?v=logosmanifest-1"></script><script defer src="/create-room-lobby-fix.js?v=logosmanifest-1"></script><script defer src="/logo-branding-fix.js?v=logosmanifest-1"></script>';
   res.type('html').send(html.replace('</body>',assets+'</body>'));
  });
 }
