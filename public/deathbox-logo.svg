@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 220" role="img" aria-labelledby="title desc">
+  <title id="title">DeathBox logo</title>
+  <desc id="desc">A molten red playing card box logo for DeathBox.</desc>
+  <defs>
+    <linearGradient id="lava" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#ffcf5a"/>
+      <stop offset="0.38" stop-color="#ff3d2e"/>
+      <stop offset="1" stop-color="#67000c"/>
+    </linearGradient>
+    <linearGradient id="steel" x1="0" x2="1">
+      <stop offset="0" stop-color="#f8fafc"/>
+      <stop offset="0.45" stop-color="#9ca3af"/>
+      <stop offset="1" stop-color="#f8fafc"/>
+    </linearGradient>
+    <filter id="glow" x="-30%" y="-50%" width="160%" height="200%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feColorMatrix in="blur" type="matrix" values="1 0 0 0 1 0 .18 0 0 .15 0 0 .05 0 0 0 0 0 .8 0" result="hot"/>
+      <feMerge><feMergeNode in="hot"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect width="720" height="220" rx="38" fill="#050505"/>
+  <g filter="url(#glow)">
+    <path d="M68 37h118c25 0 45 20 45 45v68c0 25-20 45-45 45H68c-25 0-45-20-45-45V82c0-25 20-45 45-45Z" fill="url(#lava)"/>
+    <path d="M66 54h112c19 0 35 16 35 35v54c0 19-16 35-35 35H66c-19 0-35-16-35-35V89c0-19 16-35 35-35Z" fill="#0a0505" stroke="#ffb157" stroke-width="5"/>
+    <path d="M75 74l37 82 18-35 18 35 38-82-38 25-18-31-18 31-37-25Z" fill="url(#lava)"/>
+    <path d="M57 173c25-9 39-6 55 0 17 6 35 9 57-2 6 15-6 25-28 27H87c-20-1-31-9-30-25Z" fill="#ffcf5a" opacity=".75"/>
+  </g>
+  <text x="260" y="105" fill="url(#steel)" font-family="Impact, Haettenschweiler, Arial Black, sans-serif" font-size="70" letter-spacing="-3">DEATH</text>
+  <text x="260" y="166" fill="url(#lava)" font-family="Impact, Haettenschweiler, Arial Black, sans-serif" font-size="70" letter-spacing="-3">BOX</text>
+  <path d="M258 181h330" stroke="#ff3d2e" stroke-width="6" stroke-linecap="round" opacity=".7"/>
+  <text x="597" y="166" fill="#f8fafc" font-family="Arial Black, sans-serif" font-size="28">LIVE</text>
+</svg>
