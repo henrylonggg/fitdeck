@@ -23,6 +23,7 @@ const replacement=`function sendApp(req,res){
   html=html.split('<script defer src="/lock-polish.js"></script>').join('');
   html=html.split('<script defer src="/home-nav-polish.js"></script>').join('');
   html=html.split('<script defer src="/home-auth-guard.js"></script>').join('');
+  html=html.split('<script defer src="/game-flow-polish.js"></script>').join('');
   html=html.replace('<option value="asshole">Asshole · online or AI</option>','');
   html=html.replace('<option value="asshole">Asshole · online or CPUs</option>','');
   html=html.replace('<option value="asshole" disabled="">Asshole - locked for rebuild</option>','');
@@ -33,7 +34,7 @@ const replacement=`function sendApp(req,res){
    .replace('🥇 Hard · 1.1 sec per count','🥇 Hard · 18 sec beer · 1.0 sec/count')
    .replace('Asshole - locked for rebuild','')
    .replace('Asshole is locked while it gets rebuilt.','');
-  const assets='<link rel="stylesheet" href="/lock-mode.css?v=home-2"><link rel="stylesheet" href="/final-fixes.css?v=home-2"><script defer src="/lock-mode.js?v=home-2"></script><script defer src="/final-fixes.js?v=home-2"></script><script defer src="/lock-polish.js?v=home-2"></script><script defer src="/home-nav-polish.js?v=home-2"></script><script defer src="/home-auth-guard.js?v=home-2"></script>';
+  const assets='<link rel="stylesheet" href="/lock-mode.css?v=flow-1"><link rel="stylesheet" href="/final-fixes.css?v=flow-1"><script defer src="/lock-mode.js?v=flow-1"></script><script defer src="/final-fixes.js?v=flow-1"></script><script defer src="/lock-polish.js?v=flow-1"></script><script defer src="/home-nav-polish.js?v=flow-1"></script><script defer src="/home-auth-guard.js?v=flow-1"></script><script defer src="/game-flow-polish.js?v=flow-1"></script>';
   res.type('html').send(html.replace('</body>',assets+'</body>'));
  });
 }
