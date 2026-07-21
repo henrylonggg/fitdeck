@@ -42,7 +42,7 @@ const replacement=`function sendApp(req,res){
    .replace('<option value="asshole">Asshole · online or CPUs</option>','')
    .replace('<option value="asshole" disabled="">Asshole - locked for rebuild</option>','')
    .replace('<option value="asshole" disabled>Asshole - locked for rebuild</option>','');
-  const v='launchfix-1';
+  const v='locklaunch-2';
   const assets='<link rel="stylesheet" href="/lock-mode.css?v='+v+'"><link rel="stylesheet" href="/final-fixes.css?v='+v+'"><script defer src="/lock-mode.js?v='+v+'"></script><script defer src="/final-fixes.js?v='+v+'"></script><script defer src="/lock-polish.js?v='+v+'"></script><script defer src="/home-nav-polish.js?v='+v+'"></script><script defer src="/home-auth-guard.js?v='+v+'"></script><script defer src="/game-flow-polish.js?v='+v+'"></script><script defer src="/lock-button-pin.js?v='+v+'"></script><script defer src="/nav-popup-final.js?v='+v+'"></script><script defer src="/home-profile-stats-upgrade.js?v='+v+'"></script><script defer src="/create-room-lobby-fix.js?v='+v+'"></script><script defer src="/logo-branding-fix.js?v='+v+'"></script><script defer src="/lobby-game-launch-fix.js?v='+v+'"></script>';
   res.type('html').send(html.replace('</body>',assets+'</body>'));
  });
