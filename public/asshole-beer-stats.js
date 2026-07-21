@@ -1,0 +1,27 @@
+(function(){
+  var actual=Number(sessionStorage.getItem('assholeActualBeerCount')||0)||0;
+  var estimate=Number(sessionStorage.getItem('assholeEstimatedBeerCount')||0)||0;
+  var lastPenaltyText='';
+  function $(id){return document.getElementById(id)}
+  function save(){sessionStorage.setItem('assholeActualBeerCount',String(actual));sessionStorage.setItem('assholeEstimatedBeerCount',String(estimate))}
+  function difficulty(){return $('difficultyInput')?.value||'normal'}
+  function countSpeedMs(){return {easy:400,normal:800,hard:1000}[difficulty()]||800}
+  function beerBase(){return {easy:45,normal:22.5,hard:18}[difficulty()]||22.5}
+  function parsePenalty(text){text=String(text||'').toLowerCase();var n=(text.match(/gets\s+(\d+)\s+drink/)||text.match(/(\d+)\s+drink/));if(n)return Number(n[1])||0;if(text.includes('finish drink'))return 10;if(text.includes('waterfall'))return 8;return 0}
+  function css(){if($('assholeBeerStatsStyle'))return;var s=document.createElement('style');s.id='assholeBeerStatsStyle';s.textContent='\
+    #ahBeerTracker{margin:8px 0 10px;padding:10px;border-radius:16px;border:1px solid rgba(241,201,105,.18);background:linear-gradient(145deg,rgba(22,17,6,.96),rgba(8,7,5,.98));display:grid;grid-template-columns:repeat(3,1fr);gap:7px;box-shadow:0 14px 32px rgba(0,0,0,.28)}\
+    #ahBeerTracker .ah-beer-cell{padding:9px 7px;border-radius:13px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.07);text-align:center}\
+    #ahBeerTracker span{display:block;font-size:7px;letter-spacing:.12em;text-transform:uppercase;color:#9d967f;font-weight:1000}#ahBeerTracker strong{display:block;margin-top:4px;font-size:18px;line-height:1;color:#fff}#ahBeerTracker .good strong{color:#57e3a0}#ahBeerTracker .bad strong{color:#ff4055}\
+    #ahBeerTracker .ah-actual-controls{display:grid;grid-template-columns:24px 1fr 24px;align-items:center;gap:4px;margin-top:4px}#ahBeerTracker button{width:24px;height:24px;border-radius:9px;border:1px solid rgba(255,255,255,.14);background:#17140d;color:#fff;font-size:15px;font-weight:1000;line-height:1;padding:0}\
+    .ah-difficulty-note{grid-column:1/-1;color:#a79b78;font-size:8px;text-align:center;font-weight:850;letter-spacing:.04em}\
+    .screen-lock-active #assholeGame #ahBeerTracker{grid-template-columns:1fr!important;position:absolute!important;left:5px!important;top:calc(48px + 6 * 38px)!important;width:102px!important;z-index:230!important;padding:6px!important;gap:4px!important;margin:0!important}.screen-lock-active #assholeGame #ahBeerTracker .ah-beer-cell{padding:5px!important}.screen-lock-active #assholeGame #ahBeerTracker span{font-size:6px!important}.screen-lock-active #assholeGame #ahBeerTracker strong{font-size:12px!important}.screen-lock-active #assholeGame #ahBeerTracker .ah-actual-controls{grid-template-columns:19px 1fr 19px!important;gap:2px!important}.screen-lock-active #assholeGame #ahBeerTracker button{width:19px!important;height:19px!important;font-size:12px!important}.screen-lock-active #assholeGame #ahBeerTracker .ah-difficulty-note{display:none!important}\
+    @media(max-width:430px){#ahBeerTracker{grid-template-columns:1fr 1fr 1fr;gap:5px;padding:7px}.screen-lock-active #assholeGame #ahBeerTracker{width:86px!important;top:calc(44px + 6 * 34px)!important}}\
+  ';document.head.appendChild(s)}
+  function tracker(){css();var board=$('assholePlayers');if(!board)return null;var t=$('ahBeerTracker');if(!t){t=document.createElement('div');t.id='ahBeerTracker';board.insertAdjacentElement('afterend',t)}return t}
+  function render(){var t=tracker();if(!t)return;var variance=actual-estimate,behind=variance<0;t.innerHTML='<div class="ah-beer-cell"><span>Estimate</span><strong>'+estimate.toFixed(1)+'</strong></div><div class="ah-beer-cell"><span>Actual</span><div class="ah-actual-controls"><button type="button" data-ah-beer="minus">−</button><strong>'+actual+'</strong><button type="button" data-ah-beer="plus">+</button></div></div><div class="ah-beer-cell '+(behind?'bad':'good')+'"><span>Variance</span><strong>'+(variance>=0?'+':'')+variance.toFixed(1)+'</strong></div><div class="ah-difficulty-note">'+difficulty().toUpperCase()+' · '+(countSpeedMs()/1000).toFixed(1)+'s count · '+beerBase()+'s beer</div>'}
+  function observePenalty(){var modal=$('ahPenaltyModal');if(!modal)return;var shown=modal.classList.contains('show'),reason=$('ahPenaltyReason')?.textContent||'';if(shown&&reason&&reason!==lastPenaltyText){lastPenaltyText=reason;estimate+=parsePenalty(reason);save();render()}if(!shown&&!reason)lastPenaltyText=''}
+  document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-ah-beer]');if(!b)return;e.preventDefault();e.stopPropagation();actual=Math.max(0,actual+(b.dataset.ahBeer==='plus'?1:-1));save();render()},true);
+  document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('#deathboxNav [data-nav="stats"]');if(!b)return;var p=$('profilePanel');if(p){p.classList.add('profile-page-only','show-profile-page');p.style.display=''}setTimeout(function(){var btn=$('profileStatsBtn');if(btn)btn.click();var d=$('profileDetails');if(d)d.classList.remove('hidden');var inst=$('instructionsPanel');if(inst)inst.classList.add('hidden');var o=$('overviewTab');if(o)o.click();( $('overviewPane')||$('profilePanel') )?.scrollIntoView({behavior:'smooth',block:'start'})},150)},true);
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',render);else render();
+  setInterval(function(){observePenalty();render()},500);
+}());
