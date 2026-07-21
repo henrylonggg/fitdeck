@@ -40,7 +40,7 @@ const replacement=`function sendApp(req,res){
    .replace('<option value="asshole">Asshole · online or CPUs</option>','')
    .replace('<option value="asshole" disabled="">Asshole - locked for rebuild</option>','')
    .replace('<option value="asshole" disabled>Asshole - locked for rebuild</option>','');
-  const assets='<link rel="stylesheet" href="/lock-mode.css?v=noasshole-1"><link rel="stylesheet" href="/final-fixes.css?v=noasshole-1"><script defer src="/lock-mode.js?v=noasshole-1"></script><script defer src="/final-fixes.js?v=noasshole-1"></script><script defer src="/lock-polish.js?v=noasshole-1"></script><script defer src="/home-nav-polish.js?v=noasshole-1"></script><script defer src="/home-auth-guard.js?v=noasshole-1"></script><script defer src="/game-flow-polish.js?v=noasshole-1"></script><script defer src="/lock-button-pin.js?v=noasshole-1"></script><script defer src="/nav-popup-final.js?v=noasshole-1"></script>';
+  const assets='<link rel="stylesheet" href="/lock-mode.css?v=navstats-1"><link rel="stylesheet" href="/final-fixes.css?v=navstats-1"><script defer src="/lock-mode.js?v=navstats-1"></script><script defer src="/final-fixes.js?v=navstats-1"></script><script defer src="/lock-polish.js?v=navstats-1"></script><script defer src="/home-nav-polish.js?v=navstats-1"></script><script defer src="/home-auth-guard.js?v=navstats-1"></script><script defer src="/game-flow-polish.js?v=navstats-1"></script><script defer src="/lock-button-pin.js?v=navstats-1"></script><script defer src="/nav-popup-final.js?v=navstats-1"></script>';
   res.type('html').send(html.replace('</body>',assets+'</body>'));
  });
 }
