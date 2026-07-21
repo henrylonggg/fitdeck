@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 220" role="img" aria-labelledby="title desc">
+  <title id="title">Lethal Cross logo</title>
+  <desc id="desc">A blue electric cross and playing-card logo for Lethal Cross.</desc>
+  <defs>
+    <linearGradient id="ice" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#dff6ff"/>
+      <stop offset="0.42" stop-color="#4aa8ff"/>
+      <stop offset="1" stop-color="#0b3b8f"/>
+    </linearGradient>
+    <linearGradient id="white" x1="0" x2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#9fdcff"/>
+    </linearGradient>
+    <filter id="blueGlow" x="-35%" y="-50%" width="170%" height="210%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feColorMatrix in="blur" type="matrix" values="0 .35 0 0 .1 0 .7 0 0 .55 0 0 1 0 1 0 0 0 .85 0" result="g"/>
+      <feMerge><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect width="720" height="220" rx="38" fill="#02070f"/>
+  <g filter="url(#blueGlow)">
+    <path d="M129 28l26 55 59 9-43 42 10 59-52-28-52 28 10-59-43-42 59-9 26-55Z" fill="#061528" stroke="#4aa8ff" stroke-width="7"/>
+    <path d="M116 58h28v45h45v28h-45v45h-28v-45H71v-28h45V58Z" fill="url(#ice)"/>
+    <path d="M57 102l55 3M148 119l54 2M104 53l10 31M151 64l-22 32M82 151l33-23M139 141l25 30" stroke="#dff6ff" stroke-width="4" stroke-linecap="round" opacity=".9"/>
+  </g>
+  <text x="250" y="107" fill="url(#white)" font-family="Impact, Haettenschweiler, Arial Black, sans-serif" font-size="67" letter-spacing="-3">LETHAL</text>
+  <text x="250" y="166" fill="url(#ice)" font-family="Impact, Haettenschweiler, Arial Black, sans-serif" font-size="67" letter-spacing="-3">CROSS</text>
+  <path d="M247 181h365" stroke="#4aa8ff" stroke-width="6" stroke-linecap="round" opacity=".75"/>
+  <text x="608" y="164" fill="#dff6ff" font-family="Arial Black, sans-serif" font-size="27">CO-OP</text>
+</svg>
