@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 240" role="img" aria-labelledby="title desc">
+  <title id="title">Golf</title>
+  <desc id="desc">A green fairway tournament logo for the Golf card game.</desc>
+  <defs>
+    <linearGradient id="fairway" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#eaffbf"/><stop offset=".28" stop-color="#7cff7a"/><stop offset=".66" stop-color="#10a85b"/><stop offset="1" stop-color="#06472d"/></linearGradient>
+    <linearGradient id="whiteGold" x1="0" x2="1"><stop offset="0" stop-color="#fff"/><stop offset=".45" stop-color="#f5d36d"/><stop offset="1" stop-color="#fff"/></linearGradient>
+    <filter id="greenGlow" x="-35%" y="-60%" width="180%" height="230%"><feGaussianBlur stdDeviation="8" result="b"/><feColorMatrix in="b" type="matrix" values="0 .45 0 0 .1 0 .9 0 0 .55 0 .25 0 0 .2 0 0 0 .85 0" result="g"/><feMerge><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <rect width="760" height="240" rx="42" fill="#03120a"/>
+  <path d="M0 188c74-28 140-35 224-10 80 24 150 13 222-18 78-33 158-20 314 15v65H0z" fill="#0b512e"/>
+  <path d="M0 201c100-28 196-19 292 2 92 20 186-12 278-34 54-13 112-10 190 7" fill="none" stroke="#63d46d" stroke-width="7" opacity=".55"/>
+  <g filter="url(#greenGlow)">
+    <rect x="40" y="38" width="176" height="164" rx="34" fill="#08351f" stroke="#7cff7a" stroke-width="5"/>
+    <circle cx="104" cy="151" r="29" fill="#f8fbff"/>
+    <circle cx="94" cy="143" r="3" fill="#cfd7df"/><circle cx="111" cy="140" r="3" fill="#cfd7df"/><circle cx="119" cy="156" r="3" fill="#cfd7df"/><circle cx="101" cy="163" r="3" fill="#cfd7df"/>
+    <path d="M147 58v96" stroke="#f8fbff" stroke-width="7" stroke-linecap="round"/>
+    <path d="M151 61h49l-13 18 13 18h-49z" fill="#ff4055"/>
+    <path d="M68 180c26-20 88-23 127-1" fill="none" stroke="#f5d36d" stroke-width="8" stroke-linecap="round"/>
+    <path d="M81 92c31-30 73-27 106-1" fill="none" stroke="#7cff7a" stroke-width="7" stroke-linecap="round" opacity=".85"/>
+  </g>
+  <text x="252" y="148" fill="url(#whiteGold)" font-family="Impact, Haettenschweiler, Arial Black, sans-serif" font-size="104" letter-spacing="-4">GOLF</text>
+  <text x="256" y="184" fill="#9af7a5" font-family="Arial Black, sans-serif" font-size="25" letter-spacing="5">CARD TOURNAMENT</text>
+  <path d="M252 198h370" stroke="#7cff7a" stroke-width="7" stroke-linecap="round" opacity=".78"/>
+</svg>
