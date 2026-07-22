@@ -36,6 +36,7 @@ const replacement=`function sendApp(req,res){
   html=html.split('<script defer src="/home-game-exit-prompt.js"></script>').join('');
   html=html.split('<script defer src="/game-home-logo-stats-final.js"></script>').join('');
   html=html.split('<script defer src="/absolute-final-fix.js"></script>').join('');
+  html=html.split('<script defer src="/game-screen-renovation.js"></script>').join('');
   html=html.replace('<link rel="manifest" href="/manifest.json">','<link rel="manifest" href="/site.webmanifest">');
   html=html.replace('<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">','<link rel="apple-touch-icon" sizes="512x512" href="/deathbox-logo.png">');
   html=html.replace('const drinkBase={easy:40,normal:30,hard:18};','const drinkBase={easy:45,normal:22.5,hard:18};')
@@ -49,8 +50,8 @@ const replacement=`function sendApp(req,res){
    .replace('<option value="asshole">Asshole · online or CPUs</option>','')
    .replace('<option value="asshole" disabled="">Asshole - locked for rebuild</option>','')
    .replace('<option value="asshole" disabled>Asshole - locked for rebuild</option>','');
-  const v='lc-logo-1';
-  const assets='<link rel="stylesheet" href="/final-fixes.css?v='+v+'"><script defer src="/final-fixes.js?v='+v+'"></script><script defer src="/home-nav-polish.js?v='+v+'"></script><script defer src="/home-auth-guard.js?v='+v+'"></script><script defer src="/game-flow-polish.js?v='+v+'"></script><script defer src="/nav-popup-final.js?v='+v+'"></script><script defer src="/home-profile-stats-upgrade.js?v='+v+'"></script><script defer src="/create-room-lobby-fix.js?v='+v+'"></script><script defer src="/logo-branding-fix.js?v='+v+'"></script><script defer src="/lobby-game-launch-fix.js?v='+v+'"></script><script defer src="/game-selection-hard-fix.js?v='+v+'"></script><script defer src="/no-lock-beer-controls.js?v='+v+'"></script><script defer src="/home-game-exit-prompt.js?v='+v+'"></script><script defer src="/game-home-logo-stats-final.js?v='+v+'"></script><script defer src="/absolute-final-fix.js?v='+v+'"></script>';
+  const v='game-renovation-1';
+  const assets='<link rel="stylesheet" href="/final-fixes.css?v='+v+'"><script defer src="/final-fixes.js?v='+v+'"></script><script defer src="/home-nav-polish.js?v='+v+'"></script><script defer src="/home-auth-guard.js?v='+v+'"></script><script defer src="/game-flow-polish.js?v='+v+'"></script><script defer src="/nav-popup-final.js?v='+v+'"></script><script defer src="/home-profile-stats-upgrade.js?v='+v+'"></script><script defer src="/create-room-lobby-fix.js?v='+v+'"></script><script defer src="/logo-branding-fix.js?v='+v+'"></script><script defer src="/lobby-game-launch-fix.js?v='+v+'"></script><script defer src="/game-selection-hard-fix.js?v='+v+'"></script><script defer src="/no-lock-beer-controls.js?v='+v+'"></script><script defer src="/home-game-exit-prompt.js?v='+v+'"></script><script defer src="/game-home-logo-stats-final.js?v='+v+'"></script><script defer src="/absolute-final-fix.js?v='+v+'"></script><script defer src="/game-screen-renovation.js?v='+v+'"></script>';
   res.type('html').send(html.replace('</body>',assets+'</body>'));
  });
 }
