@@ -5,7 +5,7 @@
   function stateSafe(){try{return state}catch(e){return null}}
   function getProfileObj(){try{if(!profile)profile={};return profile}catch(e){window.profile=window.profile||{};return window.profile}}
   function loadScript(src){return new Promise(function(resolve,reject){var clean=src.split('?')[0];var existing=[].slice.call(document.scripts).find(function(s){return s.src&&s.src.indexOf(clean)>=0});if(existing)return resolve();var s=document.createElement('script');s.defer=true;s.src=src;s.onload=resolve;s.onerror=reject;document.head.appendChild(s)})}
-  function ensureGolf(){if(loadedGolf)return;loadedGolf=true;loadScript('/golf-mode.js?v=golf-test-4').catch(function(e){console.error(e)})}
+  function ensureGolf(){if(loadedGolf)return;loadedGolf=true;loadScript('/golf-mode.js?v=golf-test-5').catch(function(e){console.error(e)})}
   function injectGolfCreateCard(){
     var picks=document.querySelector('.db-game-picks');
     if(picks&&!picks.querySelector('[data-create-game="golf"]')){
@@ -13,7 +13,7 @@
       b.className='db-game-pick';
       b.type='button';
       b.setAttribute('data-create-game','golf');
-      b.innerHTML='<b>Golf</b><span>Green fairway card golf. Play CPU test rounds, peek bottom cards for 3 seconds, and drink the hole difference.</span>';
+      b.innerHTML='<img src="/golf-logo.svg" alt="Golf" style="width:100%;max-width:190px;display:block;margin:0 auto 8px;filter:drop-shadow(0 0 14px rgba(87,227,160,.35))"><b>Golf</b><span>Green fairway card golf. Play CPU test rounds, peek bottom cards for 3 seconds, and drink the hole difference.</span>';
       picks.appendChild(b);
       b.onclick=function(){
         try{window.__deathboxSelectedGame='golf'}catch(e){}
