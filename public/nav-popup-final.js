@@ -9,10 +9,13 @@
     if(node.style)node.style.display='none';
   }
   function addLogoStyle(){
-    if($('dbCreateLogoStyle'))return;
+    var old=$('dbCreateLogoStyle');
+    if(old)old.remove();
     var s=document.createElement('style');
     s.id='dbCreateLogoStyle';
     s.textContent='\
+      #deathboxNav [data-nav="create"],#deathboxNav [data-nav="join"]{font-size:6px!important;letter-spacing:.01em!important;font-weight:1000!important}\
+      @media(max-width:760px){#deathboxNav [data-nav="create"],#deathboxNav [data-nav="join"]{font-size:6px!important;letter-spacing:.005em!important}}\
       .db-game-pick{position:relative!important;overflow:hidden!important;padding-top:74px!important}\
       .db-game-pick .db-create-logo{position:absolute!important;left:12px!important;top:10px!important;width:min(150px,72%)!important;height:54px!important;object-fit:contain!important;object-position:left center!important;display:block!important;filter:drop-shadow(0 10px 20px rgba(0,0,0,.45))!important;pointer-events:none!important}\
       .db-game-pick[data-pick-game="deathbox"]{background:radial-gradient(circle at 18% 8%,rgba(255,85,55,.34),transparent 8rem),linear-gradient(145deg,rgba(54,7,8,.92),rgba(12,5,6,.98))!important;border-color:rgba(255,92,80,.24)!important}\
