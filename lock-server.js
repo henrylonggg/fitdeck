@@ -97,12 +97,15 @@ const replacement=`function sendApp(req,res){
    .replace('<option value="asshole">Asshole · online or CPUs</option>','')
    .replace('<option value="asshole" disabled="">Asshole - locked for rebuild</option>','')
    .replace('<option value="asshole" disabled>Asshole - locked for rebuild</option>','');
-  const v='clerk-loader-fix-1';
+  const v='clerk-proxy-fix-1';
   const assets='<link rel="stylesheet" href="/final-fixes.css?v='+v+'"><script defer src="/final-fixes.js?v='+v+'"></script><script defer src="/home-nav-polish.js?v='+v+'"></script><script defer src="/home-auth-guard.js?v='+v+'"></script><script defer src="/game-flow-polish.js?v='+v+'"></script><script defer src="/nav-popup-final.js?v='+v+'"></script><script defer src="/home-profile-stats-upgrade.js?v='+v+'"></script><script defer src="/create-room-lobby-fix.js?v='+v+'"></script><script defer src="/logo-branding-fix.js?v='+v+'"></script><script defer src="/lobby-game-launch-fix.js?v='+v+'"></script><script defer src="/game-selection-hard-fix.js?v='+v+'"></script><script defer src="/no-lock-beer-controls.js?v='+v+'"></script><script defer src="/home-game-exit-prompt.js?v='+v+'"></script><script defer src="/game-home-logo-stats-final.js?v='+v+'"></script><script defer src="/absolute-final-fix.js?v='+v+'"></script><script defer src="/game-screen-renovation.js?v='+v+'"></script><script defer src="/clerk-auth.js?v='+v+'"></script>';
   res.type('html').send(html.replace('</body>',assets+'</body>'));
  });
 }
-app.get('/clerk-config',(_q,res)=>res.json({publishableKey:process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY||process.env.CLERK_PUBLISHABLE_KEY||''}));app.get('/health',async(_q,res)=>{try{res.json({ok:true,storage:storageMode,rooms:await roomCount()})}catch(e){res.status(503).json({ok:false,error:e.message})}});app.get('/',sendApp);app.get('*',sendApp);`;
+function clerkPubKey(){return process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY||process.env.CLERK_PUBLISHABLE_KEY||''}
+function clerkFrontendDomain(){try{const part=String(clerkPubKey()).split('_')[2]||'';return Buffer.from(part,'base64').toString('utf8').replace(/\$$/,'')}catch(e){return''}}
+async function proxyClerkAsset(res,asset){try{const domain=clerkFrontendDomain();if(!domain)return res.status(500).type('text/plain').send('Clerk publishable key is not configured.');const upstream=await fetch('https://'+domain+'/npm/@clerk/'+asset);if(!upstream.ok)return res.status(upstream.status).type('text/plain').send('Could not load Clerk asset.');const text=await upstream.text();res.setHeader('Cache-Control','no-store');res.type('application/javascript').send(text)}catch(e){res.status(502).type('text/plain').send('Could not proxy Clerk asset.')}}
+app.get('/clerk-ui.js',(_q,res)=>proxyClerkAsset(res,'ui@1/dist/ui.browser.js'));app.get('/clerk-js.js',(_q,res)=>proxyClerkAsset(res,'clerk-js@6/dist/clerk.browser.js'));app.get('/clerk-config',(_q,res)=>res.json({publishableKey:clerkPubKey()}));app.get('/health',async(_q,res)=>{try{res.json({ok:true,storage:storageMode,rooms:await roomCount()})}catch(e){res.status(503).json({ok:false,error:e.message})}});app.get('/',sendApp);app.get('*',sendApp);`;
 source=source.replace(original,replacement);
 const mod=new Module(file,module.parent);
 mod.filename=file;
