@@ -49,58 +49,37 @@ const replacement=`function sendApp(req,res){
   if(err)return res.status(500).send('Could not load Deathbox.');
   res.setHeader('Cache-Control','no-store');
   const remove=[
-   '<link rel="stylesheet" href="/lock-mode.css">',
-   '<link rel="stylesheet" href="/interface-polish.css">',
-   '<link rel="stylesheet" href="/final-fixes.css">',
-   '<script defer src="/lock-mode.js"></script>',
-   '<script defer src="/interface-polish.js"></script>',
-   '<script defer src="/final-fixes.js"></script>',
-   '<script defer src="/lock-polish.js"></script>',
-   '<script defer src="/home-nav-polish.js"></script>',
-   '<script defer src="/home-auth-guard.js"></script>',
-   '<script defer src="/game-flow-polish.js"></script>',
-   '<script defer src="/lock-button-pin.js"></script>',
-   '<script defer src="/nav-popup-final.js"></script>',
-   '<script defer src="/home-profile-stats-upgrade.js"></script>',
-   '<script defer src="/create-room-lobby-fix.js"></script>',
-   '<script defer src="/logo-branding-fix.js"></script>',
-   '<script defer src="/lobby-game-launch-fix.js"></script>',
-   '<script defer src="/game-selection-hard-fix.js"></script>',
-   '<script defer src="/final-game-ui-fix.js"></script>',
-   '<script defer src="/no-lock-beer-controls.js"></script>',
-   '<script defer src="/home-game-exit-prompt.js"></script>',
-   '<script defer src="/game-home-logo-stats-final.js"></script>',
-   '<script defer src="/absolute-final-fix.js"></script>',
-   '<script defer src="/game-screen-renovation.js"></script>',
-   '<script defer src="/clerk-auth.js"></script>',
-   '<script defer src="/golf-mode.js"></script>',
-   '<script defer src="/golf-visible-fix.js"></script>'
+   '<link rel="stylesheet" href="/lock-mode.css">','<link rel="stylesheet" href="/interface-polish.css">','<link rel="stylesheet" href="/final-fixes.css">',
+   '<script defer src="/lock-mode.js"></script>','<script defer src="/interface-polish.js"></script>','<script defer src="/final-fixes.js"></script>',
+   '<script defer src="/lock-polish.js"></script>','<script defer src="/home-nav-polish.js"></script>','<script defer src="/home-auth-guard.js"></script>',
+   '<script defer src="/game-flow-polish.js"></script>','<script defer src="/lock-button-pin.js"></script>','<script defer src="/nav-popup-final.js"></script>',
+   '<script defer src="/home-profile-stats-upgrade.js"></script>','<script defer src="/create-room-lobby-fix.js"></script>','<script defer src="/logo-branding-fix.js"></script>',
+   '<script defer src="/lobby-game-launch-fix.js"></script>','<script defer src="/game-selection-hard-fix.js"></script>','<script defer src="/final-game-ui-fix.js"></script>',
+   '<script defer src="/no-lock-beer-controls.js"></script>','<script defer src="/home-game-exit-prompt.js"></script>','<script defer src="/game-home-logo-stats-final.js"></script>',
+   '<script defer src="/absolute-final-fix.js"></script>','<script defer src="/game-screen-renovation.js"></script>','<script defer src="/clerk-auth.js"></script>',
+   '<script defer src="/golf-mode.js"></script>','<script defer src="/golf-visible-fix.js"></script>'
   ];
   for(const tag of remove)html=html.split(tag).join('');
   const golfMarker='(function(){function golfCard';
   const golfClose='</script>';
   const markerAt=html.indexOf(golfMarker);
-  if(markerAt>=0){
-   const scriptAt=html.lastIndexOf('<script>',markerAt);
-   const closeAt=html.indexOf(golfClose,markerAt);
-   if(scriptAt>=0&&closeAt>=0)html=html.slice(0,scriptAt)+html.slice(closeAt+golfClose.length);
-  }
+  if(markerAt>=0){const scriptAt=html.lastIndexOf('<script>',markerAt);const closeAt=html.indexOf(golfClose,markerAt);if(scriptAt>=0&&closeAt>=0)html=html.slice(0,scriptAt)+html.slice(closeAt+golfClose.length)}
   html=html.replace('<link rel="manifest" href="/manifest.json">','<link rel="manifest" href="/site.webmanifest">');
   html=html.replace('<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">','<link rel="apple-touch-icon" sizes="512x512" href="/deathbox-logo.png">');
   html=html.replace('const drinkBase={easy:40,normal:30,hard:18};','const drinkBase={easy:45,normal:22.5,hard:18};')
    .replace('🥉 Easy · 0.4 sec per count','🥉 Easy · 45 sec beer · 0.4 sec/count')
    .replace('🥈 Normal · 0.8 sec per count','🥈 Normal · 22.5 sec beer · 0.8 sec/count')
    .replace('🥇 Hard · 1.1 sec per count','🥇 Hard · 18 sec beer · 1.0 sec/count')
-   .replace('Asshole - locked for rebuild','')
-   .replace('Asshole is locked while it gets rebuilt.','')
-   .replace('<option value="asshole">Asshole · online or AI</option>','')
-   .replace('<option value="asshole">Asshole · online or CPUs</option>','')
-   .replace('<option value="asshole" disabled="">Asshole - locked for rebuild</option>','')
-   .replace('<option value="asshole" disabled>Asshole - locked for rebuild</option>','');
+   .replace('Asshole - locked for rebuild','').replace('Asshole is locked while it gets rebuilt.','')
+   .replace('<option value="asshole">Asshole · online or AI</option>','').replace('<option value="asshole">Asshole · online or CPUs</option>','')
+   .replace('<option value="asshole" disabled="">Asshole - locked for rebuild</option>','').replace('<option value="asshole" disabled>Asshole - locked for rebuild</option>','');
   const antiFlash='<style id="clerkOnlyAntiFlash">#profileGate:not(.clerk-gate) .profile-card,#profileGate:not(.clerk-gate) .profile-actions,#profileGate:not(.clerk-gate) .profile-bar,#profileGate:not(.clerk-gate) #authTitle,#profileGate:not(.clerk-gate) #authCopy,#profileGate:not(.clerk-gate) #loginModeBtn,#profileGate:not(.clerk-gate) #signupModeBtn,#profileGate:not(.clerk-gate) #authUsername,#profileGate:not(.clerk-gate) #authPasscode,#profileGate:not(.clerk-gate) #authSubmit{display:none!important;visibility:hidden!important;pointer-events:none!important}#profilePanel,.profile-panel,#profileDetails,.profile-details,#clerkUserChip,.clerk-user-chip{display:none!important;visibility:hidden!important;pointer-events:none!important}body:not(.db-authed) #deathboxNav,body:not(.db-authed) #deathboxHome,body:not(.db-authed) #landing,body:not(.db-authed) #lobbySection,body:not(.db-authed) #gameSection,body:not(.db-authed) #leaderSection,body:not(.db-authed) #statsSection{display:none!important}</style>';
   if(!html.includes('clerkOnlyAntiFlash'))html=html.replace('</head>',antiFlash+'</head>');
-  const v='auth-hard-reset-2';
-  const assets='<link rel="stylesheet" href="/final-fixes.css?v='+v+'"><script defer src="/final-fixes.js?v='+v+'"></script><script defer src="/auth-hard-reset.js?v='+v+'"></script><script defer src="/home-nav-polish.js?v='+v+'"></script><script defer src="/home-auth-guard.js?v='+v+'"></script><script defer src="/game-flow-polish.js?v='+v+'"></script><script defer src="/nav-popup-final.js?v='+v+'"></script><script defer src="/home-profile-stats-upgrade.js?v='+v+'"></script><script defer src="/create-room-lobby-fix.js?v='+v+'"></script><script defer src="/logo-branding-fix.js?v='+v+'"></script><script defer src="/lobby-game-launch-fix.js?v='+v+'"></script><script defer src="/game-selection-hard-fix.js?v='+v+'"></script><script defer src="/no-lock-beer-controls.js?v='+v+'"></script><script defer src="/home-game-exit-prompt.js?v='+v+'"></script><script defer src="/game-home-logo-stats-final.js?v='+v+'"></script><script defer src="/absolute-final-fix.js?v='+v+'"></script><script defer src="/game-screen-renovation.js?v='+v+'"></script><script defer src="/clerk-auth.js?v='+v+'"></script>';
+  function readPub(name){try{return fs.readFileSync(path.join(__dirname,'public',name),'utf8')}catch(e){return ''}}
+  const cssBundle=readPub('final-fixes.css').replace(/<\/style/gi,'<\\/style');
+  const jsFiles=['final-fixes.js','auth-hard-reset.js','home-nav-polish.js','home-auth-guard.js','game-flow-polish.js','nav-popup-final.js','home-profile-stats-upgrade.js','create-room-lobby-fix.js','logo-branding-fix.js','lobby-game-launch-fix.js','game-selection-hard-fix.js','no-lock-beer-controls.js','home-game-exit-prompt.js','game-home-logo-stats-final.js','absolute-final-fix.js','game-screen-renovation.js','clerk-auth.js'];
+  const jsBundle=jsFiles.map(name=>'\n;/* '+name+' */\n'+readPub(name)).join('\n').replace(/<\/script/gi,'<\\/script');
+  const assets='<style id="deathboxInlinePatchCss">'+cssBundle+'</style><script id="deathboxInlinePatchJs">'+jsBundle+'</script>';
   res.type('html').send(html.replace('</body>',assets+'</body>'));
  });
 }
