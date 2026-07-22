@@ -1,32 +1,23 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 220" role="img" aria-labelledby="title desc">
-  <title id="title">DeathBox logo</title>
-  <desc id="desc">A molten red playing card box logo for DeathBox.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 240" role="img" aria-labelledby="title desc">
+  <title id="title">DeathBox Live</title>
+  <desc id="desc">A premium lava-red DeathBox Live logo with a molten card box mark.</desc>
   <defs>
-    <linearGradient id="lava" x1="0" x2="1" y1="0" y2="1">
-      <stop offset="0" stop-color="#ffcf5a"/>
-      <stop offset="0.38" stop-color="#ff3d2e"/>
-      <stop offset="1" stop-color="#67000c"/>
-    </linearGradient>
-    <linearGradient id="steel" x1="0" x2="1">
-      <stop offset="0" stop-color="#f8fafc"/>
-      <stop offset="0.45" stop-color="#9ca3af"/>
-      <stop offset="1" stop-color="#f8fafc"/>
-    </linearGradient>
-    <filter id="glow" x="-30%" y="-50%" width="160%" height="200%">
-      <feGaussianBlur stdDeviation="8" result="blur"/>
-      <feColorMatrix in="blur" type="matrix" values="1 0 0 0 1 0 .18 0 0 .15 0 0 .05 0 0 0 0 0 .8 0" result="hot"/>
-      <feMerge><feMergeNode in="hot"/><feMergeNode in="SourceGraphic"/></feMerge>
-    </filter>
+    <linearGradient id="lavaText" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff2b0"/><stop offset=".28" stop-color="#ff7a28"/><stop offset=".62" stop-color="#ff233d"/><stop offset="1" stop-color="#6b0010"/></linearGradient>
+    <linearGradient id="chrome" x1="0" x2="1"><stop offset="0" stop-color="#fff"/><stop offset=".25" stop-color="#aab0bb"/><stop offset=".5" stop-color="#f8fbff"/><stop offset=".75" stop-color="#858b96"/><stop offset="1" stop-color="#fff"/></linearGradient>
+    <radialGradient id="core" cx="45%" cy="34%" r="70%"><stop offset="0" stop-color="#fff4a3"/><stop offset=".28" stop-color="#ff8a26"/><stop offset=".66" stop-color="#d30b22"/><stop offset="1" stop-color="#170004"/></radialGradient>
+    <filter id="hotGlow" x="-30%" y="-55%" width="170%" height="220%"><feGaussianBlur stdDeviation="9" result="b"/><feColorMatrix in="b" type="matrix" values="1 0 0 0 1 0 .16 0 0 .08 0 0 .03 0 0 0 0 0 .9 0" result="g"/><feMerge><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
   </defs>
-  <rect width="720" height="220" rx="38" fill="#050505"/>
-  <g filter="url(#glow)">
-    <path d="M68 37h118c25 0 45 20 45 45v68c0 25-20 45-45 45H68c-25 0-45-20-45-45V82c0-25 20-45 45-45Z" fill="url(#lava)"/>
-    <path d="M66 54h112c19 0 35 16 35 35v54c0 19-16 35-35 35H66c-19 0-35-16-35-35V89c0-19 16-35 35-35Z" fill="#0a0505" stroke="#ffb157" stroke-width="5"/>
-    <path d="M75 74l37 82 18-35 18 35 38-82-38 25-18-31-18 31-37-25Z" fill="url(#lava)"/>
-    <path d="M57 173c25-9 39-6 55 0 17 6 35 9 57-2 6 15-6 25-28 27H87c-20-1-31-9-30-25Z" fill="#ffcf5a" opacity=".75"/>
+  <rect width="760" height="240" rx="42" fill="#030303"/>
+  <path d="M26 202c96-44 166 34 262-18 86-46 145 34 247-14 76-36 132-6 199 24v46H26z" fill="#190006" opacity=".78"/>
+  <g filter="url(#hotGlow)">
+    <rect x="34" y="34" width="182" height="172" rx="34" fill="url(#core)"/>
+    <rect x="52" y="52" width="146" height="136" rx="25" fill="#090405" stroke="#ffbd69" stroke-width="5"/>
+    <path d="M77 154c24-48 38-83 33-108 24 22 29 47 20 76 22-29 24-51 17-73 38 39 43 77 20 113-20 30-71 32-90-8Z" fill="url(#lavaText)"/>
+    <path d="M76 71l32 76 17-34 18 34 34-76-35 23-17-30-17 30-32-23Z" fill="#050505" opacity=".82"/>
+    <path d="M64 177c36-11 52 11 82 0 18-7 29-11 44 0-9 18-23 25-45 25H97c-20 0-31-8-33-25Z" fill="#ffd36a" opacity=".78"/>
   </g>
-  <text x="260" y="105" fill="url(#steel)" font-family="Impact, Haettenschweiler, Arial Black, sans-serif" font-size="70" letter-spacing="-3">DEATH</text>
-  <text x="260" y="166" fill="url(#lava)" font-family="Impact, Haettenschweiler, Arial Black, sans-serif" font-size="70" letter-spacing="-3">BOX</text>
-  <path d="M258 181h330" stroke="#ff3d2e" stroke-width="6" stroke-linecap="round" opacity=".7"/>
-  <text x="597" y="166" fill="#f8fafc" font-family="Arial Black, sans-serif" font-size="28">LIVE</text>
+  <text x="246" y="106" fill="url(#chrome)" font-family="Impact, Haettenschweiler, Arial Black, sans-serif" font-size="76" letter-spacing="-4">DEATH</text>
+  <text x="246" y="174" fill="url(#lavaText)" font-family="Impact, Haettenschweiler, Arial Black, sans-serif" font-size="82" letter-spacing="-4">BOX</text>
+  <text x="614" y="174" fill="#fff2b0" font-family="Arial Black, sans-serif" font-size="30" letter-spacing="1">LIVE</text>
+  <path d="M244 194h398" stroke="#ff3448" stroke-width="7" stroke-linecap="round" opacity=".78"/>
 </svg>
