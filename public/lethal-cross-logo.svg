@@ -1,30 +1,21 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 220" role="img" aria-labelledby="title desc">
-  <title id="title">Lethal Cross logo</title>
-  <desc id="desc">A blue electric cross and playing-card logo for Lethal Cross.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 240" role="img" aria-labelledby="title desc">
+  <title id="title">Lethal Cross</title>
+  <desc id="desc">A blue electric Lethal Cross logo with a sharp cross-card mark.</desc>
   <defs>
-    <linearGradient id="ice" x1="0" x2="1" y1="0" y2="1">
-      <stop offset="0" stop-color="#dff6ff"/>
-      <stop offset="0.42" stop-color="#4aa8ff"/>
-      <stop offset="1" stop-color="#0b3b8f"/>
-    </linearGradient>
-    <linearGradient id="white" x1="0" x2="1">
-      <stop offset="0" stop-color="#ffffff"/>
-      <stop offset="1" stop-color="#9fdcff"/>
-    </linearGradient>
-    <filter id="blueGlow" x="-35%" y="-50%" width="170%" height="210%">
-      <feGaussianBlur stdDeviation="8" result="blur"/>
-      <feColorMatrix in="blur" type="matrix" values="0 .35 0 0 .1 0 .7 0 0 .55 0 0 1 0 1 0 0 0 .85 0" result="g"/>
-      <feMerge><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge>
-    </filter>
+    <linearGradient id="iceText" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f3fbff"/><stop offset=".32" stop-color="#79d8ff"/><stop offset=".68" stop-color="#237cff"/><stop offset="1" stop-color="#052c77"/></linearGradient>
+    <linearGradient id="steelBlue" x1="0" x2="1"><stop offset="0" stop-color="#fff"/><stop offset=".35" stop-color="#8fd7ff"/><stop offset=".7" stop-color="#e9f8ff"/><stop offset="1" stop-color="#69bfff"/></linearGradient>
+    <filter id="electric" x="-35%" y="-60%" width="180%" height="230%"><feGaussianBlur stdDeviation="8" result="b"/><feColorMatrix in="b" type="matrix" values="0 .25 0 0 .08 0 .55 0 0 .45 0 0 1 0 1 0 0 0 .95 0" result="g"/><feMerge><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
   </defs>
-  <rect width="720" height="220" rx="38" fill="#02070f"/>
-  <g filter="url(#blueGlow)">
-    <path d="M129 28l26 55 59 9-43 42 10 59-52-28-52 28 10-59-43-42 59-9 26-55Z" fill="#061528" stroke="#4aa8ff" stroke-width="7"/>
-    <path d="M116 58h28v45h45v28h-45v45h-28v-45H71v-28h45V58Z" fill="url(#ice)"/>
-    <path d="M57 102l55 3M148 119l54 2M104 53l10 31M151 64l-22 32M82 151l33-23M139 141l25 30" stroke="#dff6ff" stroke-width="4" stroke-linecap="round" opacity=".9"/>
+  <rect width="760" height="240" rx="42" fill="#020712"/>
+  <path d="M16 54c88-42 132 14 209-10 60-19 118-34 192 12 77 48 151-12 312 11" fill="none" stroke="#0b6fff" stroke-width="2" opacity=".35"/>
+  <path d="M28 190c85 23 134-12 210 3 67 14 123 36 206-7 75-39 151 8 288-17" fill="none" stroke="#79d8ff" stroke-width="2" opacity=".26"/>
+  <g filter="url(#electric)">
+    <rect x="38" y="36" width="178" height="168" rx="34" fill="#061529" stroke="#1f8cff" stroke-width="5"/>
+    <path d="M108 54h38v54h54v38h-54v54h-38v-54H54v-38h54z" fill="url(#iceText)"/>
+    <path d="M126 28l22 55 58 7-43 39 12 57-49-30-50 30 13-57-43-39 58-7z" fill="none" stroke="#bdebff" stroke-width="5" opacity=".9"/>
+    <path d="M55 108l50 7M150 128l58 6M99 63l19 38M157 69l-25 39M82 171l35-31M147 155l24 38" stroke="#eafbff" stroke-width="5" stroke-linecap="round" opacity=".85"/>
   </g>
-  <text x="250" y="107" fill="url(#white)" font-family="Impact, Haettenschweiler, Arial Black, sans-serif" font-size="67" letter-spacing="-3">LETHAL</text>
-  <text x="250" y="166" fill="url(#ice)" font-family="Impact, Haettenschweiler, Arial Black, sans-serif" font-size="67" letter-spacing="-3">CROSS</text>
-  <path d="M247 181h365" stroke="#4aa8ff" stroke-width="6" stroke-linecap="round" opacity=".75"/>
-  <text x="608" y="164" fill="#dff6ff" font-family="Arial Black, sans-serif" font-size="27">CO-OP</text>
+  <text x="246" y="106" fill="url(#steelBlue)" font-family="Impact, Haettenschweiler, Arial Black, sans-serif" font-size="74" letter-spacing="-4">LETHAL</text>
+  <text x="246" y="174" fill="url(#iceText)" font-family="Impact, Haettenschweiler, Arial Black, sans-serif" font-size="82" letter-spacing="-4">CROSS</text>
+  <path d="M244 194h420" stroke="#48b9ff" stroke-width="7" stroke-linecap="round" opacity=".82"/>
 </svg>
