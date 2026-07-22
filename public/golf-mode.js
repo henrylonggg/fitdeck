@@ -1,5 +1,5 @@
 (function(){
-  var lastGolfKey='',pendingHoleDrink=null,lastPeekKey='',peekOpenUntil=0,lastRenderSig='',lastLogoSet='';
+  var lastGolfKey='',pendingHoleDrink=null,lastPeekKey='',peekOpenUntil=0,lastRenderSig='',lastLogoSet='',boundSocket=null;
   function $(id){return document.getElementById(id)}
   function stateSafe(){try{return state}catch(e){return null}}
   function socketSafe(){try{return socket}catch(e){return null}}
@@ -19,6 +19,6 @@
   function drinkCheck(r,g,me){var key=r.code+':'+g.hole+':'+(g.scores[me]||[]).length;if(key===lastGolfKey)return;var scores=g.scores.map(function(a){return a.length}),myLen=scores[me]||0;if(!myLen)return;lastGolfKey=key;var last=(g.scores[me]||[]).at(-1),low=Math.min.apply(null,g.scores.map(function(a){return a.at(-1)}).filter(function(v){return v!==undefined})),diff=Math.max(0,last-low);if(diff>0)showDrink(diff)}
   function showDrink(sec){pendingHoleDrink=sec;var m=$('golfDrinkTimer');if(!m){m=document.createElement('div');m.id='golfDrinkTimer';m.className='golf-drink';m.innerHTML='<div style="text-align:center"><small>HOLE DRINK TIMER</small><strong id="golfDrinkValue">0</strong><p id="golfDrinkText"></p><button id="golfDrinkDone">Done</button></div>';document.body.appendChild(m);$('golfDrinkDone').onclick=function(){m.classList.remove('show')}}var n=0;m.classList.add('show');function tick(){n++;$('golfDrinkValue').textContent=String(n);$('golfDrinkText').textContent=sec+' second difference from hole winner';m.classList.toggle('red',n>=Math.max(0,sec-3)&&n<sec);m.classList.toggle('blue',n>=sec);if(n<sec)setTimeout(tick,1000);else $('golfDrinkDone').disabled=false}$('golfDrinkDone').disabled=true;tick()}
   function config(){css();var gameInput=$('gameInput');if(gameInput&&!gameInput.querySelector('option[value="golf"]'))gameInput.insertAdjacentHTML('beforeend','<option value="golf">Golf · card tournament</option>')}
-  function bind(){if(window.__golfModeBound)return;window.__golfModeBound=true;config();var s=socketSafe();if(s&&!s.__golfMode){s.__golfMode=true;s.on('roomState',function(room){if(room&&room.game==='golf')setTimeout(function(){renderGolf(true)},0)});s.on('roomJoined',function(x){if(x&&x.room&&x.room.game==='golf')setTimeout(function(){renderGolf(true)},0)})}}
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind);else bind();setInterval(function(){bind();var r=stateSafe();if(r&&r.game==='golf'){css();forceGolfLogo();renderGolf(false)}},1000);
+  function bind(){config();var s=socketSafe();if(!s)return;if(s===boundSocket||s.__golfMode)return;boundSocket=s;s.__golfMode=true;s.on('roomState',function(room){if(room&&room.game==='golf')setTimeout(function(){renderGolf(true)},0)});s.on('roomJoined',function(x){if(x&&x.room&&x.room.game==='golf')setTimeout(function(){renderGolf(true)},0)});var r=stateSafe();if(r&&r.game==='golf')setTimeout(function(){renderGolf(true)},0)}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind);else bind();setInterval(function(){bind();var r=stateSafe();if(r&&r.game==='golf'){css();forceGolfLogo();renderGolf(false)}},500);
 }());
