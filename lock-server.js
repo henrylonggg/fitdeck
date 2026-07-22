@@ -76,9 +76,9 @@ const replacement=`function sendApp(req,res){
   const antiFlash='<style id="clerkOnlyAntiFlash">#profileGate:not(.clerk-gate) .profile-card,#profileGate:not(.clerk-gate) .profile-actions,#profileGate:not(.clerk-gate) .profile-bar,#profileGate:not(.clerk-gate) #authTitle,#profileGate:not(.clerk-gate) #authCopy,#profileGate:not(.clerk-gate) #loginModeBtn,#profileGate:not(.clerk-gate) #signupModeBtn,#profileGate:not(.clerk-gate) #authUsername,#profileGate:not(.clerk-gate) #authPasscode,#profileGate:not(.clerk-gate) #authSubmit{display:none!important;visibility:hidden!important;pointer-events:none!important}#profilePanel,.profile-panel,#profileDetails,.profile-details,#clerkUserChip,.clerk-user-chip{display:none!important;visibility:hidden!important;pointer-events:none!important}body:not(.db-authed) #deathboxNav,body:not(.db-authed) #deathboxHome,body:not(.db-authed) #landing,body:not(.db-authed) #lobbySection,body:not(.db-authed) #gameSection,body:not(.db-authed) #leaderSection,body:not(.db-authed) #statsSection{display:none!important}</style>';
   if(!html.includes('clerkOnlyAntiFlash'))html=html.replace('</head>',antiFlash+'</head>');
   function readPub(name){try{return fs.readFileSync(path.join(__dirname,'public',name),'utf8')}catch(e){return ''}}
-  const cssBundle=readPub('final-fixes.css').replace(/<\/style/gi,'<\\/style');
+  const cssBundle=readPub('final-fixes.css').split('</style').join('<\\/style');
   const jsFiles=['final-fixes.js','auth-hard-reset.js','home-nav-polish.js','home-auth-guard.js','game-flow-polish.js','nav-popup-final.js','home-profile-stats-upgrade.js','create-room-lobby-fix.js','logo-branding-fix.js','lobby-game-launch-fix.js','game-selection-hard-fix.js','no-lock-beer-controls.js','home-game-exit-prompt.js','game-home-logo-stats-final.js','absolute-final-fix.js','game-screen-renovation.js','clerk-auth.js'];
-  const jsBundle=jsFiles.map(name=>'\n;/* '+name+' */\n'+readPub(name)).join('\n').replace(/<\/script/gi,'<\\/script');
+  const jsBundle=jsFiles.map(name=>'\n;/* '+name+' */\n'+readPub(name)).join('\n').split('</script').join('<\\/script');
   const assets='<style id="deathboxInlinePatchCss">'+cssBundle+'</style><script id="deathboxInlinePatchJs">'+jsBundle+'</script>';
   res.type('html').send(html.replace('</body>',assets+'</body>'));
  });
