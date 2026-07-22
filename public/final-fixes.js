@@ -1,5 +1,25 @@
 window.q=window.q||function(s){return document.querySelector(s)};
 (function(){
+  if(window.__deathboxClerkAvatarRefresh)return;
+  window.__deathboxClerkAvatarRefresh=true;
+  function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+  function clerk(){try{return window.DeathboxClerk||window.Clerk}catch(e){return null}}
+  function initials(u){var n=(u&&(u.fullName||u.username||u.firstName||u.primaryEmailAddress?.emailAddress))||localStorage.getItem('deathboxUsername')||'DB';return String(n).trim().split(/\s+/).slice(0,2).map(function(p){return p.charAt(0).toUpperCase()}).join('')||'DB'}
+  function img(u){return (u&&(u.imageUrl||u.profileImageUrl||u.externalAccounts?.[0]?.imageUrl||u.externalAccounts?.[0]?.avatarUrl))||''}
+  function refreshAvatar(){
+    var host=document.getElementById('clerkNavAvatar');if(!host)return;
+    var c=clerk(),u=c&&c.user,src=img(u),key=src||('initials:'+initials(u));
+    if(host.dataset.avatarKey===key)return;
+    host.dataset.avatarKey=key;
+    if(src){localStorage.setItem('deathboxAvatarUrl',src);host.innerHTML='<img class="db-avatar-img" alt="Profile" src="'+esc(src)+(src.indexOf('?')>=0?'&':'?')+'v='+Date.now()+'" referrerpolicy="no-referrer">'}
+    else host.innerHTML='<span class="db-avatar-initials">'+esc(initials(u))+'</span>';
+    host.onclick=function(e){var cc=clerk();if(cc&&cc.openUserProfile){e.preventDefault();e.stopPropagation();cc.openUserProfile()}}
+  }
+  function hook(){var c=clerk();if(c&&c.addListener&&!c.__deathboxAvatarListener){c.__deathboxAvatarListener=true;c.addListener(function(){setTimeout(refreshAvatar,80)})}refreshAvatar()}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',hook);else hook();
+  window.addEventListener('focus',refreshAvatar);document.addEventListener('visibilitychange',refreshAvatar);setInterval(hook,2500);
+}());
+(function(){
   var BEER_KEY='deathboxBeerHistoryV1';
   var manualBeers=0;
   function installBeerSaveGuard(){
