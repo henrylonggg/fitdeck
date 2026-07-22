@@ -1,3 +1,4 @@
+window.q=window.q||function(s){return document.querySelector(s)};
 (function(){
   var BEER_KEY='deathboxBeerHistoryV1';
   var manualBeers=0;
