@@ -2,9 +2,10 @@
   var wiredSocket=null,loadedGolf=false;
   function $(id){return document.getElementById(id)}
   function socketSafe(){try{return socket}catch(e){return null}}
+  function stateSafe(){try{return state}catch(e){return null}}
   function getProfileObj(){try{if(!profile)profile={};return profile}catch(e){window.profile=window.profile||{};return window.profile}}
   function loadScript(src){return new Promise(function(resolve,reject){var clean=src.split('?')[0];var existing=[].slice.call(document.scripts).find(function(s){return s.src&&s.src.indexOf(clean)>=0});if(existing)return resolve();var s=document.createElement('script');s.defer=true;s.src=src;s.onload=resolve;s.onerror=reject;document.head.appendChild(s)})}
-  function ensureGolf(){if(loadedGolf)return;loadedGolf=true;loadScript('/golf-mode.js?v=golf-test-3').catch(function(e){console.error(e)})}
+  function ensureGolf(){if(loadedGolf)return;loadedGolf=true;loadScript('/golf-mode.js?v=golf-test-4').catch(function(e){console.error(e)})}
   function injectGolfCreateCard(){
     var picks=document.querySelector('.db-game-picks');
     if(picks&&!picks.querySelector('[data-create-game="golf"]')){
@@ -38,10 +39,26 @@
     try{localStorage.setItem('deathboxProfileToken',p.token);localStorage.setItem('deathboxUsername',p.username)}catch(e){}
     return p;
   }
-  function openHome(){
+  function uiBusy(){
+    var r=stateSafe();
+    if(r&&(r.started||r.gameId))return true;
+    var modal=$('dbNavPopupModal');
+    if(modal&&modal.classList.contains('show'))return true;
+    var lobby=$('createRoomLobbyFix');
+    if(lobby&&lobby.classList.contains('show'))return true;
+    var game=$('gameSection');
+    if(game&&!game.classList.contains('hidden')&&game.innerHTML.trim())return true;
+    return false;
+  }
+  function applyAuthShell(){
     ensureProfile();ensureGolf();injectGolfCreateCard();
-    document.body.classList.add('db-authed','db-home-mode','dev-login-bypass');
+    document.body.classList.add('db-authed','dev-login-bypass');
     var gate=$('profileGate');if(gate){gate.classList.add('hidden');gate.style.display='none'}
+  }
+  function openHome(force){
+    applyAuthShell();
+    if(!force&&uiBusy())return;
+    document.body.classList.add('db-home-mode');
     var home=$('deathboxHome');if(home){home.classList.add('show');home.classList.remove('hidden');home.style.display='block'}
     ['landing','lobbySection','gameSection','leaderSection','statsSection','assholeGame'].forEach(function(id){var n=$(id);if(n)n.classList.add('hidden')});
   }
@@ -54,7 +71,7 @@
       if(!s.__devLoginBypassWired){
         s.__devLoginBypassWired=true;
         s.on('connect',syncServerProfile);
-        s.on('profileReady',function(next){try{profile=next||profile}catch(e){window.profile=next||window.profile}openHome()});
+        s.on('profileReady',function(next){try{profile=next||profile}catch(e){window.profile=next||window.profile}openHome(false)});
       }
     }
     if(s.connected){
@@ -62,6 +79,6 @@
     }
   }
   window.__deathboxDevLoginBypass=true;
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){openHome();syncServerProfile()});else{openHome();syncServerProfile()}
-  setInterval(function(){openHome();syncServerProfile();injectGolfCreateCard()},500);
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){openHome(true);syncServerProfile()});else{openHome(true);syncServerProfile()}
+  setInterval(function(){applyAuthShell();syncServerProfile();injectGolfCreateCard()},500);
 }());
