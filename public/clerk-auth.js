@@ -1,84 +1,31 @@
 (function(){
-  var wiredSocket=null,loadedGolf=false;
+  var clerk=null,wired=false,profileRequested=false,authMode='signIn';
   function $(id){return document.getElementById(id)}
   function socketSafe(){try{return socket}catch(e){return null}}
-  function stateSafe(){try{return state}catch(e){return null}}
-  function getProfileObj(){try{if(!profile)profile={};return profile}catch(e){window.profile=window.profile||{};return window.profile}}
-  function loadScript(src){return new Promise(function(resolve,reject){var clean=src.split('?')[0];var existing=[].slice.call(document.scripts).find(function(s){return s.src&&s.src.indexOf(clean)>=0});if(existing)return resolve();var s=document.createElement('script');s.defer=true;s.src=src;s.onload=resolve;s.onerror=reject;document.head.appendChild(s)})}
-  function ensureGolf(){if(loadedGolf)return;loadedGolf=true;loadScript('/golf-mode.js?v=golf-test-5').catch(function(e){console.error(e)})}
-  function injectGolfCreateCard(){
-    var picks=document.querySelector('.db-game-picks');
-    if(picks&&!picks.querySelector('[data-create-game="golf"]')){
-      var b=document.createElement('button');
-      b.className='db-game-pick';
-      b.type='button';
-      b.setAttribute('data-create-game','golf');
-      b.innerHTML='<img src="/golf-logo.svg" alt="Golf" style="width:100%;max-width:190px;display:block;margin:0 auto 8px;filter:drop-shadow(0 0 14px rgba(87,227,160,.35))"><b>Golf</b><span>Green fairway card golf. Play CPU test rounds, peek bottom cards for 3 seconds, and drink the hole difference.</span>';
-      picks.appendChild(b);
-      b.onclick=function(){
-        try{window.__deathboxSelectedGame='golf'}catch(e){}
-        document.querySelectorAll('[data-create-game]').forEach(function(x){x.classList.toggle('on',x===b)});
-      };
-    }
-    var gi=$('gameInput');
-    if(gi&&!gi.querySelector('option[value="golf"]')){
-      var o=document.createElement('option');o.value='golf';o.textContent='Golf · CPU test';gi.appendChild(o);
-    }
-  }
-  function ensureProfile(){
-    var id='';
-    try{id=localStorage.getItem('deathboxDevGuestId')||''}catch(e){}
-    if(!id){id=Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-4);try{localStorage.setItem('deathboxDevGuestId',id)}catch(e){}}
-    var p=getProfileObj();
-    p.token=p.token||('clerk_dev_'+id);
-    p.username=p.username||'tester';
-    p.name=p.name||localStorage.getItem('deathboxDevName')||'Tester';
-    if(!p.xp)p.xp={level:1,current:0,needed:2000,percent:0,total:0};
-    if(!p.games)p.games=[];
-    if(!p.stats)p.stats={games:0,guesses:0,correct:0,penalty:0,riskTotal:0,riskGuesses:0};
-    try{localStorage.setItem('deathboxProfileToken',p.token);localStorage.setItem('deathboxUsername',p.username)}catch(e){}
-    return p;
-  }
-  function uiBusy(){
-    var r=stateSafe();
-    if(r&&(r.started||r.gameId))return true;
-    var modal=$('dbNavPopupModal');
-    if(modal&&modal.classList.contains('show'))return true;
-    var lobby=$('createRoomLobbyFix');
-    if(lobby&&lobby.classList.contains('show'))return true;
-    var game=$('gameSection');
-    if(game&&!game.classList.contains('hidden')&&game.innerHTML.trim())return true;
-    return false;
-  }
-  function applyAuthShell(){
-    ensureProfile();ensureGolf();injectGolfCreateCard();
-    document.body.classList.add('db-authed','dev-login-bypass');
-    var gate=$('profileGate');if(gate){gate.classList.add('hidden');gate.style.display='none'}
-  }
-  function openHome(force){
-    applyAuthShell();
-    if(!force&&uiBusy())return;
-    document.body.classList.add('db-home-mode');
-    var home=$('deathboxHome');if(home){home.classList.add('show');home.classList.remove('hidden');home.style.display='block'}
-    ['landing','lobbySection','gameSection','leaderSection','statsSection','assholeGame'].forEach(function(id){var n=$(id);if(n)n.classList.add('hidden')});
-  }
-  function syncServerProfile(){
-    var p=ensureProfile();
-    var s=socketSafe();
-    if(!s)return;
-    if(s!==wiredSocket){
-      wiredSocket=s;
-      if(!s.__devLoginBypassWired){
-        s.__devLoginBypassWired=true;
-        s.on('connect',syncServerProfile);
-        s.on('profileReady',function(next){try{profile=next||profile}catch(e){window.profile=next||window.profile}openHome(false)});
-      }
-    }
-    if(s.connected){
-      try{s.emit('clerkProfile',{token:p.token,name:p.name,username:p.username,clerkId:p.token,email:''})}catch(e){}
-    }
-  }
-  window.__deathboxDevLoginBypass=true;
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){openHome(true);syncServerProfile()});else{openHome(true);syncServerProfile()}
-  setInterval(function(){applyAuthShell();syncServerProfile();injectGolfCreateCard()},500);
+  function esc(v){return String(v??'').replace(/[&<>\"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[c]})}
+  function css(){if($('clerkAuthStyle'))return;var s=document.createElement('style');s.id='clerkAuthStyle';s.textContent='\
+    #profileGate.clerk-gate{display:grid!important;place-items:center!important;padding:18px!important;background:radial-gradient(circle at 50% 0,rgba(255,64,85,.28),transparent 30rem),radial-gradient(circle at 15% 90%,rgba(74,168,255,.16),transparent 28rem),#050506!important}\
+    #profileGate.clerk-gate.hidden{display:none!important}\
+    .clerk-login-shell{width:min(1000px,100%);display:grid;grid-template-columns:1fr minmax(320px,430px);gap:18px;align-items:center}.clerk-copy{padding:26px;border-radius:30px;background:linear-gradient(145deg,rgba(255,255,255,.075),rgba(255,255,255,.025));border:1px solid rgba(255,255,255,.11);box-shadow:0 26px 80px rgba(0,0,0,.42)}.clerk-copy img{width:min(340px,92%);display:block;margin:0 0 18px;filter:drop-shadow(0 0 28px rgba(255,64,85,.36))}.clerk-copy .eyebrow{color:#f1c969!important;font-size:12px;font-weight:1000;letter-spacing:.16em;text-transform:uppercase}.clerk-copy h1{font-size:clamp(42px,8vw,82px);line-height:.88;letter-spacing:-.075em;margin:10px 0;color:#fff}.clerk-copy p{color:#aeb8c7;font-size:13px;line-height:1.65;max-width:560px}.clerk-bullets{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:16px}.clerk-bullets div{padding:12px;border-radius:17px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.08)}.clerk-bullets strong{display:block;font-size:18px;color:#fff}.clerk-bullets span{display:block;margin-top:3px;color:#8f9bad;font-size:9px;text-transform:uppercase;letter-spacing:.11em;font-weight:900}.clerk-card{border-radius:30px;padding:18px;background:linear-gradient(145deg,#171922,#07080b);border:1px solid rgba(255,255,255,.12);box-shadow:0 30px 90px rgba(0,0,0,.62);display:grid;gap:12px;min-height:430px;place-items:center}.clerk-auth-tabs{width:100%;display:grid;grid-template-columns:1fr 1fr;gap:8px}.clerk-auth-tab{min-height:44px;border-radius:15px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.07);color:#aeb8c7;font-weight:1000}.clerk-auth-tab.active{background:linear-gradient(135deg,#f1c969,#ffda7a);color:#050505;border-color:transparent}.clerk-mount{width:100%;display:grid;place-items:center}.clerk-loading{width:100%;color:#aeb8c7;text-align:center;font-size:12px;line-height:1.5}.clerk-error{padding:14px;border-radius:18px;background:rgba(255,64,85,.12);border:1px solid rgba(255,64,85,.35);color:#ffd3d8!important}.clerk-user-chip{position:fixed;top:max(12px,env(safe-area-inset-top));right:12px;z-index:10001;display:none;align-items:center;gap:9px;border:1px solid rgba(255,255,255,.12);background:rgba(8,9,12,.78);backdrop-filter:blur(16px);border-radius:999px;padding:6px 10px;color:#fff;font-size:11px;font-weight:900}.db-authed .clerk-user-chip{display:flex}.clerk-signout{border:0;background:rgba(255,255,255,.1);color:#fff;border-radius:999px;padding:7px 9px;font-size:10px;font-weight:1000}\
+    @media(max-width:760px){.clerk-login-shell{grid-template-columns:1fr}.clerk-copy{padding:20px;text-align:center}.clerk-copy img{margin-left:auto;margin-right:auto}.clerk-bullets{grid-template-columns:1fr 1fr}.clerk-card{min-height:390px;padding:14px}}\
+  ';document.head.appendChild(s)}
+  async function config(){try{var r=await fetch('/clerk-config',{cache:'no-store'});return await r.json()}catch(e){return {publishableKey:''}}}
+  function timeout(promise,ms,label){return Promise.race([promise,new Promise(function(_resolve,reject){setTimeout(function(){reject(new Error(label||'Request timed out'))},ms)})])}
+  function loadOne(src,attrs){return new Promise(function(resolve,reject){var existing=document.querySelector('script[src="'+src+'"]');if(existing){if(existing.dataset.loaded)return resolve();existing.addEventListener('load',resolve,{once:true});existing.addEventListener('error',reject,{once:true});return}var s=document.createElement('script');s.async=true;s.defer=true;s.crossOrigin='anonymous';s.src=src;Object.keys(attrs||{}).forEach(function(k){s.setAttribute(k,attrs[k])});s.onload=function(){s.dataset.loaded='1';resolve()};s.onerror=function(){reject(new Error('Failed to load '+src))};document.head.appendChild(s)})}
+  function frontendApiFromKey(pk){try{return atob(String(pk||'').split('_')[2]||'').replace(/\$$/,'')}catch(e){return ''}}
+  async function loadClerk(pk){var frontend=frontendApiFromKey(pk)||'clerk.deathboxlive.com';await timeout(loadOne('https://'+frontend+'/npm/@clerk/ui@1/dist/ui.browser.js',{}),10000,'Clerk UI script timed out');await timeout(loadOne('https://cdn.jsdelivr.net/npm/@clerk/clerk-js@6/dist/clerk.browser.js',{'data-clerk-publishable-key':pk}),8000,'Clerk script timed out');if(!window.Clerk)throw new Error('Clerk global missing');if(!window.__internal_ClerkUICtor)throw new Error('Clerk UI components did not load');clerk=window.Clerk;await timeout(clerk.load({ui:{ClerkUI:window.__internal_ClerkUICtor}}),10000,'Clerk domain request timed out');window.DeathboxClerk=clerk;return clerk}
+  function gateHTML(){return '<div class="clerk-login-shell"><section class="clerk-copy"><img src="/deathbox-logo.svg" alt="DeathBox"><div class="eyebrow">Secure account login</div><h1>Enter DeathBox.</h1><p>Sign in with Clerk to keep XP, save games, track beers, add friends, and jump into DeathBox or Lethal Cross rooms.</p><div class="clerk-bullets"><div><strong>XP</strong><span>Levels saved</span></div><div><strong>Stats</strong><span>Charts tracked</span></div><div><strong>Rooms</strong><span>Play live</span></div></div></section><section class="clerk-card"><div class="clerk-auth-tabs"><button type="button" class="clerk-auth-tab active" id="clerkTabSignIn">Sign In</button><button type="button" class="clerk-auth-tab" id="clerkTabSignUp">Create Account</button></div><div class="clerk-mount" id="clerkMount"><div class="clerk-loading" id="clerkStatus">Loading Clerk…</div></div></section></div>'}
+  function showClerkError(message){var mount=$('clerkMount');if(mount)mount.innerHTML='<div class="clerk-loading clerk-error"><strong>Clerk could not load.</strong><br>'+esc(message||'Check the Clerk publishable key and custom domain settings.')+'</div>'}
+  function setMode(mode){authMode=mode==='signUp'?'signUp':'signIn';var a=$('clerkTabSignIn'),b=$('clerkTabSignUp');if(a)a.classList.toggle('active',authMode==='signIn');if(b)b.classList.toggle('active',authMode==='signUp');mountAuth()}
+  function mountAuth(){var mount=$('clerkMount');if(!mount||!clerk)return;mount.innerHTML='';var opts={routing:'hash',afterSignInUrl:location.origin,afterSignUpUrl:location.origin,signInUrl:location.origin,signUpUrl:location.origin};try{if(authMode==='signUp')clerk.mountSignUp(mount,opts);else clerk.mountSignIn(mount,opts)}catch(e){console.error(e);showClerkError(e.message||'Clerk mount failed.')}}
+  function nameFromUser(u){return (u&&u.fullName)||(u&&u.username)||(u&&u.firstName)||((u&&u.primaryEmailAddress&&u.primaryEmailAddress.emailAddress)||'Player').split('@')[0]||'Player'}
+  function usernameFromUser(u){var raw=(u&&u.username)||((u&&u.primaryEmailAddress&&u.primaryEmailAddress.emailAddress)||'').split('@')[0]||('player_'+String((u&&u.id)||'').slice(-8));return String(raw).toLowerCase().replace(/[^a-z0-9_]/g,'_').slice(0,18)||('player_'+Date.now().toString().slice(-6))}
+  function profileTokenFromUser(u){return 'clerk_'+String(u&&u.id||'guest').replace(/[^a-zA-Z0-9_]/g,'_')}
+  function syncDeathboxProfile(){var s=socketSafe();if(!s||!clerk||!clerk.user||profileRequested)return;profileRequested=true;var u=clerk.user,token=profileTokenFromUser(u),name=nameFromUser(u),username=usernameFromUser(u);try{localStorage.setItem('deathboxProfileToken',token);localStorage.setItem('deathboxUsername',username)}catch(e){}try{s.emit('clerkProfile',{token:token,name:name,username:username,clerkId:u.id,email:u.primaryEmailAddress&&u.primaryEmailAddress.emailAddress})}catch(e){}setTimeout(function(){profileRequested=false},2200)}
+  function signOutAll(){try{localStorage.removeItem('deathboxProfileToken');localStorage.removeItem('deathboxUsername')}catch(e){}try{var s=socketSafe();if(s)s.emit('signOut')}catch(e){}if(clerk)clerk.signOut().catch(function(){})}
+  function userChip(){var chip=$('clerkUserChip');if(!chip){chip=document.createElement('div');chip.id='clerkUserChip';chip.className='clerk-user-chip';document.body.appendChild(chip)}var u=clerk&&clerk.user;if(!u){chip.innerHTML='';return}chip.innerHTML='<span>'+esc(nameFromUser(u))+'</span><button type="button" class="clerk-signout" id="clerkSignOutBtn">Sign out</button>';var btn=$('clerkSignOutBtn');if(btn)btn.onclick=signOutAll}
+  function applyAuthState(){var gate=$('profileGate');if(clerk&&(clerk.user||clerk.isSignedIn)){if(gate)gate.classList.add('hidden');document.body.classList.add('db-authed');syncDeathboxProfile();userChip()}else{document.body.classList.remove('db-authed');if(gate)gate.classList.remove('hidden')}}
+  async function boot(){if(wired)return;wired=true;css();var gate=$('profileGate');if(gate){gate.className='profile-gate clerk-gate';gate.classList.remove('hidden');gate.innerHTML=gateHTML()}var cfg=await config();if(!cfg.publishableKey){showClerkError('Missing NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY in Render.');return}try{await loadClerk(cfg.publishableKey);var signIn=$('clerkTabSignIn'),signUp=$('clerkTabSignUp');if(signIn)signIn.onclick=function(){setMode('signIn')};if(signUp)signUp.onclick=function(){setMode('signUp')};applyAuthState();if(!(clerk.user||clerk.isSignedIn))mountAuth();clerk.addListener(function(){applyAuthState();if(!(clerk.user||clerk.isSignedIn))mountAuth()})}catch(e){console.error(e);showClerkError(e.message||'Check Clerk custom domain or SSL settings.')}}
+  function socketHook(){var s=socketSafe();if(s&&!s.__clerkProfileHooked){s.__clerkProfileHooked=true;s.on('connect',syncDeathboxProfile);s.on('profileReady',function(){var g=$('profileGate');if(g&&clerk&&(clerk.user||clerk.isSignedIn))g.classList.add('hidden');if(clerk&&(clerk.user||clerk.isSignedIn))document.body.classList.add('db-authed')})}}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();setInterval(socketHook,500);
 }());
