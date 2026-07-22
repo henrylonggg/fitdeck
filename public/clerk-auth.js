@@ -2,8 +2,9 @@
   var wiredSocket=null,loadedGolf=false;
   function $(id){return document.getElementById(id)}
   function socketSafe(){try{return socket}catch(e){return null}}
+  function getProfileObj(){try{if(!profile)profile={};return profile}catch(e){window.profile=window.profile||{};return window.profile}}
   function loadScript(src){return new Promise(function(resolve,reject){var clean=src.split('?')[0];var existing=[].slice.call(document.scripts).find(function(s){return s.src&&s.src.indexOf(clean)>=0});if(existing)return resolve();var s=document.createElement('script');s.defer=true;s.src=src;s.onload=resolve;s.onerror=reject;document.head.appendChild(s)})}
-  function ensureGolf(){if(loadedGolf)return;loadedGolf=true;loadScript('/golf-mode.js?v=golf-test-2').catch(function(e){console.error(e)})}
+  function ensureGolf(){if(loadedGolf)return;loadedGolf=true;loadScript('/golf-mode.js?v=golf-test-3').catch(function(e){console.error(e)})}
   function injectGolfCreateCard(){
     var picks=document.querySelector('.db-game-picks');
     if(picks&&!picks.querySelector('[data-create-game="golf"]')){
@@ -27,14 +28,15 @@
     var id='';
     try{id=localStorage.getItem('deathboxDevGuestId')||''}catch(e){}
     if(!id){id=Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-4);try{localStorage.setItem('deathboxDevGuestId',id)}catch(e){}}
-    try{
-      window.profile=window.profile||{};
-      profile.token=profile.token||('dev_'+id);
-      profile.username=profile.username||'tester';
-      profile.name=profile.name||localStorage.getItem('deathboxDevName')||'Tester';
-      localStorage.setItem('deathboxProfileToken',profile.token);
-      localStorage.setItem('deathboxUsername',profile.username);
-    }catch(e){}
+    var p=getProfileObj();
+    p.token=p.token||('clerk_dev_'+id);
+    p.username=p.username||'tester';
+    p.name=p.name||localStorage.getItem('deathboxDevName')||'Tester';
+    if(!p.xp)p.xp={level:1,current:0,needed:2000,percent:0,total:0};
+    if(!p.games)p.games=[];
+    if(!p.stats)p.stats={games:0,guesses:0,correct:0,penalty:0,riskTotal:0,riskGuesses:0};
+    try{localStorage.setItem('deathboxProfileToken',p.token);localStorage.setItem('deathboxUsername',p.username)}catch(e){}
+    return p;
   }
   function openHome(){
     ensureProfile();ensureGolf();injectGolfCreateCard();
@@ -44,17 +46,19 @@
     ['landing','lobbySection','gameSection','leaderSection','statsSection','assholeGame'].forEach(function(id){var n=$(id);if(n)n.classList.add('hidden')});
   }
   function syncServerProfile(){
-    ensureProfile();
+    var p=ensureProfile();
     var s=socketSafe();
-    if(!s||s===wiredSocket&&!s.connected)return;
-    wiredSocket=s;
-    if(!s.__devLoginBypassWired){
-      s.__devLoginBypassWired=true;
-      s.on('connect',syncServerProfile);
-      s.on('profileReady',function(p){try{window.profile=p||profile}catch(e){}openHome()});
+    if(!s)return;
+    if(s!==wiredSocket){
+      wiredSocket=s;
+      if(!s.__devLoginBypassWired){
+        s.__devLoginBypassWired=true;
+        s.on('connect',syncServerProfile);
+        s.on('profileReady',function(next){try{profile=next||profile}catch(e){window.profile=next||window.profile}openHome()});
+      }
     }
     if(s.connected){
-      try{s.emit('clerkProfile',{token:profile.token,name:profile.name,username:profile.username,clerkId:profile.token,email:''})}catch(e){}
+      try{s.emit('clerkProfile',{token:p.token,name:p.name,username:p.username,clerkId:p.token,email:''})}catch(e){}
     }
   }
   window.__deathboxDevLoginBypass=true;
